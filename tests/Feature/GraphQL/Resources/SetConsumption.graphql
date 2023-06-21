@@ -1,0 +1,29 @@
+mutation SetConsumption(
+  $tankId: String!
+  $ruleSetId: BigInt!
+  $userId: String
+  $totalConsumed: BigInt!
+  $lastResetBlock: Int
+) {
+  SetConsumption(
+    tankId: $tankId
+    ruleSetId: $ruleSetId
+    userId: $userId
+    totalConsumed: $totalConsumed
+    lastResetBlock: $lastResetBlock
+  ) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

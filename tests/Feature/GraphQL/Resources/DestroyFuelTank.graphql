@@ -1,0 +1,17 @@
+mutation DestroyFuelTank($tankId: String!) {
+  DestroyFuelTank(tankId: $tankId) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

@@ -1,0 +1,25 @@
+mutation InsertRuleSet(
+  $tankId: String!
+  $ruleSetId: BigInt!
+  $dispatchRules: [DispatchRuleInputType!]!
+) {
+  InsertRuleSet(
+    tankId: $tankId
+    ruleSetId: $ruleSetId
+    dispatchRules: $dispatchRules
+  ) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

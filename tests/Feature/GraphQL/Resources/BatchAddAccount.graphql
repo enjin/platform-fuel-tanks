@@ -1,0 +1,17 @@
+mutation BatchAddAccount($tankId: String!, $userIds: [String!]!) {
+  BatchAddAccount(tankId: $tankId, userIds: $userIds) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

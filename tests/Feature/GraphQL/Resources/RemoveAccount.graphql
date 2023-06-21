@@ -1,0 +1,17 @@
+mutation RemoveAccount($tankId: String!, $userId: String!) {
+  RemoveAccount(tankId: $tankId, userId: $userId) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

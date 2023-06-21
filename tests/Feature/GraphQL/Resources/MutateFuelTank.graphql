@@ -1,0 +1,20 @@
+mutation MutateFuelTank(
+  $tankId: String!
+  $mutation: FuelTankMutationInputType!
+) {
+  MutateFuelTank(tankId: $tankId, mutation: $mutation) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

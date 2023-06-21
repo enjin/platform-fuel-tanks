@@ -1,0 +1,27 @@
+mutation RemoveAccountRuleData(
+  $tankId: String!
+  $ruleSetId: BigInt!
+  $userId: String!
+  $rule: DispatchRuleEnum!
+) {
+  RemoveAccountRuleData(
+    tankId: $tankId
+    ruleSetId: $ruleSetId
+    userId: $userId
+    rule: $rule
+  ) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

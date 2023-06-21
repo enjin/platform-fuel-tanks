@@ -1,0 +1,31 @@
+mutation CreateFuelTank(
+  $name: String!
+  $reservesExistentialDeposit: Boolean
+  $reservesAccountCreationDeposit: Boolean
+  $providesDeposit: Boolean!
+  $accountRules: AccountRuleInputType
+  $dispatchRules: [DispatchRuleInputType!]
+) {
+  CreateFuelTank(
+    name: $name
+    reservesExistentialDeposit: $reservesExistentialDeposit
+    reservesAccountCreationDeposit: $reservesAccountCreationDeposit
+    providesDeposit: $providesDeposit
+    accountRules: $accountRules
+    dispatchRules: $dispatchRules
+  ) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

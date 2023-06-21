@@ -1,0 +1,17 @@
+mutation AddAccount($tankId: String!, $userId: String!) {
+  AddAccount(tankId: $tankId, userId: $userId) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

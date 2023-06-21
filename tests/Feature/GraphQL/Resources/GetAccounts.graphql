@@ -1,0 +1,21 @@
+query GetAccounts($tankId: String!) {
+  GetAccounts(tankId: $tankId) {
+    totalCount
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    edges {
+      node {
+        id
+        externalId
+        account {
+          publicKey
+          address
+        }
+      }
+    }
+  }
+}

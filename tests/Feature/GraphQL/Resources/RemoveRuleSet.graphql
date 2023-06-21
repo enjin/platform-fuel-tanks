@@ -1,0 +1,17 @@
+mutation RemoveRuleSet($tankId: String!, $ruleSetId: BigInt!) {
+  RemoveRuleSet(tankId: $tankId, ruleSetId: $ruleSetId) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

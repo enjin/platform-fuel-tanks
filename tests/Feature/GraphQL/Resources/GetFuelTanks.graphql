@@ -1,0 +1,44 @@
+query GetFuelTanks($tankIds: [String!], $names: [String!]) {
+  GetFuelTanks(tankIds: $tankIds, names: $names) {
+    totalCount
+    pageInfo {
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    edges {
+      node {
+        name
+        providesDeposit
+        tankId {
+          publicKey
+          address
+        }
+        owner {
+          account {
+            publicKey
+            address
+          }
+        }
+        accounts {
+          id
+          account {
+            publicKey
+            address
+          }
+          externalId
+        }
+        accountRules {
+          rule
+          value
+        }
+        dispatchRules {
+          rule
+          value
+          isFrozen
+        }
+      }
+    }
+  }
+}

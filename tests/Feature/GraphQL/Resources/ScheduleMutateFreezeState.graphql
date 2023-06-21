@@ -1,0 +1,25 @@
+mutation ScheduleMutateFreezeState(
+  $tankId: String!
+  $ruleSetId: BigInt
+  $isFrozen: Boolean!
+) {
+  ScheduleMutateFreezeState(
+    tankId: $tankId
+    ruleSetId: $ruleSetId
+    isFrozen: $isFrozen
+  ) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

@@ -1,0 +1,27 @@
+mutation Dispatch(
+  $tankId: String!
+  $ruleSetId: BigInt!
+  $dispatch: DispatchInputType!
+  $paysRemainingFee: Boolean
+) {
+  Dispatch(
+    tankId: $tankId
+    ruleSetId: $ruleSetId
+    dispatch: $dispatch
+    paysRemainingFee: $paysRemainingFee
+  ) {
+    id
+    transactionId
+    transactionHash
+    state
+    encodedData
+    method
+    wallet {
+      account {
+        publicKey
+        address
+      }
+    }
+    idempotencyKey
+  }
+}

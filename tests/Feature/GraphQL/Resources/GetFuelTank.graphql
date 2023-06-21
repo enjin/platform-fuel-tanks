@@ -1,0 +1,33 @@
+query GetFuelTank($tankId: String, $name: String) {
+  GetFuelTank(tankId: $tankId, name: $name) {
+    name
+    providesDeposit
+    tankId {
+      publicKey
+      address
+    }
+    owner {
+      account {
+        publicKey
+        address
+      }
+    }
+    accounts {
+      id
+      account {
+        publicKey
+        address
+      }
+      externalId
+    }
+    accountRules {
+      rule
+      value
+    }
+    dispatchRules {
+      rule
+      value
+      isFrozen
+    }
+  }
+}
