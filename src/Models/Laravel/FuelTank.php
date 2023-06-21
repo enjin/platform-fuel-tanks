@@ -7,7 +7,6 @@ use Enjin\Platform\Models\BaseModel;
 use Enjin\Platform\Support\SS58Address;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -104,6 +103,13 @@ class FuelTank extends BaseModel
     {
         return new Attribute(
             get: fn () => is_null($this->public_key) ? null : SS58Address::encode($this->public_key)
+        );
+    }
+
+    protected function pivotIdentifier(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->public_key
         );
     }
 

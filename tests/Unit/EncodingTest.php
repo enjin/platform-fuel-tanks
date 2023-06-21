@@ -340,7 +340,7 @@ class EncodingTest extends TestCase
 
         $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
         $this->assertEquals(
-            "0x{$callIndex}28456e6a696e2054616e6b0004000000000404024e7253bf0e00000001000000000000",
+            "0x{$callIndex}28456e6a696e2054616e6b0004000000000404024e7253bf0e00000000",
             $data
         );
     }

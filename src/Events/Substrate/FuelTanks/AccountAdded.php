@@ -16,6 +16,8 @@ class AccountAdded extends PlatformBroadcastEvent
     {
         parent::__construct();
 
+        $this->model = $fuelTankAccount;
+
         $this->broadcastData = [
             'tankId' => $fuelTankAccount->fuelTank->public_key,
             'name' => $fuelTankAccount->fuelTank->name,

@@ -16,6 +16,8 @@ class FuelTankCreated extends PlatformBroadcastEvent
     {
         parent::__construct();
 
+        $this->model = $fuelTank;
+
         $this->broadcastData = [
             'tankId' => $fuelTank->address,
             'name' => $fuelTank->name,
