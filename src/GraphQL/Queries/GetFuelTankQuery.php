@@ -31,7 +31,7 @@ class GetFuelTankQuery extends Query
      */
     public function type(): Type
     {
-        return GraphQL::type('FuelTank!');
+        return GraphQL::type('FuelTank');
     }
 
     /**
