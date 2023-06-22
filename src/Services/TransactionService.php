@@ -291,7 +291,7 @@ class TransactionService extends DatabaseTransactionService
     /**
      * Set user account management param object.
      */
-    protected function setUserAccountManagementParams(array $args): ?UserAccountManagementParams
+    protected function setUserAccountManagementParams(?array $args = null): ?UserAccountManagementParams
     {
         if (!is_null($existentialDeposit = Arr::get($args, 'reservesExistentialDeposit'))
             || !is_null($creationDeposit = Arr::get($args, 'reservesAccountCreationDeposit'))) {
@@ -350,8 +350,12 @@ class TransactionService extends DatabaseTransactionService
     /**
      * Set account rule params object.
      */
-    protected function setAccountRulesParams(array $args): ?AccountRulesParams
+    protected function setAccountRulesParams(?array $args = null): ?AccountRulesParams
     {
+        if (is_null($args)) {
+            return null;
+        }
+
         $accountRulesParams = null;
         $callers = Arr::get($args, 'accountRules.whitelistedCallers');
         $requireToken = Arr::get($args, 'accountRules.requireToken');
