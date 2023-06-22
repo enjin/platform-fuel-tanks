@@ -12,13 +12,14 @@ class AccountAdded extends PlatformBroadcastEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(Model $fuelTankAccount)
+    public function __construct(Model $fuelTankAccount, ?Model $transaction = null)
     {
         parent::__construct();
 
         $this->model = $fuelTankAccount;
 
         $this->broadcastData = [
+            'idempotencyKey' => $transaction?->idempotency_key,
             'tankId' => $fuelTankAccount->fuelTank->public_key,
             'name' => $fuelTankAccount->fuelTank->name,
             'owner' => $fuelTankAccount->fuelTank->owner->address,

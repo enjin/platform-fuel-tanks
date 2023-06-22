@@ -6,6 +6,7 @@ use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\AccountAdded as AccountA
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\Traits\QueryDataOrFail;
 use Enjin\Platform\Models\Laravel\Block;
+use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\AccountAdded as AccountAddedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
@@ -34,16 +35,24 @@ class AccountAdded implements SubstrateEvent
             'wallet_id' => $account->id,
         ]);
 
+        $extrinsic = $block->extrinsics[$event->extrinsicIndex];
+        $daemonTransaction = Transaction::firstWhere(['transaction_chain_hash' => $extrinsic->hash]);
+
         Log::info(
             sprintf(
-                'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created.',
+                'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created from transaction %s (id: %s).',
                 $account->public_key,
                 $fuelTankAccount->id,
                 $fuelTank->public_key,
                 $fuelTank->id,
+                $daemonTransaction->transaction_chain_hash,
+                $daemonTransaction->id
             )
         );
 
-        AccountAddedEvent::safeBroadcast($fuelTankAccount);
+        AccountAddedEvent::safeBroadcast(
+            $fuelTankAccount,
+            $daemonTransaction
+        );
     }
 }
