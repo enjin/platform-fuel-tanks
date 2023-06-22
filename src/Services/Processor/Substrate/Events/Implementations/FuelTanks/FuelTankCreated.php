@@ -6,6 +6,7 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankCreated as FuelTankCreatedEvent;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\Models\Laravel\Block;
+use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankCreated as FuelTankCreatedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
@@ -73,14 +74,21 @@ class FuelTankCreated implements SubstrateEvent
         }
         $fuelTank->dispatchRules()->createMany($insertDispatchRules);
 
+        $daemonTransaction = Transaction::firstWhere(['transaction_chain_hash' => $extrinsic->hash]);
+
         Log::info(
             sprintf(
-                'FuelTank %s (id: %s) was created.',
+                'FuelTank %s (id: %s) was created from transaction %s (id: %s)',
                 $fuelTank->public_key,
-                $fuelTank->id
+                $fuelTank->id,
+                $daemonTransaction->transaction_chain_hash,
+                $daemonTransaction->id
             )
         );
 
-        FuelTankCreatedEvent::safeBroadcast($fuelTank);
+        FuelTankCreatedEvent::safeBroadcast(
+            $fuelTank,
+            $daemonTransaction
+        );
     }
 }

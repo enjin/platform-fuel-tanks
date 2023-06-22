@@ -7,6 +7,7 @@ use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\RuleSetInserted as RuleS
 use Enjin\Platform\FuelTanks\Models\DispatchRule;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\Traits\QueryDataOrFail;
 use Enjin\Platform\Models\Laravel\Block;
+use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\RuleSetInserted as RuleSetInsertedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
@@ -46,7 +47,13 @@ class RuleSetInserted implements SubstrateEvent
             ];
         }
 
+        $daemonTransaction = Transaction::firstWhere(['transaction_chain_hash' => $extrinsic->hash]);
+
         DispatchRule::insert($insertRules);
-        RuleSetInsertedEvent::safeBroadcast($fuelTank, $insertRules);
+        RuleSetInsertedEvent::safeBroadcast(
+            $fuelTank,
+            $insertRules,
+            $daemonTransaction
+        );
     }
 }

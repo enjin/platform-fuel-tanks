@@ -12,13 +12,14 @@ class FuelTankCreated extends PlatformBroadcastEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(Model $fuelTank)
+    public function __construct(Model $fuelTank, ?Model $transaction = null)
     {
         parent::__construct();
 
         $this->model = $fuelTank;
 
         $this->broadcastData = [
+            'idempotencyKey' => $transaction?->idempotency_key,
             'tankId' => $fuelTank->address,
             'name' => $fuelTank->name,
             'owner' => $fuelTank->owner->address,
