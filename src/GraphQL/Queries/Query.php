@@ -9,4 +9,19 @@ use Rebing\GraphQL\Support\Query as GraphQlQuery;
 abstract class Query extends GraphQlQuery implements PlatformGraphQlQuery
 {
     use InFuelTanksSchema;
+
+    /**
+     * Adhoc rules.
+     *
+     * @var array
+     */
+    public static $adhocRules = [];
+
+    /**
+     * Get validation rules.
+     */
+    public function getRules(array $arguments = []): array
+    {
+        return collect(parent::getRules($arguments))->mergeRecursive(static::$adhocRules)->all();
+    }
 }
