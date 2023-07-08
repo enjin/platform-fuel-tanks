@@ -4,6 +4,7 @@ namespace Enjin\Platform\FuelTanks\Rules;
 
 use Closure;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
+use Enjin\Platform\Support\Account;
 use Enjin\Platform\Support\SS58Address;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -23,7 +24,7 @@ class IsFuelTankOwner implements ValidationRule
             return;
         }
 
-        if (!SS58Address::isSameAddress($fuelTank->owner->public_key, SS58Address::getDaemonAccount())) {
+        if (!SS58Address::isSameAddress($fuelTank->owner->public_key, Account::daemonPublicKey())) {
             $fail('enjin-platform-fuel-tanks::validation.is_fuel_tank_owner')->translate();
         }
     }
