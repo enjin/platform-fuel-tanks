@@ -11,6 +11,109 @@ query GetFuelTank($tankId: String, $name: String) {
         publicKey
         address
       }
+      collectionAccounts {
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        edges {
+          cursor
+          node {
+            accountCount
+            isFrozen
+          }
+        }
+      }
+      tokenAccounts {
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        edges {
+          cursor
+          node {
+            balance
+            reservedBalance
+            isFrozen
+          }
+        }
+      }
+      collectionAccountApprovals {
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        edges {
+          cursor
+          node {
+            expiration
+          }
+        }
+      }
+      tokenAccountApprovals {
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        edges {
+          cursor
+          node {
+            amount
+            expiration
+          }
+        }
+      }
+      transactions {
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        edges {
+          cursor
+          node {
+            id
+            transactionId
+            transactionHash
+            method
+            state
+            encodedData
+          }
+        }
+      }
+      ownedCollections {
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        edges {
+          cursor
+          node {
+            collectionId
+            maxTokenCount
+            maxTokenSupply
+            forceSingleMint
+            network
+          }
+        }
+      }
     }
     accounts {
       id

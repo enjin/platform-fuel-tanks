@@ -65,14 +65,6 @@ class FuelTank extends BaseModel
     }
 
     /**
-     * The wallet's relationship.
-     */
-    public function wallet(): BelongsTo
-    {
-        return $this->belongsTo(Wallet::class);
-    }
-
-    /**
      * The account rules relationship.
      */
     public function accountRules(): HasMany
