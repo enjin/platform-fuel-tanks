@@ -2,6 +2,8 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Unit;
 
+use Enjin\Platform\FuelTanks\Models\AccountRule;
+use Enjin\Platform\FuelTanks\Models\DispatchRule;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Services\TankService;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Traits\CreateCollectionData;
@@ -23,6 +25,8 @@ class TankServiceTest extends TestCase
         $service = resolve(TankService::class);
         $tank = FuelTank::factory()->make(['owner_wallet_id' => $this->wallet->id]);
         $this->assertNotEmpty($model = $service->store($tank->toArray()));
+        DispatchRule::factory()->for($model)->create();
+        AccountRule::factory()->for($model)->create();
         $this->assertNotEmpty($service->get($model->public_key));
         $this->assertTrue($service->insert(
             FuelTank::factory()->make(['owner_wallet_id' => $this->wallet->id])->toArray()

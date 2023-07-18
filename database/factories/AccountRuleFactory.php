@@ -21,7 +21,7 @@ class AccountRuleFactory extends Factory
     {
         return [
             'rule' => '', // AccountRule,
-            'value' => [],
+            'value' => json_encode([]),
         ];
     }
 }
