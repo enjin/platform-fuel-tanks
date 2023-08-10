@@ -9,9 +9,21 @@ trait GenerateFuelTankData
     /**
      * Generate data.
      */
-    protected function generateData(): array
+    protected function generateData($isArray = true): array
     {
         $provider = resolve(SubstrateProvider::class);
+
+        $dispatchRules = [
+            'whitelistedCallers' => [$provider->public_key()],
+            'requireToken' => [
+                'collectionId' => $this->collection->collection_chain_id,
+                'tokenId' => ['integer' => $this->token->token_chain_id],
+            ],
+            'whitelistedCollections' => [$this->collection->collection_chain_id],
+            'maxFuelBurnPerTransaction' => fake()->numberBetween(1, 1000),
+            'userFuelBudget' => ['amount' => fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
+            'tankFuelBudget' => ['amount' => fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
+        ];
 
         return [
             'name' => fake()->text(32),
@@ -26,19 +38,7 @@ trait GenerateFuelTankData
                     'tokenId' => ['integer' => $this->token->token_chain_id],
                 ],
             ],
-            'dispatchRules' => [
-                [
-                    'whitelistedCallers' => [$provider->public_key()],
-                    'requireToken' => [
-                        'collectionId' => $this->collection->collection_chain_id,
-                        'tokenId' => ['integer' => $this->token->token_chain_id],
-                    ],
-                    'whitelistedCollections' => [$this->collection->collection_chain_id],
-                    'maxFuelBurnPerTransaction' => fake()->numberBetween(1, 1000),
-                    'userFuelBudget' => ['amount' => fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
-                    'tankFuelBudget' => ['amount' => fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
-                ],
-            ],
+            'dispatchRules' => $isArray ? [$dispatchRules] : $dispatchRules,
         ];
     }
 }

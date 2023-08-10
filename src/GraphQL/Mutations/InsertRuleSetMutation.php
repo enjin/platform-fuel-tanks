@@ -58,7 +58,7 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
                 'description' => __('enjin-platform-fuel-tanks::mutation.schedule_mutate_freeze_state.args.ruleSetId'),
             ],
             'dispatchRules' => [
-                'type' => GraphQL::type('[DispatchRuleInputType!]'),
+                'type' => GraphQL::type('DispatchRuleInputType!'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.description'),
             ],
             ...$this->getIdempotencyField(),
@@ -101,7 +101,7 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
                 new MaxBigInt(Hex::MAX_UINT32),
                 new RuleSetNotExists(),
             ],
-            ...$this->dispatchRules($args),
+            ...$this->dispatchRules($args, '', false),
         ];
     }
 }
