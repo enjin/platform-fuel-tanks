@@ -82,28 +82,30 @@ trait HasFuelTankValidationRules
     /**
      * Get the dispatch rules validation rules.
      */
-    protected function dispatchRules(array $args = [], string $attributePrefix = ''): array
+    protected function dispatchRules(array $args = [], string $attributePrefix = '', $isArray = true): array
     {
+        $array = $isArray ? '.*' : '';
+
         return [
-            ...$this->commonRules("{$attributePrefix}dispatchRules.*", $args),
-            "{$attributePrefix}dispatchRules.*.whitelistedCollections.*" => [
+            ...$this->commonRules("{$attributePrefix}dispatchRules{$array}", $args),
+            "{$attributePrefix}dispatchRules{$array}.whitelistedCollections.*" => [
                 'bail',
                 'distinct',
                 'max:255',
                 Rule::exists('collections', 'collection_chain_id'),
             ],
-            "{$attributePrefix}dispatchRules.*.whitelistedCollections" => [
+            "{$attributePrefix}dispatchRules{$array}.whitelistedCollections" => [
                 'nullable',
                 'array',
                 'min:1',
             ],
-            "{$attributePrefix}dispatchRules.*.maxFuelBurnPerTransaction" => [
+            "{$attributePrefix}dispatchRules{$array}.maxFuelBurnPerTransaction" => [
                 'bail',
                 new MinBigInt(),
                 new MaxBigInt(Hex::MAX_UINT128),
             ],
-            ...$this->commonRules("{$attributePrefix}dispatchRules.*.userFuelBudget"),
-            ...$this->commonRules("{$attributePrefix}dispatchRules.*.tankFuelBudget"),
+            ...$this->commonRules("{$attributePrefix}dispatchRules{$array}.userFuelBudget"),
+            ...$this->commonRules("{$attributePrefix}dispatchRules{$array}.tankFuelBudget"),
         ];
     }
 }

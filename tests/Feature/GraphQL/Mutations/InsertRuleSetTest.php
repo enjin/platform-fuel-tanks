@@ -148,58 +148,58 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $data = $this->generateRuleSet();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCallers' => ['Invalid']]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCallers' => ['Invalid']]]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.whitelistedCallers.0' => ['The dispatchRules.0.whitelistedCallers.0 is not a valid substrate address.']],
+            ['dispatchRules.whitelistedCallers.0' => ['The dispatchRules.whitelistedCallers.0 is not a valid substrate address.']],
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCallers' => [$data['tankId'], $data['tankId']]]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCallers' => [$data['tankId'], $data['tankId']]]]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.whitelistedCallers.0' => ['The dispatchRules.0.whitelistedCallers.0 field has a duplicate value.']],
+            ['dispatchRules.whitelistedCallers.0' => ['The dispatchRules.whitelistedCallers.0 field has a duplicate value.']],
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCallers' => [Str::random(300)]]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCallers' => [Str::random(300)]]]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.whitelistedCallers.0' => ['The dispatchRules.0.whitelistedCallers.0 field must not be greater than 255 characters.']],
+            ['dispatchRules.whitelistedCallers.0' => ['The dispatchRules.whitelistedCallers.0 field must not be greater than 255 characters.']],
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCallers' => []]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCallers' => []]]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.whitelistedCallers' => ['The dispatchRules.0.whitelistedCallers field must have at least 1 items.']],
+            ['dispatchRules.whitelistedCallers' => ['The dispatch rules.whitelisted callers field must have at least 1 items.']],
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCallers' => null]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCallers' => null]]),
             true
         );
         $this->assertNotEmpty($response['data']);
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCallers' => '']]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCallers' => '']]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.whitelistedCallers.0' => ['The dispatchRules.0.whitelistedCallers.0 field must have a value.']],
+            ['dispatchRules.whitelistedCallers.0' => ['The dispatchRules.whitelistedCallers.0 field must have a value.']],
             $response['error']
         );
     }
@@ -209,46 +209,46 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $data = $this->generateRuleSet();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => 1, 'tokenId'=> ['integer' => 1]]]]]),
+            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => 1, 'tokenId'=> ['integer' => 1]]]]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.requireToken.collectionId' => ['The selected dispatchRules.0.requireToken.collectionId is invalid.']],
+            ['dispatchRules.requireToken.collectionId' => ['The selected dispatch rules.require token.collection id is invalid.']],
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => 1, 'tokenId'=> null]]]]),
+            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => 1, 'tokenId'=> null]]]),
             true
         );
         $this->assertStringContainsString(
-            'Variable "$dispatchRules" got invalid value null at "dispatchRules[0].requireToken.tokenId"; Expected non-nullable type "EncodableTokenIdInput!" not to be null.',
+            'Variable "$dispatchRules" got invalid value null at "dispatchRules.requireToken.tokenId"; Expected non-nullable type "EncodableTokenIdInput!" not to be null.',
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => null, 'tokenId'=> ['integer' => 1]]]]]),
+            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => null, 'tokenId'=> ['integer' => 1]]]]),
             true
         );
         $this->assertStringContainsString(
-            'invalid value null at "dispatchRules[0].requireToken.collectionId"; Expected non-nullable type "BigInt!" not to be null',
+            'invalid value null at "dispatchRules.requireToken.collectionId"; Expected non-nullable type "BigInt!" not to be null',
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId'=> ['integer' => Hex::MAX_UINT256 + 1]]]]]),
+            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId'=> ['integer' => Hex::MAX_UINT256 + 1]]]]),
             true
         );
         $this->assertArraySubset(
             [
                 0 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].requireToken.collectionId"; Cannot represent following value as uint256: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.requireToken.collectionId"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].requireToken.tokenId.integer"; Cannot represent following value as uint256: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.requireToken.tokenId.integer"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
             ],
             $response['errors']
@@ -260,58 +260,58 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $data = $this->generateRuleSet();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCollections' => ['Invalid']]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCollections' => ['Invalid']]]),
             true
         );
         $this->assertEquals(
-            'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].whitelistedCollections[0]"; Cannot represent following value as uint256: "Invalid"',
+            'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.whitelistedCollections[0]"; Cannot represent following value as uint256: "Invalid"',
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCollections' => [1, 1]]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCollections' => [1, 1]]]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.whitelistedCollections.0' => ['The dispatchRules.0.whitelistedCollections.0 field has a duplicate value.']],
+            ['dispatchRules.whitelistedCollections.0' => ['The dispatchRules.whitelistedCollections.0 field has a duplicate value.']],
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCollections' => [5000]]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCollections' => [5000]]]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.whitelistedCollections.0' => ['The selected dispatchRules.0.whitelistedCollections.0 is invalid.']],
+            ['dispatchRules.whitelistedCollections.0' => ['The selected dispatchRules.whitelistedCollections.0 is invalid.']],
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCollections' => []]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCollections' => []]]),
             true
         );
         $this->assertArraySubset(
-            ['dispatchRules.0.whitelistedCollections' => ['The dispatchRules.0.whitelistedCollections field must have at least 1 items.']],
+            ['dispatchRules.whitelistedCollections' => ['The dispatch rules.whitelisted collections field must have at least 1 items.']],
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCollections' => null]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCollections' => null]]),
             true
         );
         $this->assertNotEmpty($response);
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['whitelistedCollections' => [Hex::MAX_UINT256 + 1]]]]),
+            array_merge($data, ['dispatchRules' => ['whitelistedCollections' => [Hex::MAX_UINT256 + 1]]]),
             true
         );
         $this->assertEquals(
-            'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].whitelistedCollections[0]"; Cannot represent following value as uint256: 1.1579208923732E+77',
+            'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.whitelistedCollections[0]"; Cannot represent following value as uint256: 1.1579208923732E+77',
             $response['error']
         );
     }
@@ -321,21 +321,21 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $data = $this->generateRuleSet();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['maxFuelBurnPerTransaction' => 'Invalid']]]),
+            array_merge($data, ['dispatchRules' => ['maxFuelBurnPerTransaction' => 'Invalid']]),
             true
         );
         $this->assertEquals(
-            'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].maxFuelBurnPerTransaction"; Cannot represent following value as uint256: "Invalid"',
+            'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.maxFuelBurnPerTransaction"; Cannot represent following value as uint256: "Invalid"',
             $response['error']
         );
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['maxFuelBurnPerTransaction' => Hex::MAX_UINT256 + 1]]]),
+            array_merge($data, ['dispatchRules' => ['maxFuelBurnPerTransaction' => Hex::MAX_UINT256 + 1]]),
             true
         );
         $this->assertEquals(
-            'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].maxFuelBurnPerTransaction"; Cannot represent following value as uint256: 1.1579208923732E+77',
+            'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.maxFuelBurnPerTransaction"; Cannot represent following value as uint256: 1.1579208923732E+77',
             $response['error']
         );
     }
@@ -345,16 +345,16 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $data = $this->generateRuleSet();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['userFuelBudget' => ['amount' => 'Invalid', 'resetPeriod' => 'Invalid']]]]),
+            array_merge($data, ['dispatchRules' => ['userFuelBudget' => ['amount' => 'Invalid', 'resetPeriod' => 'Invalid']]]),
             true
         );
         $this->assertArraySubset(
             [
                 0 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].userFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
+                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.userFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].userFuelBudget.resetPeriod"; Int cannot represent non-integer value: "Invalid"',
+                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.userFuelBudget.resetPeriod"; Int cannot represent non-integer value: "Invalid"',
                 ],
             ],
             $response['errors']
@@ -362,16 +362,16 @@ class InsertRuleSetTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['userFuelBudget' => ['amount' => Hex::MAX_UINT256 + 1, 'resetPeriod' => Hex::MAX_UINT256 + 1]]]]),
+            array_merge($data, ['dispatchRules' => ['userFuelBudget' => ['amount' => Hex::MAX_UINT256 + 1, 'resetPeriod' => Hex::MAX_UINT256 + 1]]]),
             true
         );
         $this->assertArraySubset(
             [
                 0 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].userFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.userFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].userFuelBudget.resetPeriod"; Int cannot represent non 32-bit signed integer value: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.userFuelBudget.resetPeriod"; Int cannot represent non 32-bit signed integer value: 1.1579208923732E+77',
                 ],
             ],
             $response['errors']
@@ -383,16 +383,16 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $data = $this->generateRuleSet();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['tankFuelBudget' => ['amount' => 'Invalid', 'resetPeriod' => 'Invalid']]]]),
+            array_merge($data, ['dispatchRules' => ['tankFuelBudget' => ['amount' => 'Invalid', 'resetPeriod' => 'Invalid']]]),
             true
         );
         $this->assertArraySubset(
             [
                 0 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].tankFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
+                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.tankFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].tankFuelBudget.resetPeriod"; Int cannot represent non-integer value: "Invalid"',
+                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.tankFuelBudget.resetPeriod"; Int cannot represent non-integer value: "Invalid"',
                 ],
             ],
             $response['errors']
@@ -400,16 +400,16 @@ class InsertRuleSetTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['tankFuelBudget' => ['amount' => Hex::MAX_UINT256 + 1, 'resetPeriod' => Hex::MAX_UINT256 + 1]]]]),
+            array_merge($data, ['dispatchRules' => ['tankFuelBudget' => ['amount' => Hex::MAX_UINT256 + 1, 'resetPeriod' => Hex::MAX_UINT256 + 1]]]),
             true
         );
         $this->assertArraySubset(
             [
                 0 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].tankFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.tankFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].tankFuelBudget.resetPeriod"; Int cannot represent non 32-bit signed integer value: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.tankFuelBudget.resetPeriod"; Int cannot represent non 32-bit signed integer value: 1.1579208923732E+77',
                 ],
             ],
             $response['errors']
@@ -424,7 +424,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
         return [
             'tankId' => $this->tank->public_key,
             'ruleSetId' => fake()->numberBetween(50000, 100000),
-            ...Arr::only($this->generateData(), ['dispatchRules']),
+            ...Arr::only($this->generateData(false), 'dispatchRules'),
         ];
     }
 }

@@ -86,7 +86,7 @@ class TransactionService extends DatabaseTransactionService
             'encoded_data' => $this->codec->encode()->insertRuleSet(
                 $account,
                 Arr::get($args, 'ruleSetId'),
-                $this->setDispatchRulesParams($args)
+                $this->setDispatchRulesParams(Arr::get($args, 'dispatchRules', [])),
             ),
             'method' => 'InsertRuleSet',
         ]);
