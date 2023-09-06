@@ -72,7 +72,8 @@ trait EagerLoadSelectFields
             $with = [
                 $key => function ($query) use ($select, $args) {
                     $query->select(array_unique($select))
-                        ->when(Arr::get($args, 'after'), fn ($q) => $q->where('id', '>', Cursor::fromEncoded($args['after'])->parameter('id')));
+                        ->when($cursor = Cursor::fromEncoded(Arr::get($args, 'after')), fn ($q) => $q->where('id', '>', $cursor->parameter('id')))
+                        ->orderBy('fuel_tanks.id');
                     // This must be done this way to load eager limit correctly.
                     if ($limit = Arr::get($args, 'first')) {
                         $query->limit($limit + 1);
@@ -171,11 +172,12 @@ trait EagerLoadSelectFields
             $with = [
                 $key => function ($query) use ($select, $args) {
                     $query->select($select)
-                        ->when(Arr::get($args, 'after'), fn ($q) => $q->where('id', '>', Cursor::fromEncoded($args['after'])->parameter('id')))
                         ->when(Arr::get($args, 'transactionIds'), fn ($q) => $q->whereIn('transaction_chain_id', $args['transactionIds']))
                         ->when(Arr::get($args, 'transactionHashes'), fn ($q) => $q->whereIn('transaction_chain_hash', $args['transactionIds']))
                         ->when(Arr::get($args, 'methods'), fn ($q) => $q->whereIn('method', $args['methods']))
-                        ->when(Arr::get($args, 'states'), fn ($q) => $q->whereIn('state', $args['states']));
+                        ->when(Arr::get($args, 'states'), fn ($q) => $q->whereIn('state', $args['states']))
+                        ->when($cursor = Cursor::fromEncoded(Arr::get($args, 'after')), fn ($q) => $q->where('id', '>', $cursor->parameter('id')))
+                        ->orderBy('wallets.id');
 
                     // This must be done this way to load eager limit correctly.
                     if ($limit = Arr::get($args, 'first')) {
