@@ -17,4 +17,5 @@ return [
     'dispatch.description' => 'The dispatch call.',
     'dispatch.field.query' => "The GraphQL query. It's required to query the 'id' and 'encodedData' from the result.",
     'dispatch.field.variables' => 'The GraphQL query variables.',
+    'permitted_extrinsics.description' => 'The list of permitted extrinsics in this ruleset.',
 ];

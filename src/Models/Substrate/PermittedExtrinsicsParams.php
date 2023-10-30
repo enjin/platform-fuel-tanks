@@ -20,7 +20,7 @@ class PermittedExtrinsicsParams extends FuelTankRules
     public static function fromEncodable(array $params): self
     {
         return new self(
-            extrinsics: Arr::get($params, 'PermittedExtrinsics.extrinsics')
+            extrinsics: Arr::get($params, 'PermittedExtrinsics')
         );
     }
 

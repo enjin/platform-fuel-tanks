@@ -2,6 +2,8 @@
 
 namespace Enjin\Platform\FuelTanks;
 
+use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Codec\Encoder as FuelTankEncoder;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Encoder as BaseEncoder;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -31,6 +33,8 @@ class FuelTanksServiceProvider extends PackageServiceProvider
     public function register()
     {
         parent::register();
+
+        BaseEncoder::setCallIndexKeys(array_merge(BaseEncoder::getCallIndexKeys(), FuelTankEncoder::getCallIndexKeys()));
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\BatchAddAccountMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
@@ -39,7 +41,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
         );
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->batchAddAccount($params)->encoded_data
+            TransactionSerializer::encode($this->method, BatchAddAccountMutation::getEncodableParams(...$params)),
         );
     }
 

@@ -2,6 +2,8 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\RemoveAccountMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
@@ -48,7 +50,7 @@ class RemoveAccountTest extends TestCaseGraphQL
         );
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->removeAccount($params)->encoded_data
+            TransactionSerializer::encode($this->method, RemoveAccountMutation::getEncodableParams(...$params))
         );
     }
 

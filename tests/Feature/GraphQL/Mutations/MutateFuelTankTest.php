@@ -2,6 +2,9 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\MutateFuelTankMutation;
+use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
 use Enjin\Platform\Support\Hex;
 use Illuminate\Support\Arr;
@@ -18,9 +21,15 @@ class MutateFuelTankTest extends TestCaseGraphQL
     {
         $data = $this->generateFuelTankData();
         $response = $this->graphql($this->method, $data);
+
+        $blockchainService = resolve(Substrate::class);
+        $data['userAccount'] = $blockchainService->getUserAccountManagementParams(Arr::get($data, 'mutation'));
+        $data['providesDeposit'] = Arr::get($data, 'mutation.providesDeposit');
+        $data['accountRules'] = $blockchainService->getAccountRulesParams(Arr::get($data, 'mutation'));
+
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->updateFuelTank($data)->encoded_data
+            TransactionSerializer::encode($this->method, MutateFuelTankMutation::getEncodableParams(...$data))
         );
     }
 

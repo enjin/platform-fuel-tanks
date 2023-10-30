@@ -2,6 +2,21 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Unit;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\AddAccountMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\BatchAddAccountMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\BatchRemoveAccountMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\CreateFuelTankMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\DestroyFuelTankMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\DispatchAndTouchMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\DispatchMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\ForceSetConsumptionMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\InsertRuleSetMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\MutateFuelTankMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\RemoveAccountMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\RemoveAccountRuleDataMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\RemoveRuleSetMutation;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\ScheduleMutateFreezeStateMutation;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\MaxFuelBurnPerTransactionParams;
@@ -27,12 +42,12 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_add_account()
     {
-        $data = $this->codec->encode()->addAccount(
-            '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'
-        );
+        $data = TransactionSerializer::encode('AddAccount', AddAccountMutation::getEncodableParams(
+            tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
+            userId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.add_account'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.add_account', true, true);
         $this->assertEquals(
             "0x{$callIndex}00be5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
             $data
@@ -41,12 +56,12 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_remove_account()
     {
-        $data = $this->codec->encode()->removeAccount(
-            '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'
-        );
+        $data = TransactionSerializer::encode('RemoveAccount', RemoveAccountMutation::getEncodableParams(
+            tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
+            userId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.remove_account'];
+        $callIndex = $this->codec->encoder()->getCallindex('FuelTanks.remove_account', true);
         $this->assertEquals(
             "0x{$callIndex}00be5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
             $data
@@ -55,11 +70,11 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_destroy_fuel_tank()
     {
-        $data = $this->codec->encode()->destroyFuelTank(
-            '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f'
-        );
+        $data = TransactionSerializer::encode('DestroyFuelTank', DestroyFuelTankMutation::getEncodableParams(
+            tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f'
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.destroy_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.destroy_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}00be5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f",
             $data
@@ -68,15 +83,15 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_batch_add_account()
     {
-        $data = $this->codec->encode()->batchAddAccount(
-            '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
-            [
+        $data = TransactionSerializer::encode('BatchAddAccount', BatchAddAccountMutation::getEncodableParams(
+            tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
+            userIds: [
                 '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
                 '0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48',
             ],
-        );
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.batch_add_account'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.batch_add_account', true);
         $this->assertEquals(
             "0x{$callIndex}00be5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f0800d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48",
             $data
@@ -85,15 +100,15 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_batch_remove_account()
     {
-        $data = $this->codec->encode()->batchRemoveAccount(
-            '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
-            [
+        $data = TransactionSerializer::encode('BatchRemoveAccount', BatchRemoveAccountMutation::getEncodableParams(
+            tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
+            userIds: [
                 '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
                 '0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48',
             ],
-        );
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.batch_remove_account'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.batch_remove_account', true);
         $this->assertEquals(
             "0x{$callIndex}00be5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f0800d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48",
             $data
@@ -104,13 +119,13 @@ class EncodingTest extends TestCase
     {
         $accountRules = new AccountRulesParams();
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Fuel Tank',
-            false,
-            $accountRules,
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Fuel Tank',
+            providesDeposit: false,
+            accountRules: $accountRules,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}3c456e6a696e204675656c2054616e6b00000000",
             $data
@@ -121,13 +136,13 @@ class EncodingTest extends TestCase
     {
         $accountRules = new AccountRulesParams();
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Fuel Tank',
-            true,
-            $accountRules,
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Fuel Tank',
+            providesDeposit: true,
+            accountRules: $accountRules,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}3c456e6a696e204675656c2054616e6b00000100",
             $data
@@ -142,15 +157,15 @@ class EncodingTest extends TestCase
             tankReservesAccountCreationDeposit: true,
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Fuel Tank',
-            false,
-            $accountRules,
-            [],
-            $userAccount,
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Fuel Tank',
+            providesDeposit: false,
+            accountRules: $accountRules,
+            dispatchRules: [],
+            userAccountManagement: $userAccount,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}3c456e6a696e204675656c2054616e6b010101000000",
             $data
@@ -166,13 +181,13 @@ class EncodingTest extends TestCase
             )
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Fuel Tank',
-            false,
-            $accountRules,
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Fuel Tank',
+            providesDeposit: false,
+            accountRules: $accountRules,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}3c456e6a696e204675656c2054616e6b0000000401d0070000000000000000000000000000ff000000000000000000000000000000",
             $data
@@ -190,13 +205,13 @@ class EncodingTest extends TestCase
             )
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Fuel Tank',
-            false,
-            $accountRules,
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Fuel Tank',
+            providesDeposit: false,
+            accountRules: $accountRules,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}3c456e6a696e204675656c2054616e6b0000000400088eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
             $data
@@ -218,13 +233,13 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Fuel Tank',
-            false,
-            $accountRules,
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Fuel Tank',
+            providesDeposit: false,
+            accountRules: $accountRules,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}3c456e6a696e204675656c2054616e6b0000000800088eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01d0070000000000000000000000000000ff000000000000000000000000000000",
             $data
@@ -241,14 +256,14 @@ class EncodingTest extends TestCase
             )
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Tank',
-            false,
-            null,
-            [$dispatchRules],
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Tank',
+            providesDeposit: false,
+            userAccountManagement: null,
+            dispatchRules: [$dispatchRules],
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}28456e6a696e2054616e6b000400000000040004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0000",
             $data
@@ -263,14 +278,14 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Tank',
-            false,
-            null,
-            [$dispatchRules],
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Tank',
+            providesDeposit: false,
+            userAccountManagement:  null,
+            dispatchRules: [$dispatchRules],
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}28456e6a696e2054616e6b000400000000040104d00700000000000000000000000000000000",
             $data
@@ -285,14 +300,14 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Tank',
-            false,
-            null,
-            [$dispatchRules],
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Tank',
+            providesDeposit: false,
+            userAccountManagement: null,
+            dispatchRules: [$dispatchRules],
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}28456e6a696e2054616e6b0004000000000402af6400000000000000000000000000000000",
             $data
@@ -308,14 +323,14 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Tank',
-            false,
-            null,
-            [$dispatchRules],
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Tank',
+            providesDeposit: false,
+            userAccountManagement: null,
+            dispatchRules: [$dispatchRules],
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}28456e6a696e2054616e6b000400000000040302ca9a3be09304000000",
             $data
@@ -331,14 +346,14 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = $this->codec->encode()->createFuelTank(
-            'Enjin Tank',
-            false,
-            null,
-            [$dispatchRules],
-        );
+        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+            name: 'Enjin Tank',
+            providesDeposit: false,
+            userAccountManagement: null,
+            dispatchRules: [$dispatchRules],
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.create_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}28456e6a696e2054616e6b0004000000000404024e7253bf0e00000000",
             $data
@@ -347,12 +362,12 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_schedule_mutate_freeze_state_without_rule_set_id()
     {
-        $data = $this->codec->encode()->scheduleMutateFreezeState(
-            '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
-            true,
-        );
+        $data = TransactionSerializer::encode('ScheduleMutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
+            tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
+            isFrozen: true,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.schedule_mutate_freeze_state'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.schedule_mutate_freeze_state', true);
         $this->assertEquals(
             "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0001",
             $data
@@ -361,13 +376,13 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_schedule_mutate_freeze_state_with_rule_set_id()
     {
-        $data = $this->codec->encode()->scheduleMutateFreezeState(
-            '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
-            true,
-            '255',
-        );
+        $data = TransactionSerializer::encode('ScheduleMutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
+            tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
+            isFrozen: true,
+            ruleSetId: '255',
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.schedule_mutate_freeze_state'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.schedule_mutate_freeze_state', true);
         $this->assertEquals(
             "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c01ff00000001",
             $data
@@ -382,13 +397,13 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = $this->codec->encode()->insertRuleSet(
-            '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
-            '10',
-            $dispatchRules,
-        );
+        $data = TransactionSerializer::encode('InsertRuleSet', InsertRulesetMutation::getEncodableParams(
+            tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
+            ruleSetId: '10',
+            dispatchRules: $dispatchRules,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.insert_rule_set'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
         $this->assertEquals(
             "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a000000040004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
             $data
@@ -397,12 +412,12 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_remove_rule_set()
     {
-        $data = $this->codec->encode()->removeRuleSet(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            '10'
-        );
+        $data = TransactionSerializer::encode('RemoveRuleSet', RemoveRulesetmutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            ruleSetId: '10'
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.remove_rule_set'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.remove_rule_set', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0a000000",
             $data
@@ -411,14 +426,14 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_remove_account_rule_data()
     {
-        $data = $this->codec->encode()->removeAccountRuleData(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            '0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48',
-            '20',
-            new WhitelistedCallersParams(),
-        );
+        $data = TransactionSerializer::encode('RemoveAccountRuleData', RemoveAccountRuleDataMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            userId: '0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48',
+            ruleSetId: '20',
+            rule: 'WHITELISTED_CALLERS',
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.remove_account_rule_data'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.remove_account_rule_data', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a481400000000",
             $data
@@ -427,11 +442,11 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_mutate_fuel_tank_with_some_mutation_null()
     {
-        $data = $this->codec->encode()->mutateFuelTank(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-        );
+        $data = TransactionSerializer::encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.mutate_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.mutate_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01000000",
             $data
@@ -440,15 +455,15 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_mutate_fuel_tank_with_some_mutation_filled()
     {
-        $data = $this->codec->encode()->mutateFuelTank(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            new UserAccountManagementParams(
+        $data = TransactionSerializer::encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            userAccount: new UserAccountManagementParams(
                 tankReservesExistentialDeposit: true,
                 tankReservesAccountCreationDeposit: true,
             )
-        );
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.mutate_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.mutate_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d010101010000",
             $data
@@ -457,13 +472,13 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_mutate_fuel_tank_with_provides_deposit()
     {
-        $data = $this->codec->encode()->mutateFuelTank(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            [],
-            true,
-        );
+        $data = TransactionSerializer::encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            userAccount: [],
+            providesDeposit: true,
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.mutate_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.mutate_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d00010100",
             $data
@@ -472,19 +487,19 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_mutate_fuel_tank_with_account_rules()
     {
-        $data = $this->codec->encode()->mutateFuelTank(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            [],
-            null,
-            new AccountRulesParams(
+        $data = TransactionSerializer::encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            userAccount: [],
+            providesDeposit: null,
+            accountRules: new AccountRulesParams(
                 requireToken: new RequireTokenParams(
                     collectionId: '2000',
                     tokenId: '255',
                 )
             )
-        );
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.mutate_fuel_tank'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.mutate_fuel_tank', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0000010401d0070000000000000000000000000000ff000000000000000000000000000000",
             $data
@@ -493,15 +508,13 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_dispatch()
     {
-        $createCollection = '0x2800000000000000';
-        $data = $this->codec->encode()->dispatch(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            255,
-            $createCollection,
-            false,
-        );
+        $createCollection = '2800000000000000';
+        $data = TransactionSerializer::encode('Dispatch', DispatchMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            ruleSetId: 255,
+        )) . $createCollection . '00';
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.dispatch'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.dispatch', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27dff000000280000000000000000",
             $data
@@ -510,15 +523,13 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_dispatch_and_touch()
     {
-        $createCollection = '0x2800000000000000';
-        $data = $this->codec->encode()->dispatchAndTouch(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            255,
-            $createCollection,
-            false,
-        );
+        $createCollection = '2800000000000000';
+        $data = TransactionSerializer::encode('DispatchAndTouch', DispatchAndTouchMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            ruleSetId: 255,
+        )) . $createCollection . '00';
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.dispatch_and_touch'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.dispatch_and_touch', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27dff000000280000000000000000",
             $data
@@ -527,13 +538,13 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_set_consumption_with_no_options()
     {
-        $data = $this->codec->encode()->setConsumption(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            255,
-            '100000000'
-        );
+        $data = TransactionSerializer::encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            ruleSetId: 255,
+            totalConsumed: '100000000'
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.force_set_consumption'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.force_set_consumption', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d00ff0000000284d71700",
             $data
@@ -542,14 +553,14 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_set_consumption_with_user_id()
     {
-        $data = $this->codec->encode()->setConsumption(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            255,
-            '100000000',
-            '0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48'
-        );
+        $data = TransactionSerializer::encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            ruleSetId: 255,
+            totalConsumed: '100000000',
+            userId: '0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48'
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.force_set_consumption'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.force_set_consumption', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48ff0000000284d71700",
             $data
@@ -558,15 +569,15 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_set_consumption_with_last_reset_block()
     {
-        $data = $this->codec->encode()->setConsumption(
-            '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            255,
-            '100000000',
-            null,
-            100
-        );
+        $data = TransactionSerializer::encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
+            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            ruleSetId: 255,
+            totalConsumed: '100000000',
+            userId: null,
+            lastResetBlock: 100
+        ));
 
-        $callIndex = $this->codec->encode()->callIndexes['FuelTanks.force_set_consumption'];
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.force_set_consumption', true);
         $this->assertEquals(
             "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d00ff0000000284d7170164000000",
             $data

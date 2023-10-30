@@ -2,6 +2,8 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\BatchRemoveAccountMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
@@ -49,7 +51,7 @@ class BatchRemoveAccountTest extends TestCaseGraphQL
         );
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->batchRemoveAccount($params)->encoded_data
+            TransactionSerializer::encode($this->method, BatchRemoveAccountMutation::getEncodableParams(...$params))
         );
     }
 

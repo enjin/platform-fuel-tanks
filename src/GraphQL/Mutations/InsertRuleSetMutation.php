@@ -3,25 +3,39 @@
 namespace Enjin\Platform\FuelTanks\GraphQL\Mutations;
 
 use Closure;
+use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\GraphQL\Traits\HasFuelTankValidationRules;
+use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\FuelTanks\Rules\RuleSetNotExists;
-use Enjin\Platform\FuelTanks\Services\TransactionService;
+use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
+use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
+use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasIdempotencyField;
+use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSigningAccountField;
+use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSimulateField;
 use Enjin\Platform\Interfaces\PlatformBlockchainTransaction;
 use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Rules\MaxBigInt;
 use Enjin\Platform\Rules\MinBigInt;
 use Enjin\Platform\Rules\ValidSubstrateAddress;
+use Enjin\Platform\Services\Serialization\Interfaces\SerializationServiceInterface;
+use Enjin\Platform\Support\Account;
 use Enjin\Platform\Support\Hex;
+use Enjin\Platform\Support\SS58Address;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 
 class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransaction
 {
     use HasIdempotencyField;
+    use HasSigningAccountField;
+    use HasSimulateField;
+    use HasTransactionDeposit;
+    use StoresTransactions;
     use HasFuelTankValidationRules;
 
     /**
@@ -61,7 +75,9 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
                 'type' => GraphQL::type('DispatchRuleInputType!'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.description'),
             ],
+            ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
+            ...$this->getSimulateField(),
         ];
     }
 
@@ -74,12 +90,37 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
         $context,
         ResolveInfo $resolveInfo,
         Closure $getSelectFields,
-        TransactionService $transaction
+        SerializationServiceInterface $serializationService,
+        Substrate $blockchainService
     ) {
+        $encodedData = $serializationService->encode(
+            $this->getMutationName(),
+            static::getEncodableParams(
+                tankId: $args['tankId'],
+                ruleSetId: $args['ruleSetId'],
+                dispatchRules: $blockchainService->getDispatchRulesParams($args['dispatchRules'])
+            )
+        );
+
         return Transaction::lazyLoadSelectFields(
-            DB::transaction(fn () => $transaction->insertRuleSet($args)),
+            DB::transaction(fn () => $this->storeTransaction($args, $encodedData)),
             $resolveInfo
         );
+    }
+
+    public static function getEncodableParams(...$params): array
+    {
+        $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
+        $ruleSetId = Arr::get($params, 'ruleSetId', 0);
+        $rules = Arr::get($params, 'dispatchRules', new DispatchRulesParams());
+
+        return [
+            'tankId' => [
+                'Id' => HexConverter::unPrefix(SS58Address::getPublicKey($tankId)),
+            ],
+            'ruleSetId' => $ruleSetId,
+            'rules' => $rules->toEncodable(),
+        ];
     }
 
     /**

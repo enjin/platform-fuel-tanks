@@ -2,7 +2,10 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\InsertRuleSetMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
+use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
 use Enjin\Platform\Models\Wallet;
 use Enjin\Platform\Providers\Faker\SubstrateProvider;
@@ -37,9 +40,12 @@ class InsertRuleSetTest extends TestCaseGraphQL
             $this->method,
             $params = $this->generateRuleSet()
         );
+
+        $params['dispatchRules'] = resolve(Substrate::class)->getDispatchRulesParams($params['dispatchRules']);
+
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->insertRuleSet($params)->encoded_data
+            TransactionSerializer::encode($this->method, InsertRuleSetMutation::getEncodableParams(...$params))
         );
     }
 

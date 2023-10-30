@@ -2,6 +2,9 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\DispatchAndTouchMutation;
+
 class DispatchAndTouchTest extends DispatchTest
 {
     /**
@@ -15,9 +18,12 @@ class DispatchAndTouchTest extends DispatchTest
             $this->method,
             $params = $this->generateParams()
         );
+
+        $encodedCall = DispatchAndTouchMutation::getEncodedCall($params);
+
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->dispatchAndTouch($params)->encoded_data
+            TransactionSerializer::encode($this->method, DispatchAndTouchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
         );
     }
 }

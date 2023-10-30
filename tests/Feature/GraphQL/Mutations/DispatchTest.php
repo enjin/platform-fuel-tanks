@@ -2,7 +2,9 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\FuelTanks\Enums\DispatchCall;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\DispatchMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
 use Enjin\Platform\Models\Wallet;
@@ -38,9 +40,12 @@ class DispatchTest extends TestCaseGraphQL
             $this->method,
             $params = $this->generateParams()
         );
+
+        $encodedCall = DispatchMutation::getEncodedCall($params);
+
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->dispatch($params)->encoded_data
+            TransactionSerializer::encode($this->method, DispatchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
         );
     }
 

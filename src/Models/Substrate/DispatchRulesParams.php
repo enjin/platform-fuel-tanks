@@ -71,6 +71,10 @@ class DispatchRulesParams
             $params[] = $this->tankFuelBudget->toEncodable();
         }
 
+        if ($this->permittedExtrinsics) {
+            $params[] = $this->permittedExtrinsics->toEncodable();
+        }
+
         return $params;
     }
 }

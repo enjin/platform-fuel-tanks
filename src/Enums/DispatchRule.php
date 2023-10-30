@@ -21,6 +21,7 @@ enum DispatchRule: string
     case USER_FUEL_BUDGET = 'UserFuelBudget';
     case TANK_FUEL_BUDGET = 'TankFuelBudget';
     case REQUIRE_TOKEN = 'RequireToken';
+    case PERMITTED_EXTRINSICS = 'PermittedExtrinsics';
 
     /**
      * Convert enum case to FuelTankRules.

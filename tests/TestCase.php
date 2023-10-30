@@ -5,6 +5,7 @@ namespace Enjin\Platform\FuelTanks\Tests;
 use Enjin\Platform\CoreServiceProvider;
 use Enjin\Platform\FuelTanks\FuelTanksServiceProvider;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
@@ -31,6 +32,8 @@ abstract class TestCase extends BaseTestCase
      */
     protected function defineEnvironment($app)
     {
+        Cache::flush();
+
         // Make sure, our .env file is loaded for local tests
         $app->useEnvironmentPath(__DIR__ . '/..');
         $app->useDatabasePath(__DIR__ . '/../database');
