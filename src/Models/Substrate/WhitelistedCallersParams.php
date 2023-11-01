@@ -18,6 +18,7 @@ class WhitelistedCallersParams extends FuelTankRules
             fn ($caller) => SS58Address::getPublicKey($caller),
             $callers
         );
+        sort($this->callers);
     }
 
     /**
