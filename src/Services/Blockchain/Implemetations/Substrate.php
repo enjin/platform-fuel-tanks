@@ -6,6 +6,8 @@ use Enjin\Platform\Clients\Abstracts\WebsocketAbstract;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\MaxFuelBurnPerTransactionParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\PermittedCallsParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\PermittedExtrinsicsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\RequireTokenParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\TankFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\UserAccountManagementParams;
@@ -65,6 +67,12 @@ class Substrate extends PlatformSubstrate
                 : null,
             ($tankFuelBudget = Arr::get($args, 'tankFuelBudget'))
                 ? new TankFuelBudgetParams(Arr::get($tankFuelBudget, 'amount'), Arr::get($tankFuelBudget, 'resetPeriod'))
+                : null,
+            ($permittedCalls = Arr::get($args, 'permittedCalls'))
+                ? new PermittedCallsParams(Arr::get($permittedCalls, 'calls'))
+                : null,
+            ($permittedExtrinsics = Arr::get($args, 'permittedExtrinsics'))
+                ? new PermittedExtrinsicsParams($permittedExtrinsics)
                 : null,
         );
     }

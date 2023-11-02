@@ -10,4 +10,5 @@ enum DispatchCall: string
 
     case MULTI_TOKENS = '';
     case FUEL_TANKS = 'fuel-tanks';
+    case MARKETPLACE = 'marketplace';
 }

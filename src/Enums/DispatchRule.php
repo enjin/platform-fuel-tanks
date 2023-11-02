@@ -4,6 +4,7 @@ namespace Enjin\Platform\FuelTanks\Enums;
 
 use Enjin\Platform\FuelTanks\Models\Substrate\FuelTankRules;
 use Enjin\Platform\FuelTanks\Models\Substrate\MaxFuelBurnPerTransactionParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\PermittedExtrinsicsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\RequireTokenParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\TankFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\UserFuelBudgetParams;
@@ -34,7 +35,8 @@ enum DispatchRule: string
             self::MAX_FUEL_BURN_PER_TRANSACTION => new MaxFuelBurnPerTransactionParams(''),
             self::USER_FUEL_BUDGET => new UserFuelBudgetParams('', ''),
             self::TANK_FUEL_BUDGET => new TankFuelBudgetParams('', ''),
-            self::REQUIRE_TOKEN => new RequireTokenParams('', '')
+            self::REQUIRE_TOKEN => new RequireTokenParams('', ''),
+            self::PERMITTED_EXTRINSICS => new PermittedExtrinsicsParams()
         };
     }
 }

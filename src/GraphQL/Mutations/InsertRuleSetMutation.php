@@ -27,6 +27,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 
 class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransaction
@@ -93,14 +94,21 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
         SerializationServiceInterface $serializationService,
         Substrate $blockchainService
     ) {
+        $dispatchRules = $blockchainService->getDispatchRulesParams($args['dispatchRules']);
+
         $encodedData = $serializationService->encode(
             $this->getMutationName(),
             static::getEncodableParams(
                 tankId: $args['tankId'],
                 ruleSetId: $args['ruleSetId'],
-                dispatchRules: $blockchainService->getDispatchRulesParams($args['dispatchRules'])
+                dispatchRules: $dispatchRules
             )
         );
+
+        if (Arr::get($args, 'dispatchRules.permittedExtrinsics')) {
+            $encodedData = Str::take($encodedData, Str::length($encodedData) - 4);
+            $encodedData .= Arr::get($dispatchRules->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+        }
 
         return Transaction::lazyLoadSelectFields(
             DB::transaction(fn () => $this->storeTransaction($args, $encodedData)),

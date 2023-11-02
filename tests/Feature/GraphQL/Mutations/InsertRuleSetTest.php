@@ -43,9 +43,13 @@ class InsertRuleSetTest extends TestCaseGraphQL
 
         $params['dispatchRules'] = resolve(Substrate::class)->getDispatchRulesParams($params['dispatchRules']);
 
+        $encodedData = TransactionSerializer::encode($this->method, InsertRuleSetMutation::getEncodableParams(...$params));
+        $encodedData = Str::take($encodedData, Str::length($encodedData) - 4);
+        $encodedData .= Arr::get($params['dispatchRules']->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+
         $this->assertEquals(
             $response['encodedData'],
-            TransactionSerializer::encode($this->method, InsertRuleSetMutation::getEncodableParams(...$params))
+            $encodedData
         );
     }
 

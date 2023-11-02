@@ -71,8 +71,11 @@ class DispatchRulesParams
             $params[] = $this->tankFuelBudget->toEncodable();
         }
 
+        // We have to set an empty array for the permitted extrinsics here and encode manually later
+        // due to what appears to be a bug in the Scale Codec library where it cannot encode a Call
+        // type due to missing metadata when creating the Call ScaleInstance class.
         if ($this->permittedExtrinsics) {
-            $params[] = $this->permittedExtrinsics->toEncodable();
+            $params[] = ['PermittedExtrinsics' => ['extrinsics' => []]];
         }
 
         return $params;

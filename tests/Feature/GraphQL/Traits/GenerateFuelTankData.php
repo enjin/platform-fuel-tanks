@@ -23,6 +23,7 @@ trait GenerateFuelTankData
             'maxFuelBurnPerTransaction' => fake()->numberBetween(1, 1000),
             'userFuelBudget' => ['amount' => fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
             'tankFuelBudget' => ['amount' => fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
+            'permittedExtrinsics' => ['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken'],
         ];
 
         return [

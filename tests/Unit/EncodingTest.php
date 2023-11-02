@@ -20,6 +20,7 @@ use Enjin\Platform\FuelTanks\GraphQL\Mutations\ScheduleMutateFreezeStateMutation
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\MaxFuelBurnPerTransactionParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\PermittedExtrinsicsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\RequireTokenParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\TankFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\UserAccountManagementParams;
@@ -28,6 +29,8 @@ use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCallersParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCollectionsParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\FuelTanks\Tests\TestCase;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class EncodingTest extends TestCase
 {
@@ -406,6 +409,30 @@ class EncodingTest extends TestCase
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
         $this->assertEquals(
             "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a000000040004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
+            $data
+        );
+    }
+
+    public function test_it_can_encode_insert_or_update_rule_with_permitted_extrinsics()
+    {
+        $dispatchRules = new DispatchRulesParams(
+            permittedExtrinsics: new PermittedExtrinsicsParams(
+                extrinsics: ['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken'],
+            ),
+        );
+
+        $data = TransactionSerializer::encode('InsertRuleSet', InsertRulesetMutation::getEncodableParams(
+            tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
+            ruleSetId: '10',
+            dispatchRules: $dispatchRules,
+        ));
+
+        $data = Str::take($data, Str::length($data) - 4);
+        $data .= Arr::get($dispatchRules->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
+        $this->assertEquals(
+            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a0000000407102800000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e956802002806006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e95680200000000002806006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e9568020001006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e9568020000",
             $data
         );
     }
