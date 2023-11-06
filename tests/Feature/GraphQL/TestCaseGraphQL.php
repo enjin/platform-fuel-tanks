@@ -8,7 +8,6 @@ use Enjin\Platform\FuelTanks\FuelTanksServiceProvider;
 use Enjin\Platform\FuelTanks\Models\DispatchRule;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
-use Enjin\Platform\FuelTanks\Services\TransactionService;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Traits\CreateCollectionData;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Traits\GenerateFuelTankData;
 use Enjin\Platform\Models\Wallet;
@@ -42,11 +41,6 @@ class TestCaseGraphQL extends BaseTestCase
     protected bool $fakeEvents = true;
 
     /**
-     * The transaction service.
-     */
-    protected TransactionService $service;
-
-    /**
      * Setup test case.
      */
     protected function setUp(): void
@@ -60,7 +54,6 @@ class TestCaseGraphQL extends BaseTestCase
             self::$initialized = true;
         }
         $this->createCollectionData();
-        $this->service = resolve(TransactionService::class);
     }
 
     /**

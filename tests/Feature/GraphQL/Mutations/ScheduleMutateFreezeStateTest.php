@@ -2,6 +2,8 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\ScheduleMutateFreezeStateMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
 use Enjin\Platform\Models\Wallet;
@@ -38,7 +40,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
         );
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->scheduleMutateFreezeState($params)->encoded_data
+            TransactionSerializer::encode($this->method, ScheduleMutateFreezeStateMutation::getEncodableParams(...$params))
         );
     }
 

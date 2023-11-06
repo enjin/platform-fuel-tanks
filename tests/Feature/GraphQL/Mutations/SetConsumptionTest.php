@@ -2,6 +2,8 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\ForceSetConsumptionMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
@@ -49,7 +51,7 @@ class SetConsumptionTest extends TestCaseGraphQL
         );
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->setConsumption($params)->encoded_data
+            TransactionSerializer::encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(...$params))
         );
     }
 

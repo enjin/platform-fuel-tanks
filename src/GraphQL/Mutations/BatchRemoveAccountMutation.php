@@ -3,13 +3,20 @@
 namespace Enjin\Platform\FuelTanks\GraphQL\Mutations;
 
 use Closure;
+use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Rules\AccountsExistsInFuelTank;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
-use Enjin\Platform\FuelTanks\Services\TransactionService;
+use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
+use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasIdempotencyField;
+use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSigningAccountField;
+use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSimulateField;
 use Enjin\Platform\Interfaces\PlatformBlockchainTransaction;
 use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Rules\ValidSubstrateAddress;
+use Enjin\Platform\Services\Serialization\Interfaces\SerializationServiceInterface;
+use Enjin\Platform\Support\Account;
+use Enjin\Platform\Support\SS58Address;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Illuminate\Support\Arr;
@@ -19,6 +26,10 @@ use Rebing\GraphQL\Support\Facades\GraphQL;
 class BatchRemoveAccountMutation extends Mutation implements PlatformBlockchainTransaction
 {
     use HasIdempotencyField;
+    use HasSigningAccountField;
+    use HasSimulateField;
+    use HasTransactionDeposit;
+    use StoresTransactions;
 
     /**
      * Get the mutation's attributes.
@@ -53,7 +64,9 @@ class BatchRemoveAccountMutation extends Mutation implements PlatformBlockchainT
                 'type' => GraphQL::type('[String!]!'),
                 'description' => __('enjin-platform-fuel-tanks::mutation.batch_remove_account.args.userIds'),
             ],
+            ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
+            ...$this->getSimulateField(),
         ];
     }
 
@@ -66,12 +79,29 @@ class BatchRemoveAccountMutation extends Mutation implements PlatformBlockchainT
         $context,
         ResolveInfo $resolveInfo,
         Closure $getSelectFields,
-        TransactionService $transaction
+        SerializationServiceInterface $serializationService
     ) {
+        $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(...$args));
+
         return Transaction::lazyLoadSelectFields(
-            DB::transaction(fn () => $transaction->batchRemoveAccount($args)),
+            DB::transaction(fn () => $this->storeTransaction($args, $encodedData)),
             $resolveInfo
         );
+    }
+
+    public static function getEncodableParams(...$params): array
+    {
+        $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
+        $userIds = collect(Arr::get($params, 'userIds', []));
+
+        return [
+            'tankId' => [
+                'Id' => HexConverter::unPrefix(SS58Address::getPublicKey($tankId)),
+            ],
+            'userIds' => $userIds->map(fn ($userId) => [
+                'Id' => HexConverter::unPrefix(SS58Address::getPublicKey($userId)),
+            ])->toArray(),
+        ];
     }
 
     /**

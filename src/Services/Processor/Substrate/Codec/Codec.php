@@ -8,9 +8,6 @@ use Enjin\Platform\Services\Processor\Substrate\Codec\Codec as BaseCodec;
 
 class Codec extends BaseCodec
 {
-    protected Encoder $fuelTankEncoder;
-    protected Decoder $fuelTankDecoder;
-
     /**
      * Creates a new instance.
      */
@@ -18,23 +15,23 @@ class Codec extends BaseCodec
     {
         parent::__construct();
 
-        $this->fuelTankEncoder = new FuelTankEncoder($this->scaleInstance);
-        $this->fuelTankDecoder = new FuelTankDecoder($this->scaleInstance);
+        $this->encoder = new FuelTankEncoder($this->scaleInstance);
+        $this->decoder = new FuelTankDecoder($this->scaleInstance);
     }
 
     /**
      * Get the encoder.
      */
-    public function encode(): Encoder
+    public function encoder(): Encoder
     {
-        return $this->fuelTankEncoder;
+        return $this->encoder;
     }
 
     /**
      * Get the decoder.
      */
-    public function decode(): Decoder
+    public function decoder(): Decoder
     {
-        return $this->fuelTankDecoder;
+        return $this->decoder;
     }
 }

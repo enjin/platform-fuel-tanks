@@ -2,7 +2,9 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
+use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\FuelTanks\Enums\DispatchRule;
+use Enjin\Platform\FuelTanks\GraphQL\Mutations\RemoveAccountRuleDataMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
@@ -42,7 +44,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
         ]);
     }
 
-    public function test_it_can_set_consumption(): void
+    public function test_it_can_remove_account_rule_data(): void
     {
         $response = $this->graphql(
             $this->method,
@@ -50,7 +52,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
         );
         $this->assertEquals(
             $response['encodedData'],
-            $this->service->removeAccountRuleData($params)->encoded_data
+            TransactionSerializer::encode($this->method, RemoveAccountRuleDataMutation::getEncodableParams(...$params))
         );
     }
 

@@ -2,7 +2,12 @@
 
 namespace Enjin\Platform\FuelTanks\Models\Substrate;
 
+use Enjin\BlockchainTools\HexConverter;
+use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\Interfaces\PlatformBlockchainTransaction;
+use Enjin\Platform\Package;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class PermittedExtrinsicsParams extends FuelTankRules
 {
@@ -20,7 +25,7 @@ class PermittedExtrinsicsParams extends FuelTankRules
     public static function fromEncodable(array $params): self
     {
         return new self(
-            extrinsics: Arr::get($params, 'PermittedExtrinsics.extrinsics')
+            extrinsics: Arr::get($params, 'PermittedExtrinsics')
         );
     }
 
@@ -29,8 +34,20 @@ class PermittedExtrinsicsParams extends FuelTankRules
      */
     public function toEncodable(): array
     {
+        $encodedData = '07';
+        $encodedData .= HexConverter::intToHex(count($this->extrinsics) * 4);
+        $encodedData .= collect($this->extrinsics)->reduce(fn ($data, $mutation) => Str::of($data)->append($this->getEncodedData($mutation))->toString(), '');
+
         return [
-            'PermittedExtrinsics' => $this->extrinsics,
+            'PermittedExtrinsics' =>  ['extrinsics' => $encodedData],
         ];
+    }
+
+    protected function getEncodedData(string $mutationName)
+    {
+        $transactionMutation = Package::getClassesThatImplementInterface(PlatformBlockchainTransaction::class)
+            ->filter(fn ($class) => Str::contains(class_basename($class), $mutationName))->first();
+
+        return HexConverter::unPrefix(TransactionSerializer::encode((new $transactionMutation())->getMethodName(), $transactionMutation::getEncodableParams()));
     }
 }

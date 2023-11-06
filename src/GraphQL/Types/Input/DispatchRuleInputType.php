@@ -47,6 +47,10 @@ class DispatchRuleInputType extends InputType
                 'type' => GraphQL::type('FuelBudgetInputType'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.fuel_budget.description'),
             ],
+            'permittedExtrinsics' => [
+                'type' => GraphQL::type('[TransactionMethod!]'),
+                'description' => __('enjin-platform-fuel-tanks::input_type.permitted_extrinsics.description'),
+            ],
         ];
     }
 }
