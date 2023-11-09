@@ -59,13 +59,13 @@ class Substrate extends PlatformSubstrate
             ($collections = Arr::get($args, 'whitelistedCollections'))
                 ? new WhitelistedCollectionsParams($collections)
                 : null,
-            ($maxFuelBurnPerTransaction = Arr::get($args, 'maxFuelBurnPerTransaction'))
+            (!is_null($maxFuelBurnPerTransaction = Arr::get($args, 'maxFuelBurnPerTransaction')))
                 ? new MaxFuelBurnPerTransactionParams($maxFuelBurnPerTransaction)
                 : null,
-            ($userFuelBudget = Arr::get($args, 'userFuelBudget'))
+            (!is_null($userFuelBudget = Arr::get($args, 'userFuelBudget')))
                 ? new UserFuelBudgetParams(Arr::get($userFuelBudget, 'amount'), Arr::get($userFuelBudget, 'resetPeriod'))
                 : null,
-            ($tankFuelBudget = Arr::get($args, 'tankFuelBudget'))
+            (!is_null($tankFuelBudget = Arr::get($args, 'tankFuelBudget')))
                 ? new TankFuelBudgetParams(Arr::get($tankFuelBudget, 'amount'), Arr::get($tankFuelBudget, 'resetPeriod'))
                 : null,
             ($permittedCalls = Arr::get($args, 'permittedCalls'))
