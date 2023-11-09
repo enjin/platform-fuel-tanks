@@ -9,7 +9,7 @@ trait GenerateFuelTankData
     /**
      * Generate data.
      */
-    protected function generateData($isArray = true): array
+    protected function generateData($isArray = true, $value = null): array
     {
         $provider = resolve(SubstrateProvider::class);
 
@@ -20,9 +20,9 @@ trait GenerateFuelTankData
                 'tokenId' => ['integer' => $this->token->token_chain_id],
             ],
             'whitelistedCollections' => [$this->collection->collection_chain_id],
-            'maxFuelBurnPerTransaction' => fake()->numberBetween(1, 1000),
-            'userFuelBudget' => ['amount' => fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
-            'tankFuelBudget' => ['amount' => fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
+            'maxFuelBurnPerTransaction' => $value ?? fake()->numberBetween(1, 1000),
+            'userFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
+            'tankFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
             'permittedExtrinsics' => ['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken'],
         ];
 
