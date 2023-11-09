@@ -125,7 +125,7 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
                 'userAccountManagement' => $userAccountManagement?->toEncodable(),
                 'ruleSets' => $ruleSets->map(fn ($ruleSet) => $ruleSet->toEncodable())->toArray(),
                 'providesDeposit' => $providesDeposit,
-                'accountRules' => $accountRules?->toEncodable(),
+                'accountRules' => $accountRules?->toEncodable() ?? [],
             ],
         ];
     }
