@@ -19,6 +19,7 @@ use Enjin\Platform\Rules\ValidSubstrateAddress;
 use Enjin\Platform\Services\Serialization\Interfaces\SerializationServiceInterface;
 use Enjin\Platform\Support\Account;
 use Enjin\Platform\Support\Hex;
+use Enjin\Platform\Support\SS58Address;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Illuminate\Support\Arr;
@@ -103,7 +104,7 @@ class ScheduleMutateFreezeStateMutation extends Mutation implements PlatformBloc
 
         return [
             'tankId' => [
-                'Id' => HexConverter::unPrefix($tankId),
+                'Id' => HexConverter::unPrefix(SS58Address::getPublicKey($tankId)),
             ],
             'ruleSetId' => $ruleSetId,
             'isFrozen' => $isFrozen,

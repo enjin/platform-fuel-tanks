@@ -9,6 +9,7 @@ use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
 use Enjin\Platform\Models\Wallet;
 use Enjin\Platform\Providers\Faker\SubstrateProvider;
 use Enjin\Platform\Support\Hex;
+use Enjin\Platform\Support\SS58Address;
 use Illuminate\Support\Str;
 
 class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
@@ -38,6 +39,13 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
             $this->method,
             $params = $this->generateParams(),
         );
+        $this->assertEquals(
+            $response['encodedData'],
+            TransactionSerializer::encode($this->method, ScheduleMutateFreezeStateMutation::getEncodableParams(...$params))
+        );
+
+        $params['tankId'] = SS58Address::encode($params['tankId']);
+        $response = $this->graphql($this->method, $params);
         $this->assertEquals(
             $response['encodedData'],
             TransactionSerializer::encode($this->method, ScheduleMutateFreezeStateMutation::getEncodableParams(...$params))
