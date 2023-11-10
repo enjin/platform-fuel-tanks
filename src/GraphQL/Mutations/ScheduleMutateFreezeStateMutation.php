@@ -19,6 +19,7 @@ use Enjin\Platform\Rules\ValidSubstrateAddress;
 use Enjin\Platform\Services\Serialization\Interfaces\SerializationServiceInterface;
 use Enjin\Platform\Support\Account;
 use Enjin\Platform\Support\Hex;
+use Enjin\Platform\Support\SS58Address;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Illuminate\Support\Arr;
@@ -97,7 +98,7 @@ class ScheduleMutateFreezeStateMutation extends Mutation implements PlatformBloc
 
     public static function getEncodableParams(...$params): array
     {
-        $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
+        $tankId = SS58Address::getPublicKey(Arr::get($params, 'tankId', Account::daemonPublicKey()));
         $ruleSetId = Arr::get($params, 'ruleSetId', null);
         $isFrozen = Arr::get($params, 'isFrozen', false);
 
