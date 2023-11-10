@@ -98,13 +98,13 @@ class ScheduleMutateFreezeStateMutation extends Mutation implements PlatformBloc
 
     public static function getEncodableParams(...$params): array
     {
-        $tankId = SS58Address::getPublicKey(Arr::get($params, 'tankId', Account::daemonPublicKey()));
+        $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
         $ruleSetId = Arr::get($params, 'ruleSetId', null);
         $isFrozen = Arr::get($params, 'isFrozen', false);
 
         return [
             'tankId' => [
-                'Id' => HexConverter::unPrefix($tankId),
+                'Id' => HexConverter::unPrefix(SS58Address::getPublicKey($tankId)),
             ],
             'ruleSetId' => $ruleSetId,
             'isFrozen' => $isFrozen,
