@@ -41,8 +41,8 @@ class Parser extends BaseParser
         $insertData = [];
         $insertRules = [];
         foreach ($data as [$key, $tank]) {
-            $tankKey = $this->codec->decode()->tankStorageKey($key);
-            $tankData = $this->codec->decode()->tankStorageData($tank);
+            $tankKey = $this->codec->decoder()->tankStorageKey($key);
+            $tankData = $this->codec->decoder()->tankStorageData($tank);
 
             $ownerWallet = $this->getCachedWallet(
                 $owner = $tankData['owner'],
@@ -85,8 +85,8 @@ class Parser extends BaseParser
     {
         $insertData = [];
         foreach ($data as [$key, $fuelTankAccount]) {
-            $accountKey = $this->codec->decode()->fuelTankAccountStorageKey($key);
-            $accountData = $this->codec->decode()->fuelTankAccountStorageData($fuelTankAccount);
+            $accountKey = $this->codec->decoder()->fuelTankAccountStorageKey($key);
+            $accountData = $this->codec->decoder()->fuelTankAccountStorageData($fuelTankAccount);
 
             $userWallet = $this->getCachedWallet(
                 $user = $accountKey['userAccount'],
