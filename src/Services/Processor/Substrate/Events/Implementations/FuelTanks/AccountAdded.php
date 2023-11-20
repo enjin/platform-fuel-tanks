@@ -38,17 +38,29 @@ class AccountAdded implements SubstrateEvent
         $extrinsic = $block->extrinsics[$event->extrinsicIndex];
         $daemonTransaction = Transaction::firstWhere(['transaction_chain_hash' => $extrinsic->hash]);
 
-        Log::info(
-            sprintf(
-                'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created from transaction %s (id: %s).',
-                $account->public_key,
-                $fuelTankAccount->id,
-                $fuelTank->public_key,
-                $fuelTank->id,
-                $daemonTransaction->transaction_chain_hash,
-                $daemonTransaction->id
-            )
-        );
+        if ($daemonTransaction) {
+            Log::info(
+                sprintf(
+                    'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created from transaction %s (id: %s).',
+                    $account->public_key,
+                    $fuelTankAccount->id,
+                    $fuelTank->public_key,
+                    $fuelTank->id,
+                    $daemonTransaction->transaction_chain_hash,
+                    $daemonTransaction->id
+                )
+            );
+        } else {
+            Log::info(
+                sprintf(
+                    'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created from unknown transaction.',
+                    $account->public_key,
+                    $fuelTankAccount->id,
+                    $fuelTank->public_key,
+                    $fuelTank->id,
+                )
+            );
+        }
 
         AccountAddedEvent::safeBroadcast(
             $fuelTankAccount,

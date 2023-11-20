@@ -23,7 +23,7 @@ class AccountRuleDataRemoved implements SubstrateEvent
         $params = $extrinsic->params;
 
         // TODO: Removes tracking data associated to a dispatch rule (doesn't remove the rule)
-        // Not sure how to do that yet, we would have to knew the rule structure on chain.
+        // Not sure how to do that yet, we would have to know the rule structure on chain.
         // Maybe we should query the storage for this one? That would make it slower though
     }
 }
