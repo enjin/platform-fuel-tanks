@@ -25,7 +25,14 @@ class PermittedExtrinsicsParams extends FuelTankRules
     public static function fromEncodable(array $params): self
     {
         return new self(
-            extrinsics: Arr::get($params, 'PermittedExtrinsics')
+            extrinsics: array_map(
+                fn ($extrinsic) => is_string($extrinsic) ? $extrinsic : sprintf(
+                    '%s.%s',
+                    HexConverter::hexToString(Arr::get($extrinsic, 'palletName')),
+                    HexConverter::hexToString(Arr::get($extrinsic, 'extrinsicName')),
+                ),
+                Arr::get($params, 'PermittedExtrinsics.extrinsics', [])
+            ),
         );
     }
 
@@ -34,7 +41,7 @@ class PermittedExtrinsicsParams extends FuelTankRules
      */
     public function toEncodable(): array
     {
-        $encodedData = '07';
+        $encodedData = '07'; // TODO: This should come from the metadata and not hardcode it.
         $encodedData .= HexConverter::intToHex(count($this->extrinsics) * 4);
         $encodedData .= collect($this->extrinsics)->reduce(fn ($data, $mutation) => Str::of($data)->append($this->getEncodedData($mutation))->toString(), '');
 
@@ -43,7 +50,7 @@ class PermittedExtrinsicsParams extends FuelTankRules
         ];
     }
 
-    protected function getEncodedData(string $mutationName)
+    protected function getEncodedData(string $mutationName): string
     {
         $transactionMutation = Package::getClassesThatImplementInterface(PlatformBlockchainTransaction::class)
             ->filter(fn ($class) => Str::contains(class_basename($class), $mutationName))->first();
