@@ -6,6 +6,7 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\Interfaces\PlatformBlockchainTransaction;
 use Enjin\Platform\Package;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Encoder as BaseEncoder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -26,11 +27,17 @@ class PermittedExtrinsicsParams extends FuelTankRules
     {
         return new self(
             extrinsics: array_map(
-                fn ($extrinsic) => is_string($extrinsic) ? $extrinsic : sprintf(
-                    '%s.%s',
-                    HexConverter::hexToString(Arr::get($extrinsic, 'palletName')),
-                    HexConverter::hexToString(Arr::get($extrinsic, 'extrinsicName')),
-                ),
+                fn ($extrinsic) => is_string($extrinsic) ? $extrinsic :
+                        collect(BaseEncoder::getCallIndexKeys())
+                            ->filter(
+                                fn ($item) => $item
+                                ==
+                                sprintf(
+                                    '%s.%s',
+                                    HexConverter::hexToString(Arr::get($extrinsic, 'palletName')),
+                                    HexConverter::hexToString(Arr::get($extrinsic, 'extrinsicName')),
+                                ),
+                            )->keys()->first(),
                 Arr::get($params, 'PermittedExtrinsics.extrinsics', [])
             ),
         );
