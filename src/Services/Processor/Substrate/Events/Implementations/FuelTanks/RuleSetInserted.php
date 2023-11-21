@@ -13,6 +13,7 @@ use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
 use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 class RuleSetInserted implements SubstrateEvent
 {
@@ -46,10 +47,30 @@ class RuleSetInserted implements SubstrateEvent
                 'updated_at' => $now,
             ];
         }
+        DispatchRule::insert($insertRules);
 
         $daemonTransaction = Transaction::firstWhere(['transaction_chain_hash' => $extrinsic->hash]);
 
-        DispatchRule::insert($insertRules);
+        if ($daemonTransaction) {
+            Log::info(
+                sprintf(
+                    'RuleSetInserted at FuelTank %s (id: %s) from transaction %s (id: %s).',
+                    $fuelTank->public_key,
+                    $fuelTank->id,
+                    $daemonTransaction->transaction_chain_hash,
+                    $daemonTransaction->id
+                )
+            );
+        } else {
+            Log::info(
+                sprintf(
+                    'RuleSetInserted at FuelTank %s (id: %s) from unknown transaction.',
+                    $fuelTank->public_key,
+                    $fuelTank->id,
+                )
+            );
+        }
+
         RuleSetInsertedEvent::safeBroadcast(
             $fuelTank,
             $insertRules,
