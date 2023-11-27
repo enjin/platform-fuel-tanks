@@ -27,12 +27,12 @@ trait HasFuelTankValidationRules
                 "{$attribute}.amount" => [
                     'bail',
                     new MinBigInt(),
-                    new MaxBigInt(),
+                    new MaxBigInt(Hex::MAX_UINT128),
                 ],
                 "{$attribute}.resetPeriod" => [
                     'bail',
                     new MinBigInt(),
-                    new MaxBigInt(),
+                    new MaxBigInt(Hex::MAX_UINT32),
                 ],
             ],
             default => [
@@ -44,7 +44,7 @@ trait HasFuelTankValidationRules
                                 'bail',
                                 'required_with:' . str_replace('collectionId', 'tokenId', $key),
                                 new MinBigInt(),
-                                new MaxBigInt(),
+                                new MaxBigInt(Hex::MAX_UINT128),
                                 Rule::exists('collections', 'collection_chain_id'),
                             ];
                         })
