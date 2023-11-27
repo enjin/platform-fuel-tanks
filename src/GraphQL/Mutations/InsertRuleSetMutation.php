@@ -7,7 +7,6 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\GraphQL\Traits\HasFuelTankValidationRules;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
-use Enjin\Platform\FuelTanks\Rules\RuleSetNotExists;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
@@ -148,7 +147,6 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
                 'bail',
                 new MinBigInt(),
                 new MaxBigInt(Hex::MAX_UINT32),
-                new RuleSetNotExists(),
             ],
             ...$this->dispatchRules($args, '', false),
         ];

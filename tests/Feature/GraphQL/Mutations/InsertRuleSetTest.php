@@ -141,16 +141,6 @@ class InsertRuleSetTest extends TestCaseGraphQL
             ['ruleSetId' => ['The rule set id is too large, the maximum value it can be is 4294967295.']],
             $response['error']
         );
-
-        $response = $this->graphql(
-            $this->method,
-            array_merge($data, ['ruleSetId' => $this->tank->dispatchRules->first()->rule_set_id]),
-            true
-        );
-        $this->assertArraySubset(
-            ['ruleSetId' => ['The rule set ID already exist.']],
-            $response['error']
-        );
     }
 
     public function test_it_will_fail_with_invalid_parameter_dispatch_rules_whitelisted_callers(): void
@@ -364,7 +354,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
                     'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.userFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.userFuelBudget.resetPeriod"; Int cannot represent non-integer value: "Invalid"',
+                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.userFuelBudget.resetPeriod"; Cannot represent following value as uint256: "Invalid"',
                 ],
             ],
             $response['errors']
@@ -381,7 +371,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
                     'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.userFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.userFuelBudget.resetPeriod"; Int cannot represent non 32-bit signed integer value: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.userFuelBudget.resetPeriod"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
             ],
             $response['errors']
@@ -402,7 +392,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
                     'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.tankFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.tankFuelBudget.resetPeriod"; Int cannot represent non-integer value: "Invalid"',
+                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules.tankFuelBudget.resetPeriod"; Cannot represent following value as uint256: "Invalid"',
                 ],
             ],
             $response['errors']
@@ -419,7 +409,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
                     'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.tankFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.tankFuelBudget.resetPeriod"; Int cannot represent non 32-bit signed integer value: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules.tankFuelBudget.resetPeriod"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
             ],
             $response['errors']
