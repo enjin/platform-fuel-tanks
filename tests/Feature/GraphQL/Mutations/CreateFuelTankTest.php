@@ -447,7 +447,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
                     'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].userFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].userFuelBudget.resetPeriod"; Int cannot represent non-integer value: "Invalid"',
+                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].userFuelBudget.resetPeriod"; Cannot represent following value as uint256: "Invalid"',
                 ],
             ],
             $response['errors']
@@ -464,7 +464,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
                     'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].userFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].userFuelBudget.resetPeriod"; Int cannot represent non 32-bit signed integer value: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].userFuelBudget.resetPeriod"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
             ],
             $response['errors']
@@ -481,12 +481,8 @@ class CreateFuelTankTest extends TestCaseGraphQL
         );
         $this->assertArraySubset(
             [
-                0 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].tankFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
-                ],
-                1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].tankFuelBudget.resetPeriod"; Int cannot represent non-integer value: "Invalid"',
-                ],
+                ['message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].tankFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"'],
+                ['message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].tankFuelBudget.resetPeriod"; Cannot represent following value as uint256: "Invalid"'],
             ],
             $response['errors']
         );
@@ -502,7 +498,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
                     'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].tankFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
                 1 => [
-                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].tankFuelBudget.resetPeriod"; Int cannot represent non 32-bit signed integer value: 1.1579208923732E+77',
+                    'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].tankFuelBudget.resetPeriod"; Cannot represent following value as uint256: 1.1579208923732E+77',
                 ],
             ],
             $response['errors']

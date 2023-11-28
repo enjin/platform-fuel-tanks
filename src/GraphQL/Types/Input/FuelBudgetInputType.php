@@ -28,7 +28,7 @@ class FuelBudgetInputType extends InputType
                 'description' => __('enjin-platform-fuel-tanks::input_type.fuel_budget.field.amount'),
             ],
             'resetPeriod' => [
-                'type' => GraphQL::type('Int!'),
+                'type' => GraphQL::type('BigInt!'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.fuel_budget.field.resetPeriod'),
             ],
         ];
