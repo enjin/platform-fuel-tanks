@@ -67,6 +67,7 @@ class Decoder extends BaseDecoder
         return [
             'tankDeposit' => gmp_strval(Arr::get($decoded, 'tankDeposit')),
             'userDeposit' => gmp_strval(Arr::get($decoded, 'userDeposit')),
+            'totalReceived' => gmp_strval(Arr::get($decoded, 'totalReceived')),
             'ruleDataSets' => '', //TODO: Implement
         ];
     }

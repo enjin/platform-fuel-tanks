@@ -33,6 +33,9 @@ class AccountAdded implements SubstrateEvent
         $fuelTankAccount = FuelTankAccount::create([
             'fuel_tank_id' => $fuelTank->id,
             'wallet_id' => $account->id,
+            'tank_deposit' => $event->tankDeposit,
+            'user_deposit' => $event->userDeposit,
+            'total_received' => $event->totalReceived,
         ]);
 
         $extrinsic = $block->extrinsics[$event->extrinsicIndex];

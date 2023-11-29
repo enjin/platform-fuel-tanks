@@ -29,6 +29,9 @@ class FuelTankAccount extends BaseModel
     protected $fillable = [
         'fuel_tank_id',
         'wallet_id',
+        'tank_deposit',
+        'user_deposit',
+        'total_received',
     ];
 
     /**
