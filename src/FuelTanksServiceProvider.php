@@ -20,7 +20,8 @@ class FuelTanksServiceProvider extends PackageServiceProvider
             ->hasMigrations(
                 'create_fuel_tanks_table',
                 'create_fuel_tank_accounts_table',
-                'create_fuel_tank_rules_table'
+                'create_fuel_tank_rules_table',
+                'add_total_received_to_accounts_table'
             )
             ->hasTranslations();
     }

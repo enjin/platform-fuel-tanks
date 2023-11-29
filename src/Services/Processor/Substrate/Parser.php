@@ -102,6 +102,7 @@ class Parser extends BaseParser
                 'wallet_id' => $userWallet->id,
                 'tank_deposit' => $accountData['tankDeposit'],
                 'user_deposit' => $accountData['userDeposit'],
+                'total_received' => $accountData['totalReceived'],
                 'created_at' => $now = Carbon::now(),
                 'updated_at' => $now,
             ];

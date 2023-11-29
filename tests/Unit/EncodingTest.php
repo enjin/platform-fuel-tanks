@@ -365,12 +365,12 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_schedule_mutate_freeze_state_without_rule_set_id()
     {
-        $data = TransactionSerializer::encode('ScheduleMutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
+        $data = TransactionSerializer::encode('MutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
             tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
             isFrozen: true,
         ));
 
-        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.schedule_mutate_freeze_state', true);
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.mutate_freeze_state', true);
         $this->assertEquals(
             "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0001",
             $data
@@ -379,13 +379,13 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_schedule_mutate_freeze_state_with_rule_set_id()
     {
-        $data = TransactionSerializer::encode('ScheduleMutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
+        $data = TransactionSerializer::encode('MutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
             tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
             isFrozen: true,
             ruleSetId: '255',
         ));
 
-        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.schedule_mutate_freeze_state', true);
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.mutate_freeze_state', true);
         $this->assertEquals(
             "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c01ff00000001",
             $data
