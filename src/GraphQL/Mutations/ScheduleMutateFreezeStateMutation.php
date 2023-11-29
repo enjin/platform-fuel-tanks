@@ -88,7 +88,7 @@ class ScheduleMutateFreezeStateMutation extends Mutation implements PlatformBloc
         Closure $getSelectFields,
         SerializationServiceInterface $serializationService
     ) {
-        $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(...$args));
+        $encodedData = $serializationService->encode($this->getMethodName(), static::getEncodableParams(...$args));
 
         return Transaction::lazyLoadSelectFields(
             DB::transaction(fn () => $this->storeTransaction($args, $encodedData)),
@@ -109,6 +109,14 @@ class ScheduleMutateFreezeStateMutation extends Mutation implements PlatformBloc
             'ruleSetId' => $ruleSetId,
             'isFrozen' => $isFrozen,
         ];
+    }
+
+    /**
+     * Get the serialization service method name.
+     */
+    public function getMethodName(): string
+    {
+        return 'MutateFreezeState';
     }
 
     /**
