@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
 {
     /**
-     * The graphql method.
+     * The graphql mutation.
      */
     protected string $mutation = 'ScheduleMutateFreezeState';
 
