@@ -18,7 +18,7 @@ class Encoder extends BaseEncoder
         'RemoveRuleSet' => 'FuelTanks.remove_rule_set',
         'RemoveAccountRuleData' => 'FuelTanks.remove_account_rule_data',
         'MutateFuelTank' => 'FuelTanks.mutate_fuel_tank',
-        'ScheduleMutateFreezeState' => 'FuelTanks.mutate_freeze_state',
+        'MutateFreezeState' => 'FuelTanks.mutate_freeze_state',
         'Dispatch' => 'FuelTanks.dispatch',
         'DispatchAndTouch' => 'FuelTanks.dispatch_and_touch',
     ];

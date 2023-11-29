@@ -17,7 +17,12 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
     /**
      * The graphql method.
      */
-    protected string $method = 'ScheduleMutateFreezeState';
+    protected string $mutation = 'ScheduleMutateFreezeState';
+
+    /**
+     * The graphql method.
+     */
+    protected string $method = 'MutateFreezeState';
 
     /**
      * The fuel tank.
@@ -36,16 +41,17 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
     public function test_it_can_remove_rule_set(): void
     {
         $response = $this->graphql(
-            $this->method,
-            $params = $this->generateParams(),
+            $this->mutation,
+            $params = $this->generateParams()
         );
+
         $this->assertEquals(
             $response['encodedData'],
             TransactionSerializer::encode($this->method, ScheduleMutateFreezeStateMutation::getEncodableParams(...$params))
         );
 
         $params['tankId'] = SS58Address::encode($params['tankId']);
-        $response = $this->graphql($this->method, $params);
+        $response = $this->graphql($this->mutation, $params);
         $this->assertEquals(
             $response['encodedData'],
             TransactionSerializer::encode($this->method, ScheduleMutateFreezeStateMutation::getEncodableParams(...$params))
@@ -57,7 +63,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
         $pubicKey = resolve(SubstrateProvider::class)->public_key();
         $data = $this->generateParams();
         $response = $this->graphql(
-            $this->method,
+            $this->mutation,
             array_merge($data, ['tankId' => $pubicKey]),
             true
         );
@@ -68,7 +74,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
 
 
         $response = $this->graphql(
-            $this->method,
+            $this->mutation,
             array_merge($data, ['tankId' => Str::random(300)]),
             true
         );
@@ -78,7 +84,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
         );
 
         $response = $this->graphql(
-            $this->method,
+            $this->mutation,
             array_merge($data, ['tankId' => 'Invalid']),
             true
         );
@@ -99,7 +105,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
         );
         $tank->forceFill(['owner_wallet_id' => $wallet->id])->save();
         $response = $this->graphql(
-            $this->method,
+            $this->mutation,
             array_merge($data, ['tankId' => $tank->public_key]),
             true
         );
@@ -113,7 +119,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
     {
         $data = $this->generateParams();
         $response = $this->graphql(
-            $this->method,
+            $this->mutation,
             array_merge($data, ['ruleSetId' => 'Invalid']),
             true
         );
@@ -123,14 +129,14 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
         );
 
         $response = $this->graphql(
-            $this->method,
+            $this->mutation,
             array_merge($data, ['ruleSetId' => null]),
             true
         );
         $this->assertNotEmpty($response);
 
         $response = $this->graphql(
-            $this->method,
+            $this->mutation,
             array_merge($data, ['tankId' => $this->tank->public_key, 'ruleSetId' => Hex::MAX_UINT128]),
             true
         );
@@ -140,7 +146,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
         );
 
         $response = $this->graphql(
-            $this->method,
+            $this->mutation,
             array_merge($data, ['ruleSetId' => fake()->numberBetween(5000, 10000)]),
             true
         );
