@@ -7,7 +7,6 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Enums\DispatchRule;
 use Enjin\Platform\FuelTanks\GraphQL\Traits\HasFuelTankValidationRules;
 use Enjin\Platform\FuelTanks\Rules\AccountsExistsInFuelTank;
-use Enjin\Platform\FuelTanks\Rules\FuelTankExists;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
