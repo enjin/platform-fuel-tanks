@@ -22,7 +22,9 @@ class IsFuelTankOwner implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $fuelTank = FuelTank::with('owner')->firstWhere('public_key', SS58Address::getPublicKey($value));
+        $fuelTank = FuelTank::where('public_key', SS58Address::getPublicKey($value))
+            ->with('owner')
+            ->first();
         if (!$fuelTank) {
             $fail(__('validation.exists', ['attribute' => $attribute]))->translate();
 
