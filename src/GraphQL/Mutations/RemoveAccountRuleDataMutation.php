@@ -134,7 +134,6 @@ class RemoveAccountRuleDataMutation extends Mutation implements PlatformBlockcha
                 'filled',
                 'max:255',
                 new ValidSubstrateAddress(),
-                new FuelTankExists(),
                 new IsFuelTankOwner(),
             ],
             'userId' => [
