@@ -33,6 +33,7 @@ class ValidMutation implements DataAwareRule, ValidationRule
     {
         match (Arr::get($this->data, 'dispatch.call')) {
             DispatchCall::FUEL_TANKS->name => $this->validateQuery('fuel-tanks', $value, $fail),
+            DispatchCall::MARKETPLACE->name => $this->validateQuery('marketplace', $value, $fail),
             DispatchCall::MULTI_TOKENS->name => $this->validateQuery('primary', $value, $fail),
         };
     }

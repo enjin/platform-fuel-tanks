@@ -22,7 +22,7 @@ class Codec extends BaseCodec
     /**
      * Get the encoder.
      */
-    public function encoder(): Encoder
+    public function encoder(): FuelTankEncoder
     {
         return $this->encoder;
     }
@@ -30,7 +30,7 @@ class Codec extends BaseCodec
     /**
      * Get the decoder.
      */
-    public function decoder(): Decoder
+    public function decoder(): FuelTankDecoder
     {
         return $this->decoder;
     }

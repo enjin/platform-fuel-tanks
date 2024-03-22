@@ -400,7 +400,7 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = TransactionSerializer::encode('InsertRuleSet', InsertRulesetMutation::getEncodableParams(
+        $data = TransactionSerializer::encode('InsertRuleSet', InsertRuleSetMutation::getEncodableParams(
             tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
             ruleSetId: '10',
             dispatchRules: $dispatchRules,
@@ -421,7 +421,7 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = TransactionSerializer::encode('InsertRuleSet', InsertRulesetMutation::getEncodableParams(
+        $data = TransactionSerializer::encode('InsertRuleSet', InsertRuleSetMutation::getEncodableParams(
             tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
             ruleSetId: '10',
             dispatchRules: $dispatchRules,
@@ -439,7 +439,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_remove_rule_set()
     {
-        $data = TransactionSerializer::encode('RemoveRuleSet', RemoveRulesetmutation::getEncodableParams(
+        $data = TransactionSerializer::encode('RemoveRuleSet', RemoveRuleSetMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             ruleSetId: '10'
         ));

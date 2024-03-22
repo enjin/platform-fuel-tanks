@@ -7,6 +7,7 @@ use Enjin\Platform\FuelTanks\Enums\DispatchCall;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\DispatchMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
+use Enjin\Platform\Models\Collection;
 use Enjin\Platform\Models\Wallet;
 use Enjin\Platform\Providers\Faker\SubstrateProvider;
 use Enjin\Platform\Support\Hex;
@@ -39,6 +40,21 @@ class DispatchTest extends TestCaseGraphQL
         $response = $this->graphql(
             $this->method,
             $params = $this->generateParams()
+        );
+
+        $encodedCall = DispatchMutation::getEncodedCall($params);
+
+        $this->assertEquals(
+            $response['encodedData'],
+            TransactionSerializer::encode($this->method, DispatchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
+        );
+    }
+
+    public function test_it_can_dispatch_multi_token(): void
+    {
+        $response = $this->graphql(
+            $this->method,
+            $params = $this->generateParams(DispatchCall::MULTI_TOKENS)
         );
 
         $encodedCall = DispatchMutation::getEncodedCall($params);
@@ -218,16 +234,32 @@ class DispatchTest extends TestCaseGraphQL
     /**
      * Generate parameters.
      */
-    protected function generateParams(): array
+    protected function generateParams(?DispatchCall $schema = null): array
     {
+        $dispatch = match ($schema) {
+            DispatchCall::MULTI_TOKENS => [
+                'call' => DispatchCall::MULTI_TOKENS->name,
+                'query' => static::$queries['SetCollectionAttribute'],
+                'variables' => [
+                    'collectionId' => Collection::factory()->create(['owner_wallet_id' => $this->wallet])->collection_chain_id,
+                    'key' => 'key',
+                    'value' => 'value',
+                ],
+            ],
+            default => [
+                'call' => DispatchCall::FUEL_TANKS->name,
+                'query' => static::$queries['AddAccount'],
+                'variables' => [
+                    'tankId' => $this->tank->public_key,
+                    'userId' => resolve(SubstrateProvider::class)->public_key(),
+                ],
+            ],
+        };
+
         return [
             'tankId' => $this->tank->public_key,
             'ruleSetId' => $this->tank->dispatchRules->first()->rule_set_id,
-            'dispatch' => [
-                'call' => DispatchCall::FUEL_TANKS->name,
-                'query' => static::$queries['AddAccount'],
-                'variables' => ['tankId' => $this->tank->public_key, 'userId' => resolve(SubstrateProvider::class)->public_key()],
-            ],
+            'dispatch' => $dispatch,
         ];
     }
 }
