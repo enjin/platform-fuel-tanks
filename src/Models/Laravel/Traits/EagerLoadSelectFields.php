@@ -29,7 +29,7 @@ trait EagerLoadSelectFields
         static::$query = $query;
         $queryPlan = $resolveInfo->lookAhead()->queryPlan();
 
-        switch($query) {
+        switch ($query) {
             case 'GetFuelTanks':
             case 'GetFuelTank':
                 [$select, $with, $withCount] = static::loadFuelTank(
@@ -115,7 +115,7 @@ trait EagerLoadSelectFields
         $key = $parent ? "{$parent}.{$attribute}" : $attribute;
         $alias = static::getAlias($attribute, $parentType);
         $args = Arr::get($selections, $attribute . '.args', []);
-        switch($alias) {
+        switch ($alias) {
             case 'accounts':
                 $relations = static::loadWallet(
                     $selections,
@@ -188,7 +188,7 @@ trait EagerLoadSelectFields
         }
 
         foreach (WalletType::getRelationFields($fieldKeys) as $relation) {
-            switch($relation) {
+            switch ($relation) {
                 case 'collectionAccounts':
                     $withCount[$relation] = fn ($query) => $query->when(
                         Arr::get($args, 'collectionIds'),

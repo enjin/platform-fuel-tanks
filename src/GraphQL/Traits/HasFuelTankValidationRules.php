@@ -6,6 +6,7 @@ use Enjin\Platform\FuelTanks\Rules\TokenExistsInCollection;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTokenIdFieldRules;
 use Enjin\Platform\Rules\MaxBigInt;
 use Enjin\Platform\Rules\MinBigInt;
+use Enjin\Platform\Rules\ValidHex;
 use Enjin\Platform\Rules\ValidSubstrateAddress;
 use Enjin\Platform\Support\Hex;
 use Illuminate\Support\Arr;
@@ -53,7 +54,7 @@ trait HasFuelTankValidationRules
                             Rule::exists('collections', 'collection_chain_id'),
                         ],
                 ...$this->getOptionalTokenFieldRules("{$attribute}.requireToken"),
-                "{$attribute}.requireToken"=> $isArray
+                "{$attribute}.requireToken" => $isArray
                     ? Rule::forEach(fn ($value, $key) => new TokenExistsInCollection(Arr::get($args, "{$key}.collectionId")))
                     : new TokenExistsInCollection(Arr::get($args, "{$attribute}.requireToken.collectionId")),
             ]
@@ -106,6 +107,8 @@ trait HasFuelTankValidationRules
             ],
             ...$this->commonRules("{$attributePrefix}dispatchRules{$array}.userFuelBudget"),
             ...$this->commonRules("{$attributePrefix}dispatchRules{$array}.tankFuelBudget"),
+            "{$attributePrefix}dispatchRules{$array}.whitelistedPallets.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidHex()],
+            "{$attributePrefix}dispatchRules{$array}.whitelistedPallets" => ['nullable', 'array', 'min:1'],
         ];
     }
 }

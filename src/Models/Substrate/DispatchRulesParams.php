@@ -19,6 +19,7 @@ class DispatchRulesParams
         public ?TankFuelBudgetParams $tankFuelBudget = null,
         public ?PermittedCallsParams $permittedCalls = null,
         public ?PermittedExtrinsicsParams $permittedExtrinsics = null,
+        public ?WhitelistedPalletsParams $whitelistedPallets = null,
         public ?bool $isFrozen = false,
     ) {
     }
@@ -69,6 +70,10 @@ class DispatchRulesParams
 
         if ($this->tankFuelBudget) {
             $params[] = $this->tankFuelBudget->toEncodable();
+        }
+
+        if ($this->whitelistedPallets) {
+            $params[] = $this->whitelistedPallets->toEncodable();
         }
 
         // We have to set an empty array for the permitted extrinsics here and encode manually later

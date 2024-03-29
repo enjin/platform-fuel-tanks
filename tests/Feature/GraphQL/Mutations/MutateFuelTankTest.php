@@ -36,7 +36,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
     public function test_it_will_fail_with_invalid_parameter_mutation(): void
     {
         $data = $this->generateFuelTankData();
-        $response = $this->graphql($this->method, array_merge($data, ['mutation'=>[]]), true);
+        $response = $this->graphql($this->method, array_merge($data, ['mutation' => []]), true);
         $this->assertArraySubset(
             ['mutation' => ['The mutation field is required.']],
             $response['error']
@@ -68,14 +68,14 @@ class MutateFuelTankTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['tankId'=> null]),
+            array_merge($data, ['tankId' => null]),
             true
         );
         $this->assertEquals('Variable "$tankId" of non-null type "String!" must not be null.', $response['error']);
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['tankId'=> '']),
+            array_merge($data, ['tankId' => '']),
             true
         );
         $this->assertArraySubset(
@@ -175,7 +175,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         $data = $this->generateFuelTankData();
 
         $invalidData = $data;
-        Arr::set($invalidData, 'mutation.accountRules.requireToken', ['collectionId' => 1, 'tokenId'=> ['integer' => 1]]);
+        Arr::set($invalidData, 'mutation.accountRules.requireToken', ['collectionId' => 1, 'tokenId' => ['integer' => 1]]);
         $response = $this->graphql($this->method, $invalidData, true);
         $this->assertArraySubset(
             ['mutation.accountRules.requireToken.collectionId' => ['The selected mutation.account rules.require token.collection id is invalid.']],
@@ -183,7 +183,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         );
 
         $invalidData = $data;
-        Arr::set($invalidData, 'mutation.accountRules.requireToken', ['collectionId' => null, 'tokenId'=> null]);
+        Arr::set($invalidData, 'mutation.accountRules.requireToken', ['collectionId' => null, 'tokenId' => null]);
         $response = $this->graphql($this->method, $invalidData, true);
         $this->assertStringContainsString(
             'value null at "mutation.accountRules.requireToken.collectionId"; Expected non-nullable type "BigInt!" not to be null',
@@ -195,7 +195,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         );
 
         $invalidData = $data;
-        Arr::set($invalidData, 'mutation.accountRules.requireToken', ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId'=> ['integer' => Hex::MAX_UINT256 + 1]]);
+        Arr::set($invalidData, 'mutation.accountRules.requireToken', ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId' => ['integer' => Hex::MAX_UINT256 + 1]]);
         $response = $this->graphql($this->method, $invalidData, true);
         $this->assertStringContainsString(
             'value 1.1579208923732E+77 at "mutation.accountRules.requireToken.collectionId"; Cannot represent following value as uint256',

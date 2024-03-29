@@ -209,7 +209,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $data = $this->generateRuleSet();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => 1, 'tokenId'=> ['integer' => 1]]]]),
+            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => 1, 'tokenId' => ['integer' => 1]]]]),
             true
         );
         $this->assertArraySubset(
@@ -219,7 +219,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => 1, 'tokenId'=> null]]]),
+            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => 1, 'tokenId' => null]]]),
             true
         );
         $this->assertStringContainsString(
@@ -229,7 +229,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => null, 'tokenId'=> ['integer' => 1]]]]),
+            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => null, 'tokenId' => ['integer' => 1]]]]),
             true
         );
         $this->assertStringContainsString(
@@ -239,7 +239,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId'=> ['integer' => Hex::MAX_UINT256 + 1]]]]),
+            array_merge($data, ['dispatchRules' => ['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId' => ['integer' => Hex::MAX_UINT256 + 1]]]]),
             true
         );
         $this->assertArraySubset(

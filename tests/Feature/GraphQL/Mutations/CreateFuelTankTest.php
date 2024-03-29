@@ -50,7 +50,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
     public function test_it_will_fail_with_invalid_parameter_name(): void
     {
         $data = $this->generateData();
-        FuelTank::create(['name' => $data['name'], 'public_key' => $data['account'], 'owner_wallet_id'=>$this->wallet->id]);
+        FuelTank::create(['name' => $data['name'], 'public_key' => $data['account'], 'owner_wallet_id' => $this->wallet->id]);
 
         $response = $this->graphql($this->method, $data, true);
         $this->assertArraySubset(
@@ -70,14 +70,14 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['name'=> null]),
+            array_merge($data, ['name' => null]),
             true
         );
         $this->assertEquals('Variable "$name" of non-null type "String!" must not be null.', $response['error']);
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['name'=> '']),
+            array_merge($data, ['name' => '']),
             true
         );
         $this->assertArraySubset(
@@ -188,7 +188,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
         $data = $this->generateData();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => 1, 'tokenId'=> ['integer' => 1]]]]),
+            array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => 1, 'tokenId' => ['integer' => 1]]]]),
             true
         );
         $this->assertArraySubset(
@@ -200,7 +200,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => 1, 'tokenId'=> null]]]),
+            array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => 1, 'tokenId' => null]]]),
             true
         );
         $this->assertStringContainsString(
@@ -210,7 +210,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => null, 'tokenId'=> ['integer' => 1]]]]),
+            array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => null, 'tokenId' => ['integer' => 1]]]]),
             true
         );
         $this->assertStringContainsString(
@@ -220,7 +220,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId'=> ['integer' => Hex::MAX_UINT256 + 1]]]]),
+            array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId' => ['integer' => Hex::MAX_UINT256 + 1]]]]),
             true
         );
         $this->assertArraySubset(
@@ -302,7 +302,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
         $data = $this->generateData();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => 1, 'tokenId'=> ['integer'=>1]]]]]),
+            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => 1, 'tokenId' => ['integer' => 1]]]]]),
             true
         );
         $this->assertArraySubset(
@@ -312,7 +312,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => 1, 'tokenId'=> null]]]]),
+            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => 1, 'tokenId' => null]]]]),
             true
         );
         $this->assertStringContainsString(
@@ -322,7 +322,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => null, 'tokenId'=> ['integer'=>1]]]]]),
+            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => null, 'tokenId' => ['integer' => 1]]]]]),
             true
         );
         $this->assertStringContainsString(
@@ -332,7 +332,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId'=> ['integer' => Hex::MAX_UINT256 + 1]]]]]),
+            array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId' => ['integer' => Hex::MAX_UINT256 + 1]]]]]),
             true
         );
         $this->assertArraySubset(

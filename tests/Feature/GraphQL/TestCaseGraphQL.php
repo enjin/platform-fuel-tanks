@@ -22,8 +22,8 @@ use Rebing\GraphQL\Support\Facades\GraphQL;
 class TestCaseGraphQL extends BaseTestCase
 {
     use ArraySubsetAsserts;
-    use GenerateFuelTankData;
     use CreateCollectionData;
+    use GenerateFuelTankData;
 
     /**
      * The graphql queries.
@@ -83,9 +83,9 @@ class TestCaseGraphQL extends BaseTestCase
             throw new ExpectationFailedException($assertMessage);
         }
 
-        if ('validation' === Arr::get($data, 'errors.0.message')) {
+        if (Arr::get($data, 'errors.0.message') === 'validation') {
             $data['error'] = Arr::first($result->errors)?->getPrevious()->getValidatorMessages()->toArray();
-        } elseif (null !== Arr::get($data, 'errors.0.message')) {
+        } elseif (Arr::get($data, 'errors.0.message') !== null) {
             $data['error'] = $data['errors'][0]['message'];
         }
 
@@ -95,7 +95,7 @@ class TestCaseGraphQL extends BaseTestCase
     /**
      * Create a fuel tank.
      */
-    protected function createFuelTank($count = null): FuelTank | Collection
+    protected function createFuelTank($count = null): FuelTank|Collection
     {
         $tank = FuelTank::factory($count)->create(['owner_wallet_id' => $this->wallet->id]);
         if ($tank instanceof FuelTank) {
@@ -193,7 +193,7 @@ class TestCaseGraphQL extends BaseTestCase
     /**
      * Get package providers.
      *
-     * @param mixed $app
+     * @param  mixed  $app
      */
     protected function getPackageProviders($app): array
     {
@@ -206,7 +206,7 @@ class TestCaseGraphQL extends BaseTestCase
     /**
      * Get package aliases.
      *
-     * @param mixed $app
+     * @param  mixed  $app
      */
     protected function getPackageAliases($app): array
     {
@@ -216,7 +216,7 @@ class TestCaseGraphQL extends BaseTestCase
     /**
      * Define environment.
      *
-     * @param mixed $app
+     * @param  mixed  $app
      */
     protected function defineEnvironment($app): void
     {

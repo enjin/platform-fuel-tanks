@@ -39,7 +39,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
         $this->tank = $this->createFuelTank();
         $this->account = resolve(SubstrateProvider::class)->public_key();
         FuelTankAccount::create([
-            'fuel_tank_id'=>$this->tank->id,
+            'fuel_tank_id' => $this->tank->id,
             'wallet_id' => Wallet::create(['public_key' => $this->account, 'network' => 'developer'])->id,
         ]);
     }

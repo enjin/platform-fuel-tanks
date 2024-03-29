@@ -6,8 +6,6 @@ abstract class FuelTankRules
 {
     /**
      * Get the kind array for this model.
-     *
-     * @return array
      */
     public function toKind(): array
     {

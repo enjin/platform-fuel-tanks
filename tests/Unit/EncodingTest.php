@@ -284,7 +284,7 @@ class EncodingTest extends TestCase
         $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
             providesDeposit: false,
-            userAccountManagement:  null,
+            userAccountManagement: null,
             dispatchRules: [$dispatchRules],
         ));
 
