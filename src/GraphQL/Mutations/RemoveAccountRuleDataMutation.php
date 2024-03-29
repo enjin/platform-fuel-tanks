@@ -30,12 +30,12 @@ use Rebing\GraphQL\Support\Facades\GraphQL;
 
 class RemoveAccountRuleDataMutation extends Mutation implements PlatformBlockchainTransaction
 {
+    use HasFuelTankValidationRules;
     use HasIdempotencyField;
     use HasSigningAccountField;
     use HasSimulateField;
     use HasTransactionDeposit;
     use StoresTransactions;
-    use HasFuelTankValidationRules;
 
     /**
      * Get the mutation's attributes.

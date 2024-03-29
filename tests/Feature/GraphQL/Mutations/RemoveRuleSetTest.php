@@ -87,7 +87,7 @@ class RemoveRuleSetTest extends TestCaseGraphQL
                 'network' => 'developer',
             ]
         );
-        $tank->forceFill(['owner_wallet_id'=>$wallet->id])->save();
+        $tank->forceFill(['owner_wallet_id' => $wallet->id])->save();
         $response = $this->graphql(
             $this->method,
             ['tankId' => $tank->public_key, 'ruleSetId' => 1],

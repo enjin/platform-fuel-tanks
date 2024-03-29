@@ -58,14 +58,14 @@ class ValidMutation implements DataAwareRule, ValidationRule
         }
 
         $positon = strpos($query, 'encodedData');
-        if (false === $positon || $query[$positon - 1] === '$') {
+        if ($positon === false || $query[$positon - 1] === '$') {
             $fail('enjin-platform-fuel-tanks::validation.valid_mutation.encodedData')->translate();
 
             return;
         }
 
         $positon = strpos($query, 'id');
-        if (false === $positon || $query[$positon - 1] === '$') {
+        if ($positon === false || $query[$positon - 1] === '$') {
             $fail('enjin-platform-fuel-tanks::validation.valid_mutation.encodedData')->translate();
         }
     }

@@ -10,6 +10,7 @@ use Enjin\Platform\FuelTanks\Models\Substrate\TankFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\UserFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCallersParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCollectionsParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedPalletsParams;
 use Enjin\Platform\Traits\EnumExtensions;
 
 enum DispatchRule: string
@@ -23,6 +24,7 @@ enum DispatchRule: string
     case TANK_FUEL_BUDGET = 'TankFuelBudget';
     case REQUIRE_TOKEN = 'RequireToken';
     case PERMITTED_EXTRINSICS = 'PermittedExtrinsics';
+    case WHITELISTED_PALLETS = 'WhitelistedPallets';
 
     /**
      * Convert enum case to FuelTankRules.
@@ -36,7 +38,8 @@ enum DispatchRule: string
             self::USER_FUEL_BUDGET => new UserFuelBudgetParams('', ''),
             self::TANK_FUEL_BUDGET => new TankFuelBudgetParams('', ''),
             self::REQUIRE_TOKEN => new RequireTokenParams('', ''),
-            self::PERMITTED_EXTRINSICS => new PermittedExtrinsicsParams()
+            self::PERMITTED_EXTRINSICS => new PermittedExtrinsicsParams(),
+            self::WHITELISTED_PALLETS => new WhitelistedPalletsParams(),
         };
     }
 }

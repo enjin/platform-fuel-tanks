@@ -14,6 +14,7 @@ use Enjin\Platform\FuelTanks\Models\Substrate\UserAccountManagementParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\UserFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCallersParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCollectionsParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedPalletsParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Blockchain\Implementations\Substrate as PlatformSubstrate;
 use Illuminate\Support\Arr;
@@ -73,6 +74,9 @@ class Substrate extends PlatformSubstrate
                 : null,
             ($permittedExtrinsics = Arr::get($args, 'permittedExtrinsics'))
                 ? new PermittedExtrinsicsParams($permittedExtrinsics)
+                : null,
+            ($pallets = Arr::get($args, 'whitelistedPallets'))
+                ? new WhitelistedPalletsParams($pallets)
                 : null,
         );
     }
