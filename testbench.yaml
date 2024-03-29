@@ -11,7 +11,7 @@ env:
   - QUEUE_CONNECTION="redis"
   - CHAIN="substrate"
   - NETWORK="enjin"
-  - DAEMON_ACCOUNT="0x0c4f90239e21d828f541da1860f234ad713b963a93bbbe128159fad9690abc3b"
+  - DAEMON_ACCOUNT="0x68b427dda4f3894613e113b570d5878f3eee981196133e308c0a82584cf2e160"
 
 providers:
   - Enjin\Platform\FuelTanks\FuelTanksServiceProvider
