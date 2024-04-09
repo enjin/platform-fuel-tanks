@@ -12,7 +12,7 @@ class CallDispatched extends PlatformBroadcastEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(Model $fuelTank, Model $caller)
+    public function __construct(Model $fuelTank, Model $caller, ?Model $transaction = null)
     {
         parent::__construct();
 

@@ -2,41 +2,46 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
+use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankDestroyed as FuelTankDestroyedEvent;
-use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\Traits\QueryDataOrFail;
+use Enjin\Platform\FuelTanks\Models\Laravel\FuelTank;
+use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankDestroyed as FuelTankDestroyedPolkadart;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
-use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
+use Enjin\Platform\Support\Account;
 use Illuminate\Support\Facades\Log;
 
-class FuelTankDestroyed implements SubstrateEvent
+class FuelTankDestroyed extends FuelTankSubstrateEvent
 {
-    use QueryDataOrFail;
-
     /**
      * Handle the fuel tank destroyed event.
+     *
+     * @throws PlatformException
      */
-    public function run(PolkadartEvent $event, Block $block, Codec $codec): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
+        ray($event);
+
         if (!$event instanceof FuelTankDestroyedPolkadart) {
             return;
         }
 
-        $fuelTank = $this->getFuelTank(
-            $event->tankId
-        );
-        $fuelTank->delete();
+        FuelTank::where([
+            'id' => Account::parseAccount($event->tankId),
+        ])?->delete();
 
         Log::info(
             sprintf(
-                'FuelTank %s (id: %s) was destroyed.',
-                $fuelTank->public_key,
-                $fuelTank->id,
+                'FuelTank %s was destroyed.',
+                $event->tankId,
             )
         );
 
-        FuelTankDestroyedEvent::safeBroadcast($fuelTank);
+        FuelTankDestroyedEvent::safeBroadcast(
+            $fuelTank,
+            $this->getTransaction($block, $event->extrinsicIndex),
+        );
     }
 }

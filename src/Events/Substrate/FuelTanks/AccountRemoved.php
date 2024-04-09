@@ -12,7 +12,7 @@ class AccountRemoved extends PlatformBroadcastEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(Model $fuelTankAccount)
+    public function __construct(Model $fuelTankAccount, ?Model $transaction = null)
     {
         parent::__construct();
 

@@ -2,29 +2,32 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
+use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FreezeStateMutated as FreezeStateMutatedEvent;
 use Enjin\Platform\FuelTanks\Models\DispatchRule;
-use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\Traits\QueryDataOrFail;
+use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FreezeStateMutated as FreezeStateMutatedPolkadart;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
-use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Illuminate\Support\Facades\Log;
 
-class FreezeStateMutated implements SubstrateEvent
+class FreezeStateMutated extends FuelTankSubstrateEvent
 {
-    use QueryDataOrFail;
-
     /**
      * Handle the freeze state mutated event.
+     *
+     * @throws PlatformException
      */
-    public function run(PolkadartEvent $event, Block $block, Codec $codec): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
+        ray($event);
+
         if (!$event instanceof FreezeStateMutatedPolkadart) {
             return;
         }
 
+        // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
 
         if (!$event->ruleSetId) {
@@ -56,6 +59,9 @@ class FreezeStateMutated implements SubstrateEvent
             );
         }
 
-        FreezeStateMutatedEvent::safeBroadcast($fuelTank);
+        FreezeStateMutatedEvent::safeBroadcast(
+            $fuelTank,
+            $this->getTransaction($block, $event->extrinsicIndex),
+        );
     }
 }

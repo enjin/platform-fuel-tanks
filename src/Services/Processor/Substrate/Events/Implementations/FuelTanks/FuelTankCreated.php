@@ -5,24 +5,24 @@ namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implement
 use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankCreated as FuelTankCreatedEvent;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
+use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
-use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankCreated as FuelTankCreatedPolkadart;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
-use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Enjin\Platform\Support\Account;
-use Facades\Enjin\Platform\Services\Database\WalletService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
-class FuelTankCreated implements SubstrateEvent
+class FuelTankCreated extends FuelTankSubstrateEvent
 {
     /**
      * Handle the fuel tank created event.
      */
-    public function run(PolkadartEvent $event, Block $block, Codec $codec): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
+        ray($event);
+
         if (!$event instanceof FuelTankCreatedPolkadart) {
             return;
         }
@@ -34,7 +34,7 @@ class FuelTankCreated implements SubstrateEvent
         $reservesExistentialDeposit = Arr::get($params, 'descriptor.user_account_management.Some.tank_reserves_existential_deposit');
         $reservesAccountCreationDeposit = Arr::get($params, 'descriptor.user_account_management.Some.tank_reserves_account_creation_deposit');
 
-        $owner = WalletService::firstOrStore(['account' => Account::parseAccount($event->owner)]);
+        $owner = $this->firstOrStoreAccount($event->owner);
         $fuelTank = FuelTank::create([
             'public_key' => Account::parseAccount($event->tankId),
             'name' => HexConverter::hexToString($event->tankName),
@@ -74,31 +74,21 @@ class FuelTankCreated implements SubstrateEvent
         }
         $fuelTank->dispatchRules()->createMany($insertDispatchRules);
 
-        $daemonTransaction = Transaction::firstWhere(['transaction_chain_hash' => $extrinsic->hash]);
+        $transaction = $this->getTransaction($block, $event->extrinsicIndex);
 
-        if ($daemonTransaction) {
-            Log::info(
-                sprintf(
-                    'FuelTank %s (id: %s) was created from transaction %s (id: %s)',
-                    $fuelTank->public_key,
-                    $fuelTank->id,
-                    $daemonTransaction->transaction_chain_hash,
-                    $daemonTransaction->id
-                )
-            );
-        } else {
-            Log::info(
-                sprintf(
-                    'FuelTank %s (id: %s) was created from unknown transaction',
-                    $fuelTank->public_key,
-                    $fuelTank->id,
-                )
-            );
-        }
+        Log::info(
+            sprintf(
+                'FuelTank %s (id: %s) was created from transaction %s (id: %s)',
+                $fuelTank->public_key,
+                $fuelTank->id,
+                $transaction?->transaction_chain_hash ?? 'unknown',
+                $transaction?->id ?? 'unknown'
+            )
+        );
 
         FuelTankCreatedEvent::safeBroadcast(
             $fuelTank,
-            $daemonTransaction
+            $transaction
         );
     }
 }

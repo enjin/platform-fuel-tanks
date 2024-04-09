@@ -2,34 +2,35 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
+use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\AccountAdded as AccountAddedEvent;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
-use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\Traits\QueryDataOrFail;
+use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
-use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\AccountAdded as AccountAddedPolkadart;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
-use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
-use Enjin\Platform\Support\Account;
-use Facades\Enjin\Platform\Services\Database\WalletService;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Illuminate\Support\Facades\Log;
 
-class AccountAdded implements SubstrateEvent
+class AccountAdded extends FuelTankSubstrateEvent
 {
-    use QueryDataOrFail;
-
     /**
      * Handle the account added event.
+     *
+     * @throws PlatformException
      */
-    public function run(PolkadartEvent $event, Block $block, Codec $codec): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
+        ray($event);
+
         if (!$event instanceof AccountAddedPolkadart) {
             return;
         }
 
-        $account = WalletService::firstOrStore(['account' => Account::parseAccount($event->userId)]);
+        // Fails if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
+        $account = $this->firstOrStoreAccount($event->userId);
+
         $fuelTankAccount = FuelTankAccount::create([
             'fuel_tank_id' => $fuelTank->id,
             'wallet_id' => $account->id,
@@ -38,36 +39,23 @@ class AccountAdded implements SubstrateEvent
             'total_received' => $event->totalReceived,
         ]);
 
-        $extrinsic = $block->extrinsics[$event->extrinsicIndex];
-        $daemonTransaction = Transaction::firstWhere(['transaction_chain_hash' => $extrinsic->hash]);
+        $transaction = $this->getTransaction($block, $event->extrinsicIndex);
 
-        if ($daemonTransaction) {
-            Log::info(
-                sprintf(
-                    'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created from transaction %s (id: %s).',
-                    $account->public_key,
-                    $fuelTankAccount->id,
-                    $fuelTank->public_key,
-                    $fuelTank->id,
-                    $daemonTransaction->transaction_chain_hash,
-                    $daemonTransaction->id
-                )
-            );
-        } else {
-            Log::info(
-                sprintf(
-                    'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created from unknown transaction.',
-                    $account->public_key,
-                    $fuelTankAccount->id,
-                    $fuelTank->public_key,
-                    $fuelTank->id,
-                )
-            );
-        }
+        Log::info(
+            sprintf(
+                'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created from transaction %s (id: %s).',
+                $account->public_key,
+                $fuelTankAccount->id,
+                $fuelTank->public_key,
+                $fuelTank->id,
+                $transaction?->transaction_chain_hash ?? 'unknown',
+                $transaction?->id ?? 'unknown'
+            )
+        );
 
         AccountAddedEvent::safeBroadcast(
             $fuelTankAccount,
-            $daemonTransaction
+            $transaction
         );
     }
 }
