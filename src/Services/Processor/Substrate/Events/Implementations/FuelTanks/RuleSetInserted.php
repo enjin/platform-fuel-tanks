@@ -29,6 +29,7 @@ class RuleSetInserted extends FuelTankSubstrateEvent
             return;
         }
 
+        throw new \Exception('Account rules are not supported yet');
         $extrinsic = $block->extrinsics[$event->extrinsicIndex];
         $params = $extrinsic->params;
         $rules = Arr::get($params, 'rules', []);

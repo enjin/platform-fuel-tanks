@@ -26,6 +26,7 @@ class CallDispatched extends FuelTankSubstrateEvent
             return;
         }
 
+        throw new \Exception('Account rules are not supported yet');
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
         $account = $this->firstOrStoreAccount($event->caller);

@@ -21,8 +21,6 @@ class FreezeStateMutated extends FuelTankSubstrateEvent
      */
     public function run(Event $event, Block $block, Codec $codec): void
     {
-        ray($event);
-
         if (!$event instanceof FreezeStateMutatedPolkadart) {
             return;
         }

@@ -22,14 +22,12 @@ class FuelTankDestroyed extends FuelTankSubstrateEvent
      */
     public function run(Event $event, Block $block, Codec $codec): void
     {
-        ray($event);
-
         if (!$event instanceof FuelTankDestroyedPolkadart) {
             return;
         }
 
         FuelTank::where([
-            'id' => Account::parseAccount($event->tankId),
+            'public_key' => Account::parseAccount($event->tankId),
         ])?->delete();
 
         Log::info(
@@ -39,9 +37,9 @@ class FuelTankDestroyed extends FuelTankSubstrateEvent
             )
         );
 
-        FuelTankDestroyedEvent::safeBroadcast(
-            $fuelTank,
-            $this->getTransaction($block, $event->extrinsicIndex),
-        );
+        //        FuelTankDestroyedEvent::safeBroadcast(
+        //            $fuelTank,
+        //            $this->getTransaction($block, $event->extrinsicIndex),
+        //        );
     }
 }

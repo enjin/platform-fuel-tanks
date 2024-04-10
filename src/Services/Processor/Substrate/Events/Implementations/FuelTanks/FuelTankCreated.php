@@ -2,7 +2,6 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
-use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankCreated as FuelTankCreatedEvent;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
@@ -21,8 +20,6 @@ class FuelTankCreated extends FuelTankSubstrateEvent
      */
     public function run(Event $event, Block $block, Codec $codec): void
     {
-        ray($event);
-
         if (!$event instanceof FuelTankCreatedPolkadart) {
             return;
         }
@@ -31,22 +28,34 @@ class FuelTankCreated extends FuelTankSubstrateEvent
         $params = $extrinsic->params;
 
         $providesDeposit = Arr::get($params, 'descriptor.provides_deposit');
-        $reservesExistentialDeposit = Arr::get($params, 'descriptor.user_account_management.Some.tank_reserves_existential_deposit');
-        $reservesAccountCreationDeposit = Arr::get($params, 'descriptor.user_account_management.Some.tank_reserves_account_creation_deposit');
+        $reservesExistentialDeposit = $this->getValue($params, [
+            'descriptor.user_account_management.Some.tank_reserves_existential_deposit',
+            'descriptor.user_account_management.tank_reserves_existential_deposit',
+        ]);
+
+        $reservesAccountCreationDeposit = $this->getValue($params, [
+            'descriptor.user_account_management.Some.tank_reserves_account_creation_deposit',
+            'descriptor.user_account_management.tank_reserves_account_creation_deposit',
+        ]);
 
         $owner = $this->firstOrStoreAccount($event->owner);
-        $fuelTank = FuelTank::create([
-            'public_key' => Account::parseAccount($event->tankId),
-            'name' => HexConverter::hexToString($event->tankName),
-            'owner_wallet_id' => $owner->id,
-            'reserves_existential_deposit' => $reservesExistentialDeposit,
-            'reserves_account_creation_deposit' => $reservesAccountCreationDeposit,
-            'provides_deposit' => $providesDeposit,
-            'is_frozen' => false,
-        ]);
+        $fuelTank = FuelTank::updateOrCreate(
+            [
+                'public_key' => Account::parseAccount($event->tankId),
+            ],
+            [
+                'name' => $event->tankName,
+                'owner_wallet_id' => $owner->id,
+                'reserves_existential_deposit' => $reservesExistentialDeposit,
+                'reserves_account_creation_deposit' => $reservesAccountCreationDeposit,
+                'provides_deposit' => $providesDeposit,
+                'is_frozen' => false,
+            ]
+        );
 
         $accountRules = Arr::get($params, 'descriptor.account_rules', []);
         $insertAccountRules = [];
+
         foreach ($accountRules as $rule) {
             $ruleName = array_key_first($rule);
             $ruleData = $rule[$ruleName];
@@ -55,10 +64,11 @@ class FuelTankCreated extends FuelTankSubstrateEvent
                 'value' => $ruleData,
             ];
         }
-        $fuelTank->accountRules()->createMany($insertAccountRules);
 
+        $fuelTank->accountRules()->createMany($insertAccountRules);
         $dispatchRules = Arr::get($params, 'descriptor.rule_sets', []);
         $insertDispatchRules = [];
+
         foreach ($dispatchRules as $ruleSet) {
             $ruleSetId = $ruleSet[0];
             foreach ($ruleSet[1] as $rule) {
@@ -72,8 +82,8 @@ class FuelTankCreated extends FuelTankSubstrateEvent
                 ];
             }
         }
-        $fuelTank->dispatchRules()->createMany($insertDispatchRules);
 
+        $fuelTank->dispatchRules()->createMany($insertDispatchRules);
         $transaction = $this->getTransaction($block, $event->extrinsicIndex);
 
         Log::info(
