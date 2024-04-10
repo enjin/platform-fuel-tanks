@@ -4,13 +4,11 @@ namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implement
 
 use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankDestroyed as FuelTankDestroyedEvent;
-use Enjin\Platform\FuelTanks\Models\Laravel\FuelTank;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankDestroyed as FuelTankDestroyedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
-use Enjin\Platform\Support\Account;
 use Illuminate\Support\Facades\Log;
 
 class FuelTankDestroyed extends FuelTankSubstrateEvent
@@ -26,9 +24,10 @@ class FuelTankDestroyed extends FuelTankSubstrateEvent
             return;
         }
 
-        FuelTank::where([
-            'public_key' => Account::parseAccount($event->tankId),
-        ])?->delete();
+        $fuelTank = $this->getFuelTank(
+            $event->tankId
+        );
+        $fuelTank->delete();
 
         Log::info(
             sprintf(
@@ -37,9 +36,9 @@ class FuelTankDestroyed extends FuelTankSubstrateEvent
             )
         );
 
-        //        FuelTankDestroyedEvent::safeBroadcast(
-        //            $fuelTank,
-        //            $this->getTransaction($block, $event->extrinsicIndex),
-        //        );
+        FuelTankDestroyedEvent::safeBroadcast(
+            $fuelTank,
+            $this->getTransaction($block, $event->extrinsicIndex),
+        );
     }
 }

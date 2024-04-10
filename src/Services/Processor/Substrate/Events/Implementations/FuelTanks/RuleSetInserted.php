@@ -29,7 +29,6 @@ class RuleSetInserted extends FuelTankSubstrateEvent
             return;
         }
 
-        throw new \Exception('Account rules are not supported yet');
         $extrinsic = $block->extrinsics[$event->extrinsicIndex];
         $params = $extrinsic->params;
         $rules = Arr::get($params, 'rules', []);
@@ -37,6 +36,10 @@ class RuleSetInserted extends FuelTankSubstrateEvent
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
 
+        ray($extrinsic);
+        ray($params);
+
+//        throw new \Exception('Account rules are not supported yet');
         $insertRules = [];
         foreach ($rules as $rule) {
             $ruleName = array_key_first($rule);

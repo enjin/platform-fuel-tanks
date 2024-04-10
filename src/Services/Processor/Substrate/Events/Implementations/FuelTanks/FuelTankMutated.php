@@ -21,13 +21,10 @@ class FuelTankMutated extends FuelTankSubstrateEvent
      */
     public function run(Event $event, Block $block, Codec $codec): void
     {
-        ray($event);
-
         if (!$event instanceof FuelTankMutatedPolkadart) {
             return;
         }
 
-        throw new \Exception('Account rules are not supported yet');
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
 
