@@ -2,10 +2,10 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
-use Carbon\Carbon;
 use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\RuleSetInserted as RuleSetInsertedEvent;
 use Enjin\Platform\FuelTanks\Models\DispatchRule;
+use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
@@ -23,8 +23,6 @@ class RuleSetInserted extends FuelTankSubstrateEvent
      */
     public function run(Event $event, Block $block, Codec $codec): void
     {
-        ray($event);
-
         if (!$event instanceof RuleSetInsertedPolkadart) {
             return;
         }
@@ -36,27 +34,26 @@ class RuleSetInserted extends FuelTankSubstrateEvent
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
 
-        ray($extrinsic);
-        ray($params);
-        throw new \Exception('Account rules are not supported yet');
+        // Removes rules from that rule set id
+        DispatchRule::where([
+            'fuel_tank_id' => $fuelTank->id,
+            'rule_set_id' => $event->ruleSetId,
+        ])?->delete();
 
-//        throw new \Exception('Account rules are not supported yet');
-        $insertRules = [];
-        foreach ($rules as $rule) {
-            $ruleName = array_key_first($rule);
-            $ruleData = $rule[$ruleName];
-            $insertRules[] = [
+        $insertDispatchRules = [];
+        $dispatchRule = (new DispatchRulesParams())->fromEncodable($event->ruleSetId, ['rules' => $rules])->toEncodable();
+
+        foreach ($dispatchRule as $rule) {
+            $insertDispatchRules[] = [
                 'fuel_tank_id' => $fuelTank->id,
                 'rule_set_id' => $event->ruleSetId,
-                'rule' => $ruleName,
-                'value' => is_string($ruleData) ? $ruleData : json_encode($ruleData),
+                'rule' => array_key_first($rule),
+                'value' => $rule[array_key_first($rule)],
                 'is_frozen' => false,
-                'created_at' => $now = Carbon::now(),
-                'updated_at' => $now,
             ];
         }
-        DispatchRule::insert($insertRules);
 
+        $fuelTank->dispatchRules()->createMany($insertDispatchRules);
         $transaction = $this->getTransaction($block, $event->extrinsicIndex);
 
         Log::info(
@@ -71,7 +68,7 @@ class RuleSetInserted extends FuelTankSubstrateEvent
 
         RuleSetInsertedEvent::safeBroadcast(
             $fuelTank,
-            $insertRules,
+            $insertDispatchRules,
             $transaction
         );
     }

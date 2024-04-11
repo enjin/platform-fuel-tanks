@@ -31,12 +31,8 @@ class DispatchRulesParams
     {
         $this->ruleSetId = $setId;
         $this->isFrozen = $params['isFrozen'] ?? false;
-//        ray($params);
 
         foreach ($params['rules'] as $rule) {
-//            ray($rule);
-
-            ray($rule);
             $ruleParam = '\Enjin\Platform\FuelTanks\Models\Substrate\\' . ($ruleName = array_key_first($rule)) . 'Params';
             $ruleParams = $ruleParam::fromEncodable($rule);
             $this->{Str::camel($ruleName)} = $ruleParams;

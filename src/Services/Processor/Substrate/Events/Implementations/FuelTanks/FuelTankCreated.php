@@ -14,7 +14,6 @@ use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Enjin\Platform\Support\Account;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class FuelTankCreated extends FuelTankSubstrateEvent
 {
@@ -29,9 +28,6 @@ class FuelTankCreated extends FuelTankSubstrateEvent
 
         $extrinsic = $block->extrinsics[$event->extrinsicIndex];
         $params = $extrinsic->params;
-
-        ray($event);
-        ray($params);
 
         $providesDeposit = Arr::get($params, 'descriptor.provides_deposit');
         $reservesExistentialDeposit = $this->getValue($params, [
@@ -66,14 +62,14 @@ class FuelTankCreated extends FuelTankSubstrateEvent
         if ($rules->isNotEmpty()) {
             $accountRules = (new AccountRulesParams())->fromEncodable($rules->toArray())->toArray();
 
-            if (Arr::has($accountRules, 'WhitelistedCallers')) {
+            if (!empty($accountRules['WhitelistedCallers'])) {
                 $insertAccountRules[] = [
                     'rule' => 'WhitelistedCallers',
                     'value' => $accountRules['WhitelistedCallers'],
                 ];
             }
 
-            if (Arr::has($accountRules, 'RequireToken')) {
+            if (!empty($accountRules['RequireToken'])) {
                 $insertAccountRules[] = [
                     'rule' => 'RequireToken',
                     'value' => $accountRules['RequireToken'],
@@ -81,20 +77,14 @@ class FuelTankCreated extends FuelTankSubstrateEvent
             }
         }
 
-        ray($insertAccountRules);
-
         $fuelTank->accountRules()->createMany($insertAccountRules);
 
-
-
         $dispatchRules = Arr::get($params, 'descriptor.rule_sets', []);
-        ray($dispatchRules);
         $insertDispatchRules = [];
 
         foreach ($dispatchRules as $ruleSet) {
             $ruleSetId = $ruleSet[0];
             $rules = collect($ruleSet[1])->toArray();
-            ray($rules);
 
             $dispatchRule = (new DispatchRulesParams())->fromEncodable($ruleSetId, ['rules' => $rules])->toEncodable();
             foreach ($dispatchRule as $rule) {
@@ -104,39 +94,10 @@ class FuelTankCreated extends FuelTankSubstrateEvent
                     'value' => $rule[array_key_first($rule)],
                     'is_frozen' => false,
                 ];
-                ray($insertDispatchRules);
             }
-
-
-            ray($dispatchRule);
         }
 
-        ray($insertDispatchRules);
-
-
-
-//        foreach ($dispatchRules as $ruleSet) {
-//            $ruleSetId = $ruleSet[0];
-//            foreach ($ruleSet[1] as $rule) {
-//                $ruleName = array_key_first($rule);
-//                $ruleData = $rule[$ruleName];
-//                $insertDispatchRules[] = [
-//                    'rule_set_id' => $ruleSetId,
-//                    'rule' => $ruleName,
-//                    'value' => $ruleData,
-//                    'is_frozen' => false,
-//                ];
-//                ray($ruleData);
-//            }
-//        }
-
-
-//        throw new \Exception('Account rules are not supported yet');
         $fuelTank->dispatchRules()->createMany($insertDispatchRules);
-
-        throw new \Exception('Account rules are not supported yet');
-
-
         $transaction = $this->getTransaction($block, $event->extrinsicIndex);
 
         Log::info(

@@ -43,8 +43,8 @@ class RequireTokenParams extends FuelTankRules
     public function toArray(): array
     {
         return [
-                'collectionId' => $this->collectionId,
-                'tokenId' => $this->tokenId,
+            'collectionId' => $this->collectionId,
+            'tokenId' => $this->tokenId,
         ];
     }
 }

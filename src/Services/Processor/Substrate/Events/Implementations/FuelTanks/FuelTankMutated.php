@@ -5,12 +5,12 @@ namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implement
 use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankMutated as FuelTankMutatedEvent;
 use Enjin\Platform\FuelTanks\Models\AccountRule;
+use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankMutated as FuelTankMutatedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
-use Illuminate\Support\Arr;
 
 class FuelTankMutated extends FuelTankSubstrateEvent
 {
@@ -27,12 +27,10 @@ class FuelTankMutated extends FuelTankSubstrateEvent
 
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
-        ray($event);
-        ray($fuelTank);
 
         if (!is_null($uac = $event->userAccountManagement)) {
-            $fuelTank->reserves_existential_deposit = Arr::get($uac, 'Some.tank_reserves_existential_deposit');
-            $fuelTank->reserves_account_creation_deposit = Arr::get($uac, 'Some.tank_reserves_account_creation_deposit');
+            $fuelTank->reserves_existential_deposit = $this->getValue($uac, ['Some.tank_reserves_existential_deposit', 'tank_reserves_existential_deposit']);
+            $fuelTank->reserves_account_creation_deposit = $this->getValue($uac, ['Some.tank_reserves_account_creation_deposit', 'tank_reserves_account_creation_deposit']);
         }
 
         if (!is_null($providesDeposit = $event->providesDeposit)) {
@@ -43,21 +41,26 @@ class FuelTankMutated extends FuelTankSubstrateEvent
             AccountRule::where('fuel_tank_id', $fuelTank->id)?->delete();
 
             $insertAccountRules = [];
-            foreach ($accountRules as $rule) {
-                $ruleName = array_key_first($rule);
-                $ruleData = $rule[$ruleName];
-                ray($ruleData);
+            $rules = collect($accountRules)->collapse();
+            $accountRules = (new AccountRulesParams())->fromEncodable($rules->toArray())->toArray();
+
+            if (!empty($accountRules['WhitelistedCallers'])) {
                 $insertAccountRules[] = [
-                    'rule' => $ruleName,
-                    'value' => $ruleData,
+                    'rule' => 'WhitelistedCallers',
+                    'value' => $accountRules['WhitelistedCallers'],
                 ];
             }
 
-            throw new \Exception('Account rules are not supported yet');
+            if (!empty($accountRules['RequireToken'])) {
+                $insertAccountRules[] = [
+                    'rule' => 'RequireToken',
+                    'value' => $accountRules['RequireToken'],
+                ];
+            }
+
             $fuelTank->accountRules()->createMany($insertAccountRules);
         }
 
-        throw new \Exception('Account rules are not supported yet');
         $fuelTank->save();
 
         FuelTankMutatedEvent::safeBroadcast(

@@ -26,7 +26,7 @@ class PermittedCallsParams extends FuelTankRules
     public static function fromEncodable(array $params): self
     {
         return new self(
-            calls: Arr::get($params, 'PermittedCalls.calls') ?? Arr::get($params, 'PermittedCalls')
+            calls: Arr::get($params, 'PermittedCalls.calls') ?? Arr::get($params, 'PermittedCalls') ?? []
         );
     }
 

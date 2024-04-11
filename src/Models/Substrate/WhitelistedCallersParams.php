@@ -14,6 +14,8 @@ class WhitelistedCallersParams extends FuelTankRules
      */
     public function __construct(?array $callers = [])
     {
+        ray($callers);
+
         $this->callers = array_map(
             fn ($caller) => SS58Address::getPublicKey($caller),
             $callers
@@ -26,8 +28,10 @@ class WhitelistedCallersParams extends FuelTankRules
      */
     public static function fromEncodable(array $params): self
     {
+        ray($params);
+
         return new self(
-            callers: Arr::get($params, 'WhitelistedCallers'),
+            callers: Arr::get($params, 'WhitelistedCallers') ?? $params,
         );
     }
 

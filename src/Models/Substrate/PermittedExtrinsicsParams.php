@@ -6,7 +6,6 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\Interfaces\PlatformBlockchainTransaction;
 use Enjin\Platform\Package;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Encoder as BaseEncoder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -45,14 +44,18 @@ class PermittedExtrinsicsParams extends FuelTankRules
      */
     public function toEncodable(): array
     {
-        ray($this->extrinsics);
-
-        $encodedData = '07'; // TODO: This should come from the metadata and not hardcode it.
-        $encodedData .= HexConverter::intToHex(count($this->extrinsics) * 4);
-        $encodedData .= collect($this->extrinsics)->reduce(fn ($data, $mutation) => Str::of($data)->append($this->getEncodedData($mutation))->toString(), '');
+        //        throw new \Exception('Not implemented');
+        //
+        //        $encodedData = '07'; // TODO: This should come from the metadata and not hardcode it.
+        //        $encodedData .= HexConverter::intToHex(count($this->extrinsics) * 4);
+        //        $encodedData .= collect($this->extrinsics)->reduce(fn ($data, $mutation) => Str::of($data)->append($this->getEncodedData($mutation))->toString(), '');
+        //
+        //        return [
+        //            'PermittedExtrinsics' =>  ['extrinsics' => $encodedData],
+        //        ];
 
         return [
-            'PermittedExtrinsics' =>  ['extrinsics' => $encodedData],
+            'PermittedExtrinsics' => $this->extrinsics,
         ];
     }
 
