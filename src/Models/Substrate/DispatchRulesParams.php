@@ -30,9 +30,13 @@ class DispatchRulesParams
     public function fromEncodable(int $setId, mixed $params): self
     {
         $this->ruleSetId = $setId;
-        $this->isFrozen = $params['isFrozen'];
+        $this->isFrozen = $params['isFrozen'] ?? false;
+//        ray($params);
 
         foreach ($params['rules'] as $rule) {
+//            ray($rule);
+
+            ray($rule);
             $ruleParam = '\Enjin\Platform\FuelTanks\Models\Substrate\\' . ($ruleName = array_key_first($rule)) . 'Params';
             $ruleParams = $ruleParam::fromEncodable($rule);
             $this->{Str::camel($ruleName)} = $ruleParams;
@@ -76,11 +80,12 @@ class DispatchRulesParams
             $params[] = $this->whitelistedPallets->toEncodable();
         }
 
-        // We have to set an empty array for the permitted extrinsics here and encode manually later
-        // due to what appears to be a bug in the Scale Codec library where it cannot encode a Call
-        // type due to missing metadata when creating the Call ScaleInstance class.
+        if ($this->permittedCalls) {
+            $params[] = $this->permittedCalls->toEncodable();
+        }
+
         if ($this->permittedExtrinsics) {
-            $params[] = ['PermittedExtrinsics' => ['extrinsics' => []]];
+            $params[] = $this->permittedExtrinsics->toEncodable();
         }
 
         return $params;

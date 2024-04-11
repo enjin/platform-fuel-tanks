@@ -38,6 +38,7 @@ class RuleSetInserted extends FuelTankSubstrateEvent
 
         ray($extrinsic);
         ray($params);
+        throw new \Exception('Account rules are not supported yet');
 
 //        throw new \Exception('Account rules are not supported yet');
         $insertRules = [];

@@ -27,6 +27,8 @@ class FuelTankMutated extends FuelTankSubstrateEvent
 
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
+        ray($event);
+        ray($fuelTank);
 
         if (!is_null($uac = $event->userAccountManagement)) {
             $fuelTank->reserves_existential_deposit = Arr::get($uac, 'Some.tank_reserves_existential_deposit');
@@ -44,14 +46,18 @@ class FuelTankMutated extends FuelTankSubstrateEvent
             foreach ($accountRules as $rule) {
                 $ruleName = array_key_first($rule);
                 $ruleData = $rule[$ruleName];
+                ray($ruleData);
                 $insertAccountRules[] = [
                     'rule' => $ruleName,
                     'value' => $ruleData,
                 ];
             }
+
+            throw new \Exception('Account rules are not supported yet');
             $fuelTank->accountRules()->createMany($insertAccountRules);
         }
 
+        throw new \Exception('Account rules are not supported yet');
         $fuelTank->save();
 
         FuelTankMutatedEvent::safeBroadcast(

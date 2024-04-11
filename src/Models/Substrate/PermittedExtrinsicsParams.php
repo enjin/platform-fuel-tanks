@@ -12,12 +12,22 @@ use Illuminate\Support\Str;
 
 class PermittedExtrinsicsParams extends FuelTankRules
 {
+    protected ?array $extrinsics;
+
     /**
      * Creates a new instance.
      */
-    public function __construct(
-        public ?array $extrinsics = [],
-    ) {
+    public function __construct(?array $extrinsics = [])
+    {
+        $this->extrinsics = array_map(
+            function ($extrinsic) {
+                $palletName = array_key_first($extrinsic);
+                $methodName = array_key_first($extrinsic[$palletName]);
+
+                return $palletName . '.' . $methodName;
+            },
+            $extrinsics
+        );
     }
 
     /**
@@ -26,20 +36,7 @@ class PermittedExtrinsicsParams extends FuelTankRules
     public static function fromEncodable(array $params): self
     {
         return new self(
-            extrinsics: array_map(
-                fn ($extrinsic) => is_string($extrinsic) ? $extrinsic :
-                        collect(BaseEncoder::getCallIndexKeys())
-                            ->filter(
-                                fn ($item) => $item
-                                ==
-                                sprintf(
-                                    '%s.%s',
-                                    HexConverter::hexToString(Arr::get($extrinsic, 'palletName')),
-                                    HexConverter::hexToString(Arr::get($extrinsic, 'extrinsicName')),
-                                ),
-                            )->keys()->first(),
-                Arr::get($params, 'PermittedExtrinsics.extrinsics', [])
-            ),
+            extrinsics: Arr::get($params, 'PermittedExtrinsics.extrinsics') ?? Arr::get($params, 'PermittedExtrinsics')
         );
     }
 
@@ -48,6 +45,8 @@ class PermittedExtrinsicsParams extends FuelTankRules
      */
     public function toEncodable(): array
     {
+        ray($this->extrinsics);
+
         $encodedData = '07'; // TODO: This should come from the metadata and not hardcode it.
         $encodedData .= HexConverter::intToHex(count($this->extrinsics) * 4);
         $encodedData .= collect($this->extrinsics)->reduce(fn ($data, $mutation) => Str::of($data)->append($this->getEncodedData($mutation))->toString(), '');

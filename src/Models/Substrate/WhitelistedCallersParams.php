@@ -40,4 +40,9 @@ class WhitelistedCallersParams extends FuelTankRules
             'WhitelistedCallers' => $this->callers,
         ];
     }
+
+    public function toArray(): array
+    {
+        return $this->callers;
+    }
 }
