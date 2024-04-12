@@ -2,7 +2,6 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Unit;
 
-use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\AddAccountMutation;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\BatchAddAccountMutation;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\BatchRemoveAccountMutation;
@@ -29,28 +28,31 @@ use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCallersParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCollectionsParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\FuelTanks\Tests\TestCase;
+use Enjin\Platform\Services\Serialization\Implementations\Substrate;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class EncodingTest extends TestCase
 {
+    protected Substrate $substrate;
     protected Codec $codec;
 
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->substrate = new Substrate();
         $this->codec = new Codec();
     }
 
     public function test_it_can_encode_add_account()
     {
-        $data = TransactionSerializer::encode('AddAccount', AddAccountMutation::getEncodableParams(
+        $data = $this->substrate->encode('AddAccount', AddAccountMutation::getEncodableParams(
             tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
             userId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'
         ));
 
-        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.add_account', true, true);
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.add_account', true);
         $this->assertEquals(
             "0x{$callIndex}00be5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
             $data
@@ -59,7 +61,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_remove_account()
     {
-        $data = TransactionSerializer::encode('RemoveAccount', RemoveAccountMutation::getEncodableParams(
+        $data = $this->substrate->encode('RemoveAccount', RemoveAccountMutation::getEncodableParams(
             tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
             userId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'
         ));
@@ -73,7 +75,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_destroy_fuel_tank()
     {
-        $data = TransactionSerializer::encode('DestroyFuelTank', DestroyFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('DestroyFuelTank', DestroyFuelTankMutation::getEncodableParams(
             tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f'
         ));
 
@@ -86,7 +88,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_batch_add_account()
     {
-        $data = TransactionSerializer::encode('BatchAddAccount', BatchAddAccountMutation::getEncodableParams(
+        $data = $this->substrate->encode('BatchAddAccount', BatchAddAccountMutation::getEncodableParams(
             tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
             userIds: [
                 '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
@@ -103,7 +105,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_batch_remove_account()
     {
-        $data = TransactionSerializer::encode('BatchRemoveAccount', BatchRemoveAccountMutation::getEncodableParams(
+        $data = $this->substrate->encode('BatchRemoveAccount', BatchRemoveAccountMutation::getEncodableParams(
             tankId: '0xbe5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f',
             userIds: [
                 '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
@@ -122,7 +124,7 @@ class EncodingTest extends TestCase
     {
         $accountRules = new AccountRulesParams();
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
             providesDeposit: false,
             accountRules: $accountRules,
@@ -139,7 +141,7 @@ class EncodingTest extends TestCase
     {
         $accountRules = new AccountRulesParams();
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
             providesDeposit: true,
             accountRules: $accountRules,
@@ -160,7 +162,7 @@ class EncodingTest extends TestCase
             tankReservesAccountCreationDeposit: true,
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
             providesDeposit: false,
             accountRules: $accountRules,
@@ -184,7 +186,7 @@ class EncodingTest extends TestCase
             )
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
             providesDeposit: false,
             accountRules: $accountRules,
@@ -208,7 +210,7 @@ class EncodingTest extends TestCase
             )
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
             providesDeposit: false,
             accountRules: $accountRules,
@@ -236,7 +238,7 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
             providesDeposit: false,
             accountRules: $accountRules,
@@ -259,7 +261,7 @@ class EncodingTest extends TestCase
             )
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
             providesDeposit: false,
             userAccountManagement: null,
@@ -281,7 +283,7 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
             providesDeposit: false,
             userAccountManagement: null,
@@ -303,7 +305,7 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
             providesDeposit: false,
             userAccountManagement: null,
@@ -326,7 +328,7 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
             providesDeposit: false,
             userAccountManagement: null,
@@ -349,7 +351,7 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = TransactionSerializer::encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
             providesDeposit: false,
             userAccountManagement: null,
@@ -365,7 +367,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_schedule_mutate_freeze_state_without_rule_set_id()
     {
-        $data = TransactionSerializer::encode('MutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
+        $data = $this->substrate->encode('MutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
             tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
             isFrozen: true,
         ));
@@ -379,7 +381,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_schedule_mutate_freeze_state_with_rule_set_id()
     {
-        $data = TransactionSerializer::encode('MutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
+        $data = $this->substrate->encode('MutateFreezeState', ScheduleMutateFreezeStateMutation::getEncodableParams(
             tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
             isFrozen: true,
             ruleSetId: '255',
@@ -400,7 +402,7 @@ class EncodingTest extends TestCase
             ),
         );
 
-        $data = TransactionSerializer::encode('InsertRuleSet', InsertRuleSetMutation::getEncodableParams(
+        $data = $this->substrate->encode('InsertRuleSet', InsertRuleSetMutation::getEncodableParams(
             tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
             ruleSetId: '10',
             dispatchRules: $dispatchRules,
@@ -416,12 +418,10 @@ class EncodingTest extends TestCase
     public function test_it_can_encode_insert_or_update_rule_with_permitted_extrinsics()
     {
         $dispatchRules = new DispatchRulesParams(
-            permittedExtrinsics: new PermittedExtrinsicsParams(
-                extrinsics: ['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken'],
-            ),
+            permittedExtrinsics: (new PermittedExtrinsicsParams())->fromMethods(['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken']),
         );
 
-        $data = TransactionSerializer::encode('InsertRuleSet', InsertRuleSetMutation::getEncodableParams(
+        $data = $this->substrate->encode('InsertRuleSet', InsertRuleSetMutation::getEncodableParams(
             tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
             ruleSetId: '10',
             dispatchRules: $dispatchRules,
@@ -432,14 +432,14 @@ class EncodingTest extends TestCase
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
         $this->assertEquals(
-            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a0000000407102800000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e956802002806006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e95680200000000002806006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e9568020001006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e9568020000",
+            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a00000004070c2800000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e95680200280c0000",
             $data
         );
     }
 
     public function test_it_can_encode_remove_rule_set()
     {
-        $data = TransactionSerializer::encode('RemoveRuleSet', RemoveRuleSetMutation::getEncodableParams(
+        $data = $this->substrate->encode('RemoveRuleSet', RemoveRuleSetMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             ruleSetId: '10'
         ));
@@ -453,7 +453,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_remove_account_rule_data()
     {
-        $data = TransactionSerializer::encode('RemoveAccountRuleData', RemoveAccountRuleDataMutation::getEncodableParams(
+        $data = $this->substrate->encode('RemoveAccountRuleData', RemoveAccountRuleDataMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             userId: '0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48',
             ruleSetId: '20',
@@ -469,7 +469,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_mutate_fuel_tank_with_some_mutation_null()
     {
-        $data = TransactionSerializer::encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
         ));
 
@@ -482,7 +482,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_mutate_fuel_tank_with_some_mutation_filled()
     {
-        $data = TransactionSerializer::encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             userAccount: new UserAccountManagementParams(
                 tankReservesExistentialDeposit: true,
@@ -499,7 +499,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_mutate_fuel_tank_with_provides_deposit()
     {
-        $data = TransactionSerializer::encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             userAccount: [],
             providesDeposit: true,
@@ -514,7 +514,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_mutate_fuel_tank_with_account_rules()
     {
-        $data = TransactionSerializer::encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
+        $data = $this->substrate->encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             userAccount: [],
             providesDeposit: null,
@@ -536,7 +536,7 @@ class EncodingTest extends TestCase
     public function test_it_can_encode_dispatch()
     {
         $createCollection = '2800000000000000';
-        $data = TransactionSerializer::encode('Dispatch', DispatchMutation::getEncodableParams(
+        $data = $this->substrate->encode('Dispatch', DispatchMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             ruleSetId: 255,
         )) . $createCollection . '00';
@@ -551,7 +551,7 @@ class EncodingTest extends TestCase
     public function test_it_can_encode_dispatch_and_touch()
     {
         $createCollection = '2800000000000000';
-        $data = TransactionSerializer::encode('DispatchAndTouch', DispatchAndTouchMutation::getEncodableParams(
+        $data = $this->substrate->encode('DispatchAndTouch', DispatchAndTouchMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             ruleSetId: 255,
         )) . $createCollection . '00';
@@ -565,7 +565,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_set_consumption_with_no_options()
     {
-        $data = TransactionSerializer::encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
+        $data = $this->substrate->encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             ruleSetId: 255,
             totalConsumed: '100000000'
@@ -580,7 +580,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_set_consumption_with_user_id()
     {
-        $data = TransactionSerializer::encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
+        $data = $this->substrate->encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             ruleSetId: 255,
             totalConsumed: '100000000',
@@ -596,7 +596,7 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_set_consumption_with_last_reset_block()
     {
-        $data = TransactionSerializer::encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
+        $data = $this->substrate->encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             ruleSetId: 255,
             totalConsumed: '100000000',

@@ -6,6 +6,7 @@ use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\CreateFuelTankMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
+use Enjin\Platform\Services\Serialization\Implementations\Substrate as SubstrateEncoder;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
 use Enjin\Platform\Support\Hex;
 use Illuminate\Support\Str;
@@ -19,6 +20,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
     public function test_it_can_create_fuel_tank(): void
     {
+        $substrate = new SubstrateEncoder();
         $response = $this->graphql($this->method, $data = $this->generateData());
 
         $blockchainService = resolve(Substrate::class);
@@ -28,7 +30,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
         $this->assertEquals(
             $response['encodedData'],
-            TransactionSerializer::encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data))
+            $substrate->encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data))
         );
     }
 
