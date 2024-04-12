@@ -14,6 +14,8 @@ class PermittedCallsParams extends FuelTankRules
      */
     public function __construct(?array $calls = [])
     {
+        ray($calls);
+
         $this->calls = array_map(
             fn ($call) => HexConverter::prefix(is_string($call) ? $call : HexConverter::bytesToHex($call)),
             $calls
@@ -34,6 +36,13 @@ class PermittedCallsParams extends FuelTankRules
      * Returns the encodable representation of this instance.
      */
     public function toEncodable(): array
+    {
+        return [
+            'PermittedCalls' => $this->calls,
+        ];
+    }
+
+    public function toArray(): array
     {
         return [
             'PermittedCalls' => $this->calls,

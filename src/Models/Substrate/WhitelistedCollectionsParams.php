@@ -36,4 +36,11 @@ class WhitelistedCollectionsParams extends FuelTankRules
             'WhitelistedCollections' => $this->collections,
         ];
     }
+
+    public function toArray(): array
+    {
+        return [
+            'WhitelistedCollections' => $this->collections,
+        ];
+    }
 }

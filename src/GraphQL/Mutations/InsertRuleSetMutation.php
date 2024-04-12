@@ -94,6 +94,7 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
         Substrate $blockchainService
     ) {
         $dispatchRules = $blockchainService->getDispatchRulesParams($args['dispatchRules']);
+        ray($dispatchRules);
 
         $encodedData = $serializationService->encode(
             $this->getMutationName(),
@@ -103,6 +104,9 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
                 dispatchRules: $dispatchRules
             )
         );
+
+
+        ray($encodedData);
 
         if (Arr::get($args, 'dispatchRules.permittedExtrinsics')) {
             $encodedData = Str::take($encodedData, Str::length($encodedData) - 4);
@@ -117,9 +121,14 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
 
     public static function getEncodableParams(...$params): array
     {
+        ray($params);
+
         $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
         $ruleSetId = Arr::get($params, 'ruleSetId', 0);
         $rules = Arr::get($params, 'dispatchRules', new DispatchRulesParams());
+
+        ray($rules);
+        ray($rules->toEncodable());
 
         return [
             'tankId' => [

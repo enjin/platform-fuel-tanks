@@ -32,4 +32,11 @@ class MaxFuelBurnPerTransactionParams extends FuelTankRules
             'MaxFuelBurnPerTransaction' => $this->max,
         ];
     }
+
+    public function toArray(): array
+    {
+        return [
+            'MaxFuelBurnPerTransaction' => $this->max,
+        ];
+    }
 }

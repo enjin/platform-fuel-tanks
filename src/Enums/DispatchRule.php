@@ -4,6 +4,7 @@ namespace Enjin\Platform\FuelTanks\Enums;
 
 use Enjin\Platform\FuelTanks\Models\Substrate\FuelTankRules;
 use Enjin\Platform\FuelTanks\Models\Substrate\MaxFuelBurnPerTransactionParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\PermittedCallsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\PermittedExtrinsicsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\RequireTokenParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\TankFuelBudgetParams;
@@ -24,6 +25,7 @@ enum DispatchRule: string
     case TANK_FUEL_BUDGET = 'TankFuelBudget';
     case REQUIRE_TOKEN = 'RequireToken';
     case PERMITTED_EXTRINSICS = 'PermittedExtrinsics';
+    case PERMITTED_CALLS = 'PermittedCalls';
     case WHITELISTED_PALLETS = 'WhitelistedPallets';
 
     /**
@@ -39,6 +41,7 @@ enum DispatchRule: string
             self::TANK_FUEL_BUDGET => new TankFuelBudgetParams('', ''),
             self::REQUIRE_TOKEN => new RequireTokenParams('', ''),
             self::PERMITTED_EXTRINSICS => new PermittedExtrinsicsParams(),
+            self::PERMITTED_CALLS => new PermittedCallsParams(),
             self::WHITELISTED_PALLETS => new WhitelistedPalletsParams(),
         };
     }

@@ -20,15 +20,12 @@ class AccountRulesParams
      */
     public function fromEncodable(mixed $params): self
     {
-        ray($params);
 
         if (!empty($whitelist = Arr::get($params, 'WhitelistedCallers'))) {
-            ray($whitelist);
             $this->whitelistedCallers = WhitelistedCallersParams::fromEncodable($whitelist);
         }
 
         if (!empty($required = Arr::get($params, 'RequireToken'))) {
-            //            ray($required);
             $this->requireToken = RequireTokenParams::fromEncodable($required);
         }
 

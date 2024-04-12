@@ -76,12 +76,52 @@ class DispatchRulesParams
             $params[] = $this->whitelistedPallets->toEncodable();
         }
 
+        if ($this->permittedExtrinsics) {
+            $params[] = ['PermittedExtrinsics' => ['extrinsics' => []]];
+        }
+
+
+        return $params;
+    }
+
+    public function toArray(): array
+    {
+        $params = [];
+
+        if ($this->whitelistedCallers) {
+            $params[] = $this->whitelistedCallers->toArray();
+        }
+
+        if ($this->requireToken) {
+            $params[] = $this->requireToken->toArray();
+        }
+
+        if ($this->whitelistedCollections) {
+            $params[] = $this->whitelistedCollections->toArray();
+        }
+
+        if ($this->maxFuelBurnPerTransaction) {
+            $params[] = $this->maxFuelBurnPerTransaction->toArray();
+        }
+
+        if ($this->userFuelBudget) {
+            $params[] = $this->userFuelBudget->toArray();
+        }
+
+        if ($this->tankFuelBudget) {
+            $params[] = $this->tankFuelBudget->toArray();
+        }
+
+        if ($this->whitelistedPallets) {
+            $params[] = $this->whitelistedPallets->toArray();
+        }
+
         if ($this->permittedCalls) {
-            $params[] = $this->permittedCalls->toEncodable();
+            $params[] = $this->permittedCalls->toArray();
         }
 
         if ($this->permittedExtrinsics) {
-            $params[] = $this->permittedExtrinsics->toEncodable();
+            $params[] = $this->permittedExtrinsics->toArray();
         }
 
         return $params;

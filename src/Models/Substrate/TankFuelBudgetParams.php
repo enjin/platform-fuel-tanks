@@ -44,4 +44,16 @@ class TankFuelBudgetParams extends FuelTankRules
             ],
         ];
     }
+
+    public function toArray(): array
+    {
+        return [
+            'TankFuelBudget' => [
+                'amount' => $this->amount,
+                'resetPeriod' => $this->resetPeriod,
+                'totalConsumed' => $this->totalConsumed,
+                'lastResetBlock' => $this->lastResetBlock,
+            ],
+        ];
+    }
 }

@@ -86,7 +86,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
             $ruleSetId = $ruleSet[0];
             $rules = collect($ruleSet[1])->toArray();
 
-            $dispatchRule = (new DispatchRulesParams())->fromEncodable($ruleSetId, ['rules' => $rules])->toEncodable();
+            $dispatchRule = (new DispatchRulesParams())->fromEncodable($ruleSetId, ['rules' => $rules])->toArray();
             foreach ($dispatchRule as $rule) {
                 $insertDispatchRules[] = [
                     'rule_set_id' => $ruleSetId,
