@@ -19,8 +19,6 @@ class PermittedExtrinsicsParams extends FuelTankRules
      */
     public function __construct(?array $extrinsics = [])
     {
-        ray($extrinsics);
-
         $this->extrinsics = array_map(
             function ($extrinsic) {
                 if (($palletName = Arr::get($extrinsic, 'palletName')) && ($methodName = Arr::get($extrinsic, 'extrinsicName'))) {
