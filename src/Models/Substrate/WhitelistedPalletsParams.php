@@ -40,4 +40,11 @@ class WhitelistedPalletsParams extends FuelTankRules
             ),
         ];
     }
+
+    public function toArray(): array
+    {
+        return [
+            'WhitelistedPallets' => $this->pallets,
+        ];
+    }
 }

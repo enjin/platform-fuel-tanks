@@ -137,7 +137,7 @@ class Parser extends BaseParser
                         'fuel_tank_id' => $tank->id,
                         'rule_set_id' => $ruleSet->ruleSetId,
                         'rule' => $rule,
-                        'value' => json_encode(Arr::get($ruleParam->toEncodable(), $rule)),
+                        'value' => json_encode(Arr::get($ruleParam->toArray(), $rule)),
                         'is_frozen' => $ruleSet->isFrozen,
                         'created_at' => $now = Carbon::now(),
                         'updated_at' => $now,
@@ -156,7 +156,7 @@ class Parser extends BaseParser
                     $insertAccountRules[] = [
                         'fuel_tank_id' => $tank->id,
                         'rule' => $rule,
-                        'value' => json_encode(Arr::get($ruleParam->toEncodable(), $rule)),
+                        'value' => json_encode(Arr::get($ruleParam->toArray(), $rule)),
                         'created_at' => $now = Carbon::now(),
                         'updated_at' => $now,
                     ];

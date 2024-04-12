@@ -94,7 +94,6 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
         Substrate $blockchainService
     ) {
         $dispatchRules = $blockchainService->getDispatchRulesParams($args['dispatchRules']);
-
         $encodedData = $serializationService->encode(
             $this->getMutationName(),
             static::getEncodableParams(

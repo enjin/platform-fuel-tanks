@@ -2,18 +2,18 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
+use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\AccountRuleDataRemoved as AccountRuleDataPolkadart;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
-use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 
-class AccountRuleDataRemoved implements SubstrateEvent
+class AccountRuleDataRemoved extends FuelTankSubstrateEvent
 {
     /**
      * Handle the account rule data removed event.
      */
-    public function run(PolkadartEvent $event, Block $block, Codec $codec): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
         if (!$event instanceof AccountRuleDataPolkadart) {
             return;

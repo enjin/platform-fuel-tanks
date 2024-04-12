@@ -2,31 +2,31 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
+use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\CallDispatched as CallDispatchedEvent;
-use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\Traits\QueryDataOrFail;
+use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\CallDispatched as CallDispatchedPolkadart;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
-use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
-use Facades\Enjin\Platform\Services\Database\WalletService;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Illuminate\Support\Facades\Log;
 
-class CallDispatched implements SubstrateEvent
+class CallDispatched extends FuelTankSubstrateEvent
 {
-    use QueryDataOrFail;
-
     /**
      * Handle the call dispatched event.
+     *
+     * @throws PlatformException
      */
-    public function run(PolkadartEvent $event, Block $block, Codec $codec): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
         if (!$event instanceof CallDispatchedPolkadart) {
             return;
         }
 
-        $account = WalletService::firstOrStore(['account' => $event->caller]);
+        // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
+        $account = $this->firstOrStoreAccount($event->caller);
 
         Log::info(
             sprintf(
@@ -38,6 +38,10 @@ class CallDispatched implements SubstrateEvent
             )
         );
 
-        CallDispatchedEvent::safeBroadcast($fuelTank, $account);
+        CallDispatchedEvent::safeBroadcast(
+            $fuelTank,
+            $account,
+            $this->getTransaction($block, $event->extrinsicIndex),
+        );
     }
 }

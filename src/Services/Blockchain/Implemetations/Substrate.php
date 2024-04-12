@@ -73,7 +73,7 @@ class Substrate extends PlatformSubstrate
                 ? new PermittedCallsParams(Arr::get($permittedCalls, 'calls'))
                 : null,
             ($permittedExtrinsics = Arr::get($args, 'permittedExtrinsics'))
-                ? new PermittedExtrinsicsParams($permittedExtrinsics)
+                ? (new PermittedExtrinsicsParams())->fromMethods($permittedExtrinsics)
                 : null,
             ($pallets = Arr::get($args, 'whitelistedPallets'))
                 ? new WhitelistedPalletsParams($pallets)

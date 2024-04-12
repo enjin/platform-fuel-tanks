@@ -20,9 +20,12 @@ class RequireTokenParams extends FuelTankRules
      */
     public static function fromEncodable(array $params): self
     {
+        $collectionId = Arr::get($params, 'RequireToken.collectionId') ?? Arr::get($params, 'RequireToken.collection_id');
+        $tokenId = Arr::get($params, 'RequireToken.tokenId') ?? Arr::get($params, 'RequireToken.token_id');
+
         return new self(
-            collectionId: gmp_strval(Arr::get($params, 'RequireToken.collectionId')),
-            tokenId: gmp_strval(Arr::get($params, 'RequireToken.tokenId')),
+            collectionId: gmp_strval($collectionId),
+            tokenId: gmp_strval($tokenId),
         );
     }
 
@@ -30,6 +33,14 @@ class RequireTokenParams extends FuelTankRules
      * Returns the encodable representation of this instance.
      */
     public function toEncodable(): array
+    {
+        return ['RequireToken' => [
+            'collectionId' => $this->collectionId,
+            'tokenId' => $this->tokenId,
+        ]];
+    }
+
+    public function toArray(): array
     {
         return ['RequireToken' => [
             'collectionId' => $this->collectionId,

@@ -27,7 +27,7 @@ class WhitelistedCallersParams extends FuelTankRules
     public static function fromEncodable(array $params): self
     {
         return new self(
-            callers: Arr::get($params, 'WhitelistedCallers'),
+            callers: Arr::get($params, 'WhitelistedCallers') ?? $params,
         );
     }
 
@@ -35,6 +35,13 @@ class WhitelistedCallersParams extends FuelTankRules
      * Returns the encodable representation of this instance.
      */
     public function toEncodable(): array
+    {
+        return [
+            'WhitelistedCallers' => $this->callers,
+        ];
+    }
+
+    public function toArray(): array
     {
         return [
             'WhitelistedCallers' => $this->callers,

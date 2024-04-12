@@ -40,4 +40,17 @@ class UserFuelBudgetParams extends FuelTankRules
             ],
         ];
     }
+
+    /**
+     * Returns the encodable representation of this instance.
+     */
+    public function toArray(): array
+    {
+        return [
+            'UserFuelBudget' => [
+                'amount' => $this->amount,
+                'resetPeriod' => $this->resetPeriod,
+            ],
+        ];
+    }
 }

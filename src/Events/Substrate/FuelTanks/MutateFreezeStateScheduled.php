@@ -12,7 +12,7 @@ class MutateFreezeStateScheduled extends PlatformBroadcastEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(Model $fuelTank)
+    public function __construct(Model $fuelTank, ?Model $transaction = null)
     {
         parent::__construct();
 

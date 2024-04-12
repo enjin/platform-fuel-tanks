@@ -2,49 +2,50 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
+use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\AccountRemoved as AccountRemovedEvent;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
-use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\Traits\QueryDataOrFail;
+use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Models\Laravel\Block;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\AccountRemoved as AccountRemovedPolkadart;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\PolkadartEvent;
-use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
-use Enjin\Platform\Support\Account;
-use Facades\Enjin\Platform\Services\Database\WalletService;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Illuminate\Support\Facades\Log;
 
-class AccountRemoved implements SubstrateEvent
+class AccountRemoved extends FuelTankSubstrateEvent
 {
-    use QueryDataOrFail;
-
     /**
      * Handle the account removed event.
+     *
+     * @throws PlatformException
      */
-    public function run(PolkadartEvent $event, Block $block, Codec $codec): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
         if (!$event instanceof AccountRemovedPolkadart) {
             return;
         }
 
-        $account = WalletService::firstOrStore(['account' => Account::parseAccount($event->userId)]);
+        // Fails if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($event->tankId);
-        $fuelTankAccount = FuelTankAccount::firstWhere([
+        $account = $this->firstOrStoreAccount($event->userId);
+
+        $fuelTankAccount = FuelTankAccount::where([
             'fuel_tank_id' => $fuelTank->id,
             'wallet_id' => $account->id,
-        ]);
-        $fuelTankAccount->delete();
+        ])?->delete();
 
         Log::info(
             sprintf(
-                'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was removed.',
+                'FuelTankAccount %s of FuelTank %s (id: %s) was removed.',
                 $account->public_key,
-                $fuelTankAccount->id,
                 $fuelTank->public_key,
                 $fuelTank->id,
             )
         );
 
-        AccountRemovedEvent::safeBroadcast($fuelTankAccount);
+        AccountRemovedEvent::safeBroadcast(
+            $fuelTankAccount,
+            $this->getTransaction($block, $event->extrinsicIndex),
+        );
     }
 }

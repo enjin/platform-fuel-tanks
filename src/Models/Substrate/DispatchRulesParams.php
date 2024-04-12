@@ -30,7 +30,7 @@ class DispatchRulesParams
     public function fromEncodable(int $setId, mixed $params): self
     {
         $this->ruleSetId = $setId;
-        $this->isFrozen = $params['isFrozen'];
+        $this->isFrozen = $params['isFrozen'] ?? false;
 
         foreach ($params['rules'] as $rule) {
             $ruleParam = '\Enjin\Platform\FuelTanks\Models\Substrate\\' . ($ruleName = array_key_first($rule)) . 'Params';
@@ -76,11 +76,52 @@ class DispatchRulesParams
             $params[] = $this->whitelistedPallets->toEncodable();
         }
 
-        // We have to set an empty array for the permitted extrinsics here and encode manually later
-        // due to what appears to be a bug in the Scale Codec library where it cannot encode a Call
-        // type due to missing metadata when creating the Call ScaleInstance class.
         if ($this->permittedExtrinsics) {
             $params[] = ['PermittedExtrinsics' => ['extrinsics' => []]];
+        }
+
+
+        return $params;
+    }
+
+    public function toArray(): array
+    {
+        $params = [];
+
+        if ($this->whitelistedCallers) {
+            $params[] = $this->whitelistedCallers->toArray();
+        }
+
+        if ($this->requireToken) {
+            $params[] = $this->requireToken->toArray();
+        }
+
+        if ($this->whitelistedCollections) {
+            $params[] = $this->whitelistedCollections->toArray();
+        }
+
+        if ($this->maxFuelBurnPerTransaction) {
+            $params[] = $this->maxFuelBurnPerTransaction->toArray();
+        }
+
+        if ($this->userFuelBudget) {
+            $params[] = $this->userFuelBudget->toArray();
+        }
+
+        if ($this->tankFuelBudget) {
+            $params[] = $this->tankFuelBudget->toArray();
+        }
+
+        if ($this->whitelistedPallets) {
+            $params[] = $this->whitelistedPallets->toArray();
+        }
+
+        if ($this->permittedCalls) {
+            $params[] = $this->permittedCalls->toArray();
+        }
+
+        if ($this->permittedExtrinsics) {
+            $params[] = $this->permittedExtrinsics->toArray();
         }
 
         return $params;

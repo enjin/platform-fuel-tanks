@@ -1,19 +1,19 @@
 <?php
 
-namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\Traits;
+namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events;
 
 use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
-use Enjin\Platform\Services\Processor\Substrate\Events\Implementations\Traits\QueryDataOrFail as QueryDataOrFailBase;
+use Enjin\Platform\Services\Processor\Substrate\Events\SubstrateEvent;
 use Enjin\Platform\Support\SS58Address;
 use Illuminate\Database\Eloquent\Model;
 
-trait QueryDataOrFail
+abstract class FuelTankSubstrateEvent extends SubstrateEvent
 {
-    use QueryDataOrFailBase;
-
     /**
      * Get the fuel tank by the public key.
+     *
+     * @throws PlatformException
      */
     protected function getFuelTank(string $publicKey): Model
     {

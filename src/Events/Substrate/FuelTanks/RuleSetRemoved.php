@@ -12,7 +12,7 @@ class RuleSetRemoved extends PlatformBroadcastEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(Model $fuelTank, int $ruleSetId)
+    public function __construct(Model $fuelTank, int $ruleSetId, ?Model $transaction = null)
     {
         parent::__construct();
 
