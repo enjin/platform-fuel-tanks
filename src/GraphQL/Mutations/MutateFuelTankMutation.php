@@ -8,6 +8,7 @@ use Enjin\Platform\FuelTanks\GraphQL\Traits\HasFuelTankValidationRules;
 use Enjin\Platform\FuelTanks\Rules\FuelTankExists;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
+use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasSkippableRules;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasIdempotencyField;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSigningAccountField;
@@ -29,6 +30,7 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
     use HasIdempotencyField;
     use HasSigningAccountField;
     use HasSimulateField;
+    use HasSkippableRules;
     use HasTransactionDeposit;
     use StoresTransactions;
 
@@ -68,6 +70,7 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
+            ...$this->getSkipValidationField(),
         ];
     }
 
@@ -116,9 +119,9 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
     }
 
     /**
-     * Get the mutation's request validation rules.
+     * Get the mutation's validation rules.
      */
-    protected function rules(array $args = []): array
+    protected function rulesWithValidation(array $args): array
     {
         return [
             'tankId' => [
@@ -127,7 +130,22 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
                 new FuelTankExists(),
             ],
             'mutation' => 'required',
-            ...$this->validationRules($args, ['name', 'account'], 'mutation.'),
+            ...$this->validationRulesExist($args, ['name', 'account'], 'mutation.'),
+        ];
+    }
+
+    /**
+     * Get the mutation's validation rules without DB rules.
+     */
+    protected function rulesWithoutValidation(array $args): array
+    {
+        return [
+            'tankId' => [
+                'filled',
+                'max:255',
+            ],
+            'mutation' => 'required',
+            ...$this->validationRulesExist($args, ['name', 'account'], 'mutation.'),
         ];
     }
 }

@@ -2,11 +2,13 @@ mutation ScheduleMutateFreezeState(
   $tankId: String!
   $ruleSetId: BigInt
   $isFrozen: Boolean!
+  $skipValidation: Boolean
 ) {
   ScheduleMutateFreezeState(
     tankId: $tankId
     ruleSetId: $ruleSetId
     isFrozen: $isFrozen
+    skipValidation: $skipValidation
   ) {
     id
     transactionId

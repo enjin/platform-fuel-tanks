@@ -56,6 +56,24 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
         );
     }
 
+    public function test_it_can_skip_validation(): void
+    {
+        $response = $this->graphql(
+            $this->method,
+            $params = [
+                'tankId' => resolve(SubstrateProvider::class)->public_key(),
+                'userId' => resolve(SubstrateProvider::class)->public_key(),
+                'ruleSetId' => fake()->numberBetween(10000, 20000),
+                'rule' => collect(DispatchRule::caseNamesAsArray())->random(),
+                'skipValidation' => true,
+            ]
+        );
+        $this->assertEquals(
+            $response['encodedData'],
+            TransactionSerializer::encode($this->method, RemoveAccountRuleDataMutation::getEncodableParams(...$params))
+        );
+    }
+
     public function test_it_will_fail_with_invalid_parameter_tank_id(): void
     {
         $pubicKey = resolve(SubstrateProvider::class)->public_key();

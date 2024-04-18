@@ -10,6 +10,7 @@ use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\FuelTanks\Rules\RuleSetExists;
 use Enjin\Platform\FuelTanks\Rules\ValidMutation;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
+use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasSkippableRules;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasIdempotencyField;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSigningAccountField;
@@ -34,6 +35,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
     use HasIdempotencyField;
     use HasSigningAccountField;
     use HasSimulateField;
+    use HasSkippableRules;
     use HasTransactionDeposit;
     use StoresTransactions;
 
@@ -82,6 +84,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
+            ...$this->getSkipValidationField(),
         ];
     }
 
@@ -143,9 +146,9 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
     }
 
     /**
-     * Get the mutation's request validation rules.
+     * Get the mutation's validation rules.
      */
-    protected function rules(array $args = []): array
+    protected function rulesWithValidation(array $args): array
     {
         return [
             'tankId' => [
@@ -160,6 +163,30 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
                 new MinBigInt(),
                 new MaxBigInt(Hex::MAX_UINT32),
                 new RuleSetExists(),
+            ],
+            'dispatch.query' => [
+                'filled',
+                new ValidMutation(),
+            ],
+        ];
+    }
+
+    /**
+     * Get the mutation's validation rules without DB rules.
+     */
+    protected function rulesWithoutValidation(array $args): array
+    {
+        return [
+            'tankId' => [
+                'bail',
+                'filled',
+                'max:255',
+                new ValidSubstrateAddress(),
+            ],
+            'ruleSetId' => [
+                'bail',
+                new MinBigInt(),
+                new MaxBigInt(Hex::MAX_UINT32),
             ],
             'dispatch.query' => [
                 'filled',

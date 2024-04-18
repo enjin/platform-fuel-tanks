@@ -55,6 +55,26 @@ class SetConsumptionTest extends TestCaseGraphQL
         );
     }
 
+    public function test_it_can_skip_validation(): void
+    {
+        $response = $this->graphql(
+            $this->method,
+            $params = [
+                'tankId' => resolve(SubstrateProvider::class)->public_key(),
+                'userId' => resolve(SubstrateProvider::class)->public_key(),
+                'ruleSetId' => fake()->numberBetween(10000, 20000),
+                'totalConsumed' => fake()->numberBetween(1, 100),
+                'lastResetBlock' => fake()->numberBetween(1, 100),
+                'skipValidation' => true,
+            ]
+        );
+
+        $this->assertEquals(
+            $response['encodedData'],
+            TransactionSerializer::encode('ForceSetConsumption', ForceSetConsumptionMutation::getEncodableParams(...$params))
+        );
+    }
+
     public function test_it_will_fail_with_invalid_parameter_tank_id(): void
     {
         $pubicKey = resolve(SubstrateProvider::class)->public_key();

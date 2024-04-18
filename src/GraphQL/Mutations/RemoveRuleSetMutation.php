@@ -8,6 +8,7 @@ use Enjin\Platform\FuelTanks\GraphQL\Traits\HasFuelTankValidationRules;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\FuelTanks\Rules\RuleSetExists;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
+use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasSkippableRules;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasIdempotencyField;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSigningAccountField;
@@ -33,6 +34,7 @@ class RemoveRuleSetMutation extends Mutation implements PlatformBlockchainTransa
     use HasIdempotencyField;
     use HasSigningAccountField;
     use HasSimulateField;
+    use HasSkippableRules;
     use HasTransactionDeposit;
     use StoresTransactions;
 
@@ -72,6 +74,7 @@ class RemoveRuleSetMutation extends Mutation implements PlatformBlockchainTransa
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
+            ...$this->getSkipValidationField(),
         ];
     }
 
@@ -108,9 +111,9 @@ class RemoveRuleSetMutation extends Mutation implements PlatformBlockchainTransa
     }
 
     /**
-     * Get the mutation's request validation rules.
+     * Get the mutation's validation rules.
      */
-    protected function rules(array $args = []): array
+    protected function rulesWithValidation(array $args): array
     {
         return [
             'tankId' => [
@@ -125,6 +128,26 @@ class RemoveRuleSetMutation extends Mutation implements PlatformBlockchainTransa
                 new MinBigInt(),
                 new MaxBigInt(Hex::MAX_UINT32),
                 new RuleSetExists(),
+            ],
+        ];
+    }
+
+    /**
+     * Get the mutation's validation rules without DB rules.
+     */
+    protected function rulesWithoutValidation(array $args): array
+    {
+        return [
+            'tankId' => [
+                'bail',
+                'filled',
+                'max:255',
+                new ValidSubstrateAddress(),
+            ],
+            'ruleSetId' => [
+                'bail',
+                new MinBigInt(),
+                new MaxBigInt(Hex::MAX_UINT32),
             ],
         ];
     }

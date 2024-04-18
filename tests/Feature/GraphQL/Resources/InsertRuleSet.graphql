@@ -2,11 +2,13 @@ mutation InsertRuleSet(
   $tankId: String!
   $ruleSetId: BigInt!
   $dispatchRules: DispatchRuleInputType!
+  $skipValidation: Boolean
 ) {
   InsertRuleSet(
     tankId: $tankId
     ruleSetId: $ruleSetId
     dispatchRules: $dispatchRules
+    skipValidation: $skipValidation
   ) {
     id
     transactionId

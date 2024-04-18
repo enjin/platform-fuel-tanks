@@ -1,5 +1,5 @@
-mutation DestroyFuelTank($tankId: String!) {
-  DestroyFuelTank(tankId: $tankId) {
+mutation DestroyFuelTank($tankId: String!, $skipValidation: Boolean) {
+  DestroyFuelTank(tankId: $tankId, skipValidation: $skipValidation) {
     id
     transactionId
     transactionHash

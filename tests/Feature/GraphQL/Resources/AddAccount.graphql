@@ -1,5 +1,5 @@
-mutation AddAccount($tankId: String!, $userId: String!) {
-  AddAccount(tankId: $tankId, userId: $userId) {
+mutation AddAccount($tankId: String!, $userId: String!, $skipValidation: Boolean) {
+  AddAccount(tankId: $tankId, userId: $userId, skipValidation: $skipValidation) {
     id
     transactionId
     transactionHash

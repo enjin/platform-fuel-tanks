@@ -7,6 +7,7 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Rules\AccountsExistsInFuelTank;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
+use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasSkippableRules;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasIdempotencyField;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSigningAccountField;
@@ -28,6 +29,7 @@ class RemoveAccountMutation extends Mutation implements PlatformBlockchainTransa
     use HasIdempotencyField;
     use HasSigningAccountField;
     use HasSimulateField;
+    use HasSkippableRules;
     use HasTransactionDeposit;
     use StoresTransactions;
 
@@ -67,6 +69,7 @@ class RemoveAccountMutation extends Mutation implements PlatformBlockchainTransa
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
+            ...$this->getSkipValidationField(),
         ];
     }
 
@@ -105,9 +108,9 @@ class RemoveAccountMutation extends Mutation implements PlatformBlockchainTransa
     }
 
     /**
-     * Get the mutation's request validation rules.
+     * Get the mutation's validation rules.
      */
-    protected function rules(array $args = []): array
+    protected function rulesWithValidation(array $args): array
     {
         return [
             'tankId' => [
@@ -123,6 +126,27 @@ class RemoveAccountMutation extends Mutation implements PlatformBlockchainTransa
                 'max:255',
                 new ValidSubstrateAddress(),
                 new AccountsExistsInFuelTank(Arr::get($args, 'tankId')),
+            ],
+        ];
+    }
+
+    /**
+     * Get the mutation's validation rules without DB rules.
+     */
+    protected function rulesWithoutValidation(array $args): array
+    {
+        return [
+            'tankId' => [
+                'bail',
+                'filled',
+                'max:255',
+                new ValidSubstrateAddress(),
+            ],
+            'userId' => [
+                'bail',
+                'filled',
+                'max:255',
+                new ValidSubstrateAddress(),
             ],
         ];
     }

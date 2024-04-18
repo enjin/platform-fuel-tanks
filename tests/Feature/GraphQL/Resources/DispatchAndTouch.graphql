@@ -3,12 +3,14 @@ mutation DispatchAndTouch(
   $ruleSetId: BigInt!
   $dispatch: DispatchInputType!
   $paysRemainingFee: Boolean
+  $skipValidation: Boolean
 ) {
   DispatchAndTouch(
     tankId: $tankId
     ruleSetId: $ruleSetId
     dispatch: $dispatch
     paysRemainingFee: $paysRemainingFee
+    skipValidation: $skipValidation
   ) {
     id
     transactionId

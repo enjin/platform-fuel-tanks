@@ -26,6 +26,19 @@ class DestroyFuelTankTest extends TestCaseGraphQL
         );
     }
 
+    public function test_it_can_skip_validation(): void
+    {
+        $response = $this->graphql(
+            $this->method,
+            $params = ['tankId' => resolve(SubstrateProvider::class)->public_key(), 'skipValidation' => true]
+        );
+
+        $this->assertEquals(
+            $response['encodedData'],
+            TransactionSerializer::encode($this->method, DestroyFuelTankMutation::getEncodableParams(...$params))
+        );
+    }
+
     public function test_it_will_fail_with_invalid_parameter(): void
     {
         $pubicKey = resolve(SubstrateProvider::class)->public_key();

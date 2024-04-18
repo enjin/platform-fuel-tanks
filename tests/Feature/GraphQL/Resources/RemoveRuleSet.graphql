@@ -1,5 +1,5 @@
-mutation RemoveRuleSet($tankId: String!, $ruleSetId: BigInt!) {
-  RemoveRuleSet(tankId: $tankId, ruleSetId: $ruleSetId) {
+mutation RemoveRuleSet($tankId: String!, $ruleSetId: BigInt!, $skipValidation: Boolean) {
+  RemoveRuleSet(tankId: $tankId, ruleSetId: $ruleSetId, skipValidation: $skipValidation) {
     id
     transactionId
     transactionHash
