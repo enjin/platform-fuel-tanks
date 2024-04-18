@@ -53,6 +53,25 @@ class InsertRuleSetTest extends TestCaseGraphQL
         );
     }
 
+    public function test_it_can_skip_validation(): void
+    {
+        $response = $this->graphql(
+            $this->method,
+            $params = $this->generateRuleSet() + ['skipValidation' => true]
+        );
+
+        $params['dispatchRules'] = resolve(Substrate::class)->getDispatchRulesParams($params['dispatchRules']);
+
+        $encodedData = TransactionSerializer::encode($this->method, InsertRuleSetMutation::getEncodableParams(...$params));
+        $encodedData = Str::take($encodedData, Str::length($encodedData) - 4);
+        $encodedData .= Arr::get($params['dispatchRules']->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+
+        $this->assertEquals(
+            $response['encodedData'],
+            $encodedData
+        );
+    }
+
     public function test_it_will_fail_with_invalid_parameter_tank_id(): void
     {
         $pubicKey = resolve(SubstrateProvider::class)->public_key();

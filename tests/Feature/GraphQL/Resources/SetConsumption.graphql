@@ -4,6 +4,7 @@ mutation SetConsumption(
   $userId: String
   $totalConsumed: BigInt!
   $lastResetBlock: Int
+  $skipValidation: Boolean
 ) {
   SetConsumption(
     tankId: $tankId
@@ -11,6 +12,7 @@ mutation SetConsumption(
     userId: $userId
     totalConsumed: $totalConsumed
     lastResetBlock: $lastResetBlock
+    skipValidation: $skipValidation
   ) {
     id
     transactionId

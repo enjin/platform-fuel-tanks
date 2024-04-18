@@ -26,4 +26,19 @@ class DispatchAndTouchTest extends DispatchTest
             TransactionSerializer::encode($this->method, DispatchAndTouchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
         );
     }
+
+    public function test_it_can_skip_validation(): void
+    {
+        $response = $this->graphql(
+            $this->method,
+            $params = $this->generateParams() + ['skipValidation' => true]
+        );
+
+        $encodedCall = DispatchAndTouchMutation::getEncodedCall($params);
+
+        $this->assertEquals(
+            $response['encodedData'],
+            TransactionSerializer::encode($this->method, DispatchAndTouchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
+        );
+    }
 }

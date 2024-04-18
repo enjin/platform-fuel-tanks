@@ -33,6 +33,22 @@ class MutateFuelTankTest extends TestCaseGraphQL
         );
     }
 
+    public function test_it_can_skip_validation(): void
+    {
+        $data = $this->generateFuelTankData();
+        $response = $this->graphql($this->method, array_merge($data, ['skipValidation' => true]));
+
+        $blockchainService = resolve(Substrate::class);
+        $data['userAccount'] = $blockchainService->getUserAccountManagementParams(Arr::get($data, 'mutation'));
+        $data['providesDeposit'] = Arr::get($data, 'mutation.providesDeposit');
+        $data['accountRules'] = $blockchainService->getAccountRulesParams(Arr::get($data, 'mutation'));
+
+        $this->assertEquals(
+            $response['encodedData'],
+            TransactionSerializer::encode($this->method, MutateFuelTankMutation::getEncodableParams(...$data))
+        );
+    }
+
     public function test_it_will_fail_with_invalid_parameter_mutation(): void
     {
         $data = $this->generateFuelTankData();

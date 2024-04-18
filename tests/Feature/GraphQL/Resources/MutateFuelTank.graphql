@@ -1,8 +1,9 @@
 mutation MutateFuelTank(
   $tankId: String!
   $mutation: FuelTankMutationInputType!
+  $skipValidation: Boolean
 ) {
-  MutateFuelTank(tankId: $tankId, mutation: $mutation) {
+  MutateFuelTank(tankId: $tankId, mutation: $mutation, skipValidation: $skipValidation) {
     id
     transactionId
     transactionHash

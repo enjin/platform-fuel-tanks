@@ -3,12 +3,14 @@ mutation RemoveAccountRuleData(
   $ruleSetId: BigInt!
   $userId: String!
   $rule: DispatchRuleEnum!
+  $skipValidation: Boolean
 ) {
   RemoveAccountRuleData(
     tankId: $tankId
     ruleSetId: $ruleSetId
     userId: $userId
     rule: $rule
+    skipValidation: $skipValidation
   ) {
     id
     transactionId

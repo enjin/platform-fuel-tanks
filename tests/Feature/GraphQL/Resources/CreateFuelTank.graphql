@@ -5,6 +5,7 @@ mutation CreateFuelTank(
   $providesDeposit: Boolean!
   $accountRules: AccountRuleInputType
   $dispatchRules: [DispatchRuleInputType!]
+  $skipValidation: Boolean
 ) {
   CreateFuelTank(
     name: $name
@@ -13,6 +14,7 @@ mutation CreateFuelTank(
     providesDeposit: $providesDeposit
     accountRules: $accountRules
     dispatchRules: $dispatchRules
+    skipValidation: $skipValidation
   ) {
     id
     transactionId

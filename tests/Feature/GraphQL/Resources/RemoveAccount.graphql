@@ -1,5 +1,5 @@
-mutation RemoveAccount($tankId: String!, $userId: String!) {
-  RemoveAccount(tankId: $tankId, userId: $userId) {
+mutation RemoveAccount($tankId: String!, $userId: String!, $skipValidation: Boolean) {
+  RemoveAccount(tankId: $tankId, userId: $userId, skipValidation: $skipValidation) {
     id
     transactionId
     transactionHash

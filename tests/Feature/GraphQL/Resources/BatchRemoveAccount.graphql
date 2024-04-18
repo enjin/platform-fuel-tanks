@@ -1,5 +1,5 @@
-mutation BatchRemoveAccount($tankId: String!, $userIds: [String!]!) {
-  BatchRemoveAccount(tankId: $tankId, userIds: $userIds) {
+mutation BatchRemoveAccount($tankId: String!, $userIds: [String!]!, $skipValidation: Boolean) {
+  BatchRemoveAccount(tankId: $tankId, userIds: $userIds, skipValidation: $skipValidation) {
     id
     transactionId
     transactionHash

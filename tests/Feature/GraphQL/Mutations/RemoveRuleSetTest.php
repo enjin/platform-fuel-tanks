@@ -44,6 +44,18 @@ class RemoveRuleSetTest extends TestCaseGraphQL
         );
     }
 
+    public function test_it_can_skip_validation(): void
+    {
+        $response = $this->graphql(
+            $this->method,
+            $params = ['tankId' => resolve(SubstrateProvider::class)->public_key(), 'ruleSetId' => fake()->numberBetween(10000, 20000)],
+        );
+        $this->assertEquals(
+            $response['encodedData'],
+            TransactionSerializer::encode($this->method, RemoveRuleSetMutation::getEncodableParams(...$params))
+        );
+    }
+
     public function test_it_will_fail_with_invalid_parameter_tank_id(): void
     {
         $pubicKey = resolve(SubstrateProvider::class)->public_key();

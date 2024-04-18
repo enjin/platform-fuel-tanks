@@ -1,5 +1,5 @@
-mutation BatchAddAccount($tankId: String!, $userIds: [String!]!) {
-  BatchAddAccount(tankId: $tankId, userIds: $userIds) {
+mutation BatchAddAccount($tankId: String!, $userIds: [String!]!, $skipValidation: Boolean) {
+  BatchAddAccount(tankId: $tankId, userIds: $userIds, skipValidation: $skipValidation) {
     id
     transactionId
     transactionHash
