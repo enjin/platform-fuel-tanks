@@ -7,6 +7,7 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Rules\AccountsNotInFuelTank;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
+use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasSkippableRules;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasIdempotencyField;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSigningAccountField;
@@ -28,6 +29,7 @@ class BatchAddAccountMutation extends Mutation implements PlatformBlockchainTran
     use HasIdempotencyField;
     use HasSigningAccountField;
     use HasSimulateField;
+    use HasSkippableRules;
     use HasTransactionDeposit;
     use StoresTransactions;
 
@@ -67,6 +69,7 @@ class BatchAddAccountMutation extends Mutation implements PlatformBlockchainTran
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
+            ...$this->getSkipValidationField(),
         ];
     }
 
@@ -105,9 +108,9 @@ class BatchAddAccountMutation extends Mutation implements PlatformBlockchainTran
     }
 
     /**
-     * Get the mutation's request validation rules.
+     * Get the mutation's validation rules.
      */
-    protected function rules(array $args = []): array
+    protected function rulesWithValidation(array $args): array
     {
         return [
             'tankId' => [
@@ -118,6 +121,23 @@ class BatchAddAccountMutation extends Mutation implements PlatformBlockchainTran
                 new IsFuelTankOwner(),
             ],
             'userIds' => ['array', 'min:1', 'max:100', new AccountsNotInFuelTank(Arr::get($args, 'tankId'))],
+            'userIds.*' => ['bail', 'filled', 'distinct', 'max:255', new ValidSubstrateAddress()],
+        ];
+    }
+
+    /**
+     * Get the mutation's validation rules without DB rules.
+     */
+    protected function rulesWithoutValidation(array $args): array
+    {
+        return [
+            'tankId' => [
+                'bail',
+                'filled',
+                'max:255',
+                new ValidSubstrateAddress(),
+            ],
+            'userIds' => ['array', 'min:1', 'max:100'],
             'userIds.*' => ['bail', 'filled', 'distinct', 'max:255', new ValidSubstrateAddress()],
         ];
     }

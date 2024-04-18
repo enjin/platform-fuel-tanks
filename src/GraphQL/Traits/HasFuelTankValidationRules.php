@@ -19,7 +19,7 @@ trait HasFuelTankValidationRules
     /**
      * Get the common validation rules.
      */
-    protected function commonRules(string $attribute, array $args = []): array
+    protected function commonRulesExist(string $attribute, array $args = []): array
     {
         $isArray = str_contains($attribute, '.*');
 
@@ -62,6 +62,46 @@ trait HasFuelTankValidationRules
     }
 
     /**
+     * Get the common validation rules.
+     */
+    protected function commonRules(string $attribute, array $args = []): array
+    {
+        $isArray = str_contains($attribute, '.*');
+
+        return match (true) {
+            str_contains($attribute, 'FuelBudget') => [
+                "{$attribute}.amount" => [
+                    'bail',
+                    new MinBigInt(),
+                    new MaxBigInt(Hex::MAX_UINT128),
+                ],
+                "{$attribute}.resetPeriod" => [
+                    'bail',
+                    new MinBigInt(),
+                    new MaxBigInt(Hex::MAX_UINT32),
+                ],
+            ],
+            default => [
+                "{$attribute}.whitelistedCallers.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidSubstrateAddress()],
+                "{$attribute}.whitelistedCallers" => ['nullable', 'array', 'min:1'],
+                "{$attribute}.requireToken.collectionId" => $isArray
+                    ? Rule::forEach(function ($value, $key) {
+                        return [
+                            'bail',
+                            'required_with:' . str_replace('collectionId', 'tokenId', $key),
+                            new MinBigInt(),
+                            new MaxBigInt(Hex::MAX_UINT128),
+                        ];
+                    })
+                    : [
+                        "required_with:{$attribute}.requireToken.tokenId",
+                    ],
+                ...$this->getOptionalTokenFieldRules("{$attribute}.requireToken"),
+            ]
+        };
+    }
+
+    /**
      * Get the mutation's request validation rules.
      */
     protected function validationRules(array $args = [], array $except = [], string $attributePrefix = ''): array
@@ -73,11 +113,43 @@ trait HasFuelTankValidationRules
                 'max:32',
                 Rule::unique('fuel_tanks', 'name'),
             ],
-            ...$this->commonRules("{$attributePrefix}accountRules", $args),
-            ...$this->dispatchRules($args, $attributePrefix),
+            ...$this->commonRulesExist("{$attributePrefix}accountRules", $args),
+            ...$this->dispatchRulesExist($args, $attributePrefix),
         ];
 
         return Arr::except($rules, $except);
+    }
+
+    /**
+     * Get the dispatch rules validation rules.
+     */
+    protected function dispatchRulesExist(array $args = [], string $attributePrefix = '', $isArray = true): array
+    {
+        $array = $isArray ? '.*' : '';
+
+        return [
+            ...$this->commonRulesExist("{$attributePrefix}dispatchRules{$array}", $args),
+            "{$attributePrefix}dispatchRules{$array}.whitelistedCollections.*" => [
+                'bail',
+                'distinct',
+                'max:255',
+                Rule::exists('collections', 'collection_chain_id'),
+            ],
+            "{$attributePrefix}dispatchRules{$array}.whitelistedCollections" => [
+                'nullable',
+                'array',
+                'min:1',
+            ],
+            "{$attributePrefix}dispatchRules{$array}.maxFuelBurnPerTransaction" => [
+                'bail',
+                new MinBigInt(),
+                new MaxBigInt(Hex::MAX_UINT128),
+            ],
+            ...$this->commonRulesExist("{$attributePrefix}dispatchRules{$array}.userFuelBudget"),
+            ...$this->commonRulesExist("{$attributePrefix}dispatchRules{$array}.tankFuelBudget"),
+            "{$attributePrefix}dispatchRules{$array}.whitelistedPallets.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidHex()],
+            "{$attributePrefix}dispatchRules{$array}.whitelistedPallets" => ['nullable', 'array', 'min:1'],
+        ];
     }
 
     /**
@@ -93,7 +165,6 @@ trait HasFuelTankValidationRules
                 'bail',
                 'distinct',
                 'max:255',
-                Rule::exists('collections', 'collection_chain_id'),
             ],
             "{$attributePrefix}dispatchRules{$array}.whitelistedCollections" => [
                 'nullable',

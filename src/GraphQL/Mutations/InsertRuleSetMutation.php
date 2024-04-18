@@ -9,6 +9,7 @@ use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
+use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasSkippableRules;
 use Enjin\Platform\GraphQL\Schemas\Primary\Traits\HasTransactionDeposit;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasIdempotencyField;
 use Enjin\Platform\GraphQL\Types\Input\Substrate\Traits\HasSigningAccountField;
@@ -35,6 +36,7 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
     use HasIdempotencyField;
     use HasSigningAccountField;
     use HasSimulateField;
+    use HasSkippableRules;
     use HasTransactionDeposit;
     use StoresTransactions;
 
@@ -78,6 +80,7 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
+            ...$this->getSkipValidationField(),
         ];
     }
 
@@ -130,9 +133,9 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
     }
 
     /**
-     * Get the mutation's request validation rules.
+     * Get the mutation's validation rules.
      */
-    protected function rules(array $args = []): array
+    protected function rulesWithValidation(array $args): array
     {
         return [
             'tankId' => [
@@ -141,6 +144,27 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
                 'max:255',
                 new ValidSubstrateAddress(),
                 new IsFuelTankOwner(),
+            ],
+            'ruleSetId' => [
+                'bail',
+                new MinBigInt(),
+                new MaxBigInt(Hex::MAX_UINT32),
+            ],
+            ...$this->dispatchRulesExist($args, '', false),
+        ];
+    }
+
+    /**
+     * Get the mutation's validation rules without DB rules.
+     */
+    protected function rulesWithoutValidation(array $args): array
+    {
+        return [
+            'tankId' => [
+                'bail',
+                'filled',
+                'max:255',
+                new ValidSubstrateAddress(),
             ],
             'ruleSetId' => [
                 'bail',
