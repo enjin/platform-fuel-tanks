@@ -67,7 +67,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
                     'tokenId' => ['integer' => fake()->numberBetween(10000, 20000)],
                 ],
             ],
-            'dispatchRules' => [
+            'dispatchRules' => [[
                 'whitelistedCallers' => [resolve(SubstrateProvider::class)->public_key()],
                 'requireToken' => [
                     'collectionId' => fake()->numberBetween(10000, 20000),
@@ -78,7 +78,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
                 'userFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
                 'tankFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
                 'permittedExtrinsics' => ['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken'],
-            ],
+            ]],
             'skipValidation' => true,
         ]);
 

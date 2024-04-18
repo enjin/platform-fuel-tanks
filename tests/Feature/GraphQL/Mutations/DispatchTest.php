@@ -76,7 +76,7 @@ class DispatchTest extends TestCaseGraphQL
                     'call' => DispatchCall::MULTI_TOKENS->name,
                     'query' => static::$queries['SetCollectionAttribute'],
                     'variables' => [
-                        'collectionId' => fake()->numberBetween(10000, 20000),
+                        'collectionId' => Collection::factory()->create(['owner_wallet_id' => $this->wallet])->collection_chain_id,
                         'key' => 'key',
                         'value' => 'value',
                     ],
