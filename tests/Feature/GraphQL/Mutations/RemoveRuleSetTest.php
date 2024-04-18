@@ -48,7 +48,11 @@ class RemoveRuleSetTest extends TestCaseGraphQL
     {
         $response = $this->graphql(
             $this->method,
-            $params = ['tankId' => resolve(SubstrateProvider::class)->public_key(), 'ruleSetId' => fake()->numberBetween(10000, 20000)],
+            $params = [
+                'tankId' => resolve(SubstrateProvider::class)->public_key(),
+                'ruleSetId' => fake()->numberBetween(10000, 20000),
+                'skipValidation' => true,
+            ],
         );
         $this->assertEquals(
             $response['encodedData'],

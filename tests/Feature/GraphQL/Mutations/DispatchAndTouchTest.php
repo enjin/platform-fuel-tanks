@@ -3,7 +3,9 @@
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
 use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\Enums\DispatchCall;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\DispatchAndTouchMutation;
+use Enjin\Platform\Providers\Faker\SubstrateProvider;
 
 class DispatchAndTouchTest extends DispatchTest
 {
@@ -31,7 +33,19 @@ class DispatchAndTouchTest extends DispatchTest
     {
         $response = $this->graphql(
             $this->method,
-            $params = $this->generateParams() + ['skipValidation' => true]
+            $params =      ['tankId' => resolve(SubstrateProvider::class)->public_key(),
+                'ruleSetId' => fake()->numberBetween(10000, 20000),
+                'dispatch' => [
+                    'call' => DispatchCall::MULTI_TOKENS->name,
+                    'query' => static::$queries['SetCollectionAttribute'],
+                    'variables' => [
+                        'collectionId' => fake()->numberBetween(10000, 20000),
+                        'key' => 'key',
+                        'value' => 'value',
+                    ],
+                ],
+                'skipValidation' => true,
+            ]
         );
 
         $encodedCall = DispatchAndTouchMutation::getEncodedCall($params);

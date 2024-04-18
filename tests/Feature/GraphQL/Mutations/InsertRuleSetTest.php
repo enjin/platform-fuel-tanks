@@ -57,7 +57,12 @@ class InsertRuleSetTest extends TestCaseGraphQL
     {
         $response = $this->graphql(
             $this->method,
-            $params = $this->generateRuleSet() + ['skipValidation' => true]
+            $params = [
+                'tankId' => resolve(SubstrateProvider::class)->public_key(),
+                'ruleSetId' => fake()->numberBetween(50000, 100000),
+                ...Arr::only($this->generateData(false), 'dispatchRules'),
+                'skipValidation' => true,
+            ]
         );
 
         $params['dispatchRules'] = resolve(Substrate::class)->getDispatchRulesParams($params['dispatchRules']);

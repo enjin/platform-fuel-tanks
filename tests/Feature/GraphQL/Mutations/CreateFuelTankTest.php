@@ -6,6 +6,7 @@ use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\CreateFuelTankMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
+use Enjin\Platform\Providers\Faker\SubstrateProvider;
 use Enjin\Platform\Services\Serialization\Implementations\Substrate as SubstrateEncoder;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
 use Enjin\Platform\Support\Hex;
@@ -52,7 +53,34 @@ class CreateFuelTankTest extends TestCaseGraphQL
     public function test_it_can_skip_validation(): void
     {
         $substrate = new SubstrateEncoder();
-        $response = $this->graphql($this->method, $data = $this->generateData());
+
+        $response = $this->graphql($this->method, $data = [
+            'name' => fake()->text(32),
+            'account' => resolve(SubstrateProvider::class)->public_key(),
+            'reservesExistentialDeposit' => $existentialDeposit = (fake()->boolean() ? fake()->boolean() : null),
+            'reservesAccountCreationDeposit' => $existentialDeposit != null ? fake()->boolean() : null,
+            'providesDeposit' => fake()->boolean(),
+            'accountRules' => [
+                'whitelistedCallers' => [resolve(SubstrateProvider::class)->public_key()],
+                'requireToken' => [
+                    'collectionId' => fake()->numberBetween(10000, 20000),
+                    'tokenId' => ['integer' => fake()->numberBetween(10000, 20000)],
+                ],
+            ],
+            'dispatchRules' => [
+                'whitelistedCallers' => [resolve(SubstrateProvider::class)->public_key()],
+                'requireToken' => [
+                    'collectionId' => fake()->numberBetween(10000, 20000),
+                    'tokenId' => ['integer' => fake()->numberBetween(10000, 20000)],
+                ],
+                'whitelistedCollections' => [fake()->numberBetween(10000, 20000)],
+                'maxFuelBurnPerTransaction' => $value ?? fake()->numberBetween(1, 1000),
+                'userFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
+                'tankFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
+                'permittedExtrinsics' => ['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken'],
+            ],
+            'skipValidation' => true,
+        ]);
 
         $blockchainService = resolve(Substrate::class);
         $data['userAccountManagement'] = $blockchainService->getUserAccountManagementParams($data);

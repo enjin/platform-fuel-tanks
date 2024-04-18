@@ -130,7 +130,7 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
                 new FuelTankExists(),
             ],
             'mutation' => 'required',
-            ...$this->validationRules($args, ['name', 'account'], 'mutation.'),
+            ...$this->validationRulesExist($args, ['name', 'account'], 'mutation.'),
         ];
     }
 
@@ -145,7 +145,7 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
                 'max:255',
             ],
             'mutation' => 'required',
-            ...$this->validationRules($args, ['name', 'account'], 'mutation.'),
+            ...$this->validationRulesExist($args, ['name', 'account'], 'mutation.'),
         ];
     }
 }

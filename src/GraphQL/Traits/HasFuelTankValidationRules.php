@@ -104,7 +104,7 @@ trait HasFuelTankValidationRules
     /**
      * Get the mutation's request validation rules.
      */
-    protected function validationRules(array $args = [], array $except = [], string $attributePrefix = ''): array
+    protected function validationRulesExist(array $args = [], array $except = [], string $attributePrefix = ''): array
     {
         $rules = [
             "{$attributePrefix}name" => [
@@ -115,6 +115,24 @@ trait HasFuelTankValidationRules
             ],
             ...$this->commonRulesExist("{$attributePrefix}accountRules", $args),
             ...$this->dispatchRulesExist($args, $attributePrefix),
+        ];
+
+        return Arr::except($rules, $except);
+    }
+
+    /**
+     * Get the mutation's request validation rules.
+     */
+    protected function validationRules(array $args = [], array $except = [], string $attributePrefix = ''): array
+    {
+        $rules = [
+            "{$attributePrefix}name" => [
+                'bail',
+                'filled',
+                'max:32',
+            ],
+            ...$this->commonRules("{$attributePrefix}accountRules", $args),
+            ...$this->dispatchRules($args, $attributePrefix),
         ];
 
         return Arr::except($rules, $except);

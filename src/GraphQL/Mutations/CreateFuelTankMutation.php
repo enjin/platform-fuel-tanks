@@ -134,9 +134,17 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
     }
 
     /**
-     * Get the mutation's request validation rules.
+     * Get the mutation's validation rules.
      */
-    protected function rules(array $args = []): array
+    protected function rulesWithValidation(array $args): array
+    {
+        return $this->validationRulesExist($args);
+    }
+
+    /**
+     * Get the mutation's validation rules without DB rules.
+     */
+    protected function rulesWithoutValidation(array $args): array
     {
         return $this->validationRules($args);
     }

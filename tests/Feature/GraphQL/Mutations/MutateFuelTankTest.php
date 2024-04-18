@@ -35,17 +35,20 @@ class MutateFuelTankTest extends TestCaseGraphQL
 
     public function test_it_can_skip_validation(): void
     {
-        $data = $this->generateFuelTankData();
-        $response = $this->graphql($this->method, array_merge($data, ['skipValidation' => true]));
+        $response = $this->graphql($this->method, $params = [
+            'tankId' => $this->createFuelTank()->public_key,
+            'mutation' => Arr::except($this->generateData(), ['name', 'account', 'dispatchRules']),
+            'skipValidation' => true,
+        ]);
 
         $blockchainService = resolve(Substrate::class);
-        $data['userAccount'] = $blockchainService->getUserAccountManagementParams(Arr::get($data, 'mutation'));
-        $data['providesDeposit'] = Arr::get($data, 'mutation.providesDeposit');
-        $data['accountRules'] = $blockchainService->getAccountRulesParams(Arr::get($data, 'mutation'));
+        $params['userAccount'] = $blockchainService->getUserAccountManagementParams(Arr::get($params, 'mutation'));
+        $params['providesDeposit'] = Arr::get($params, 'mutation.providesDeposit');
+        $params['accountRules'] = $blockchainService->getAccountRulesParams(Arr::get($params, 'mutation'));
 
         $this->assertEquals(
             $response['encodedData'],
-            TransactionSerializer::encode($this->method, MutateFuelTankMutation::getEncodableParams(...$data))
+            TransactionSerializer::encode($this->method, MutateFuelTankMutation::getEncodableParams(...$params))
         );
     }
 

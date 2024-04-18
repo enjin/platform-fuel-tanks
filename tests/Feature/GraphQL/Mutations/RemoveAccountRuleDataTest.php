@@ -60,7 +60,13 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
     {
         $response = $this->graphql(
             $this->method,
-            $params = array_merge($this->generateAccountRuleData(), ['skipValidation' => true])
+            $params = [
+                'tankId' => resolve(SubstrateProvider::class)->public_key(),
+                'userId' => resolve(SubstrateProvider::class)->public_key(),
+                'ruleSetId' => fake()->numberBetween(10000, 20000),
+                'rule' => collect(DispatchRule::caseNamesAsArray())->random(),
+                'skipValidation' => true,
+            ]
         );
         $this->assertEquals(
             $response['encodedData'],
