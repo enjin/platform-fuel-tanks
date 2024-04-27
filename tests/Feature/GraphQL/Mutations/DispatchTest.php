@@ -244,7 +244,6 @@ class DispatchTest extends TestCaseGraphQL
 
         Arr::set($invalidData, 'dispatch.variables', null);
         $response = $this->graphql($this->method, $invalidData, true);
-        ray($response);
 
         $this->assertEquals(
             "There's an error with the query. Please check the query and try again.",
