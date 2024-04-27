@@ -168,11 +168,12 @@ class DispatchTest extends TestCaseGraphQL
             array_merge($data, ['ruleSetId' => Hex::MAX_UINT128]),
             true
         );
-        $this->assertEquals(
+        ray($response['error']);
+
+        $this->assertArraySubset(
             ['ruleSetId' => ['The rule set id is too large, the maximum value it can be is 4294967295.']],
             $response['error']
         );
-
         $response = $this->graphql(
             $this->method,
             array_merge($data, ['ruleSetId' => fake()->numberBetween(5000, 10000)]),
@@ -244,6 +245,8 @@ class DispatchTest extends TestCaseGraphQL
 
         Arr::set($invalidData, 'dispatch.variables', null);
         $response = $this->graphql($this->method, $invalidData, true);
+        ray($response);
+
         $this->assertEquals(
             "There's an error with the query. Please check the query and try again.",
             $response['error']

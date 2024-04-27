@@ -25,10 +25,6 @@ class CanDispatch implements DataAwareRule, ValidationRule
 {
     use HasDataAwareRule;
 
-    public function __construct(protected int $ruleSetId)
-    {
-    }
-
     /**
      * Run the validation rule.
      *
@@ -36,7 +32,7 @@ class CanDispatch implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $fuelTank = FuelTank::where('public_key', SS58Address::getPublicKey($value))
+        $fuelTank = FuelTank::where('public_key', SS58Address::getPublicKey(Arr::get($this->data, 'tankId')))
             ->with('owner')
             ->first();
 
@@ -47,7 +43,7 @@ class CanDispatch implements DataAwareRule, ValidationRule
         }
 
         $caller = SS58Address::getPublicKey(Arr::get($this->data, 'signingAccount') ?? Account::daemonPublicKey());
-        $ruleSetRules = $fuelTank->dispatchRules()->where('rule_set_id', $this->ruleSetId)->get();
+        $ruleSetRules = $fuelTank->dispatchRules()->where('rule_set_id', Arr::get($this->data, 'ruleSetId'))->get();
 
         if ($ruleSetRules->isEmpty()) {
             $fail(__('enjin-platform-fuel-tanks::validation.dispatch_rule_not_found'))->translate();

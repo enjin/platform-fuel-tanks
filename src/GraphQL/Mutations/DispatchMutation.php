@@ -165,10 +165,12 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
                 new MaxBigInt(Hex::MAX_UINT32),
                 new RuleSetExists(),
             ],
+            'dispatch' => [
+                new CanDispatch(),
+            ],
             'dispatch.query' => [
                 'filled',
                 new ValidMutation(),
-                new CanDispatch($args['ruleSetId']),
             ],
         ];
     }
