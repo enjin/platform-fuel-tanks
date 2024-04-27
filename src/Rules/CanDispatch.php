@@ -63,7 +63,7 @@ class CanDispatch implements DataAwareRule, ValidationRule
         });
 
         if ($canDispatch->count() < $ruleSetRules->count()) {
-            $fail(__('enjin-platform-fuel-tanks::validation.cannot_dispatch'))->translate();
+            $fail(__('enjin-platform-fuel-tanks::validation.dispatch_rule_requirements'))->translate();
         }
     }
 

@@ -9,4 +9,6 @@ return [
     'valid_mutation.encodedData' => 'The id and encodedData attribute must be queried from the result.',
     'rule_set_not_exist' => 'The rule set ID doesn\'t exist.',
     'rule_set_exist' => 'The rule set ID already exist.',
+    'dispatch_rule_not_found' => 'The dispatch rule chosen was not found.',
+    'dispatch_rule_requirements' => 'The dispatch rule requirements are not met.',
 ];

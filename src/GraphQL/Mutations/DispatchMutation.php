@@ -7,6 +7,7 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Enums\DispatchCall;
 use Enjin\Platform\FuelTanks\Exceptions\FuelTanksException;
 use Enjin\Platform\FuelTanks\Rules\CanDispatch;
+use Enjin\Platform\FuelTanks\Rules\FuelTankExists;
 use Enjin\Platform\FuelTanks\Rules\RuleSetExists;
 use Enjin\Platform\FuelTanks\Rules\ValidMutation;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;
@@ -156,7 +157,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
                 'filled',
                 'max:255',
                 new ValidSubstrateAddress(),
-                new CanDispatch($args['ruleSetId']),
+                new FuelTankExists(),
             ],
             'ruleSetId' => [
                 'bail',
@@ -167,6 +168,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
             'dispatch.query' => [
                 'filled',
                 new ValidMutation(),
+                new CanDispatch($args['ruleSetId']),
             ],
         ];
     }

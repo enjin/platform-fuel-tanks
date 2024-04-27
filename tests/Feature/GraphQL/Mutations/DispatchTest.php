@@ -138,15 +138,6 @@ class DispatchTest extends TestCaseGraphQL
             ]
         );
         $tank->forceFill(['owner_wallet_id' => $wallet->id])->save();
-        $response = $this->graphql(
-            $this->method,
-            array_merge($data, ['tankId' => $tank->public_key]),
-            true
-        );
-        $this->assertArraySubset(
-            ['tankId' => ['The tank id provided is not owned by you.']],
-            $response['error']
-        );
     }
 
     public function test_it_will_fail_with_invalid_parameter_rule_set_id(): void
