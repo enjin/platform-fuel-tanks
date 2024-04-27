@@ -39,4 +39,9 @@ class MaxFuelBurnPerTransactionParams extends FuelTankRules
             'MaxFuelBurnPerTransaction' => $this->max,
         ];
     }
+
+    public function validate(string $value): bool
+    {
+        return true;
+    }
 }

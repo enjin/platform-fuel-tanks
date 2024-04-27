@@ -6,6 +6,7 @@ use Closure;
 use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Enums\DispatchCall;
 use Enjin\Platform\FuelTanks\Exceptions\FuelTanksException;
+use Enjin\Platform\FuelTanks\Rules\CanDispatch;
 use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\FuelTanks\Rules\RuleSetExists;
 use Enjin\Platform\FuelTanks\Rules\ValidMutation;
@@ -156,7 +157,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
                 'filled',
                 'max:255',
                 new ValidSubstrateAddress(),
-                new IsFuelTankOwner(),
+                new CanDispatch($args['ruleSetId']),
             ],
             'ruleSetId' => [
                 'bail',

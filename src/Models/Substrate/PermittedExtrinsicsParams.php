@@ -20,6 +20,8 @@ class PermittedExtrinsicsParams extends FuelTankRules
      */
     public function __construct(?array $extrinsics = [])
     {
+        ray($extrinsics);
+
         $this->extrinsics = array_map(
             function ($extrinsic) {
                 if (($palletName = Arr::get($extrinsic, 'palletName')) && ($methodName = Arr::get($extrinsic, 'extrinsicName'))) {
@@ -103,5 +105,10 @@ class PermittedExtrinsicsParams extends FuelTankRules
             ->filter(fn ($class) => Str::contains(class_basename($class), $mutationName))->first();
 
         return HexConverter::unPrefix(TransactionSerializer::encode((new $transactionMutation())->getMethodName(), $transactionMutation::getEncodableParams()));
+    }
+
+    public function validate(string $value): bool
+    {
+        return true;
     }
 }

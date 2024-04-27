@@ -46,4 +46,9 @@ class PermittedCallsParams extends FuelTankRules
             'PermittedCalls' => $this->calls,
         ];
     }
+
+    public function validate(string $value): bool
+    {
+        return true;
+    }
 }

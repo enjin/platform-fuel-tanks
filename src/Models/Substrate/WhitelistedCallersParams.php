@@ -47,4 +47,9 @@ class WhitelistedCallersParams extends FuelTankRules
             'WhitelistedCallers' => $this->callers,
         ];
     }
+
+    public function validate(string $caller): bool
+    {
+        return in_array($caller, $this->callers);
+    }
 }

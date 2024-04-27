@@ -43,4 +43,9 @@ class WhitelistedCollectionsParams extends FuelTankRules
             'WhitelistedCollections' => $this->collections,
         ];
     }
+
+    public function validate(string $value): bool
+    {
+        return true;
+    }
 }
