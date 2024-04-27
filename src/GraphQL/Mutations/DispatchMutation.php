@@ -7,7 +7,6 @@ use Enjin\BlockchainTools\HexConverter;
 use Enjin\Platform\FuelTanks\Enums\DispatchCall;
 use Enjin\Platform\FuelTanks\Exceptions\FuelTanksException;
 use Enjin\Platform\FuelTanks\Rules\CanDispatch;
-use Enjin\Platform\FuelTanks\Rules\IsFuelTankOwner;
 use Enjin\Platform\FuelTanks\Rules\RuleSetExists;
 use Enjin\Platform\FuelTanks\Rules\ValidMutation;
 use Enjin\Platform\GraphQL\Schemas\Primary\Substrate\Traits\StoresTransactions;

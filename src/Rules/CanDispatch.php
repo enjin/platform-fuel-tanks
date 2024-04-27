@@ -16,7 +16,6 @@ use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCollectionsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedPalletsParams;
 use Enjin\Platform\Rules\Traits\HasDataAwareRule;
 use Enjin\Platform\Support\Account;
-use Enjin\Platform\Support\Hex;
 use Enjin\Platform\Support\SS58Address;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -43,6 +42,7 @@ class CanDispatch implements DataAwareRule, ValidationRule
 
         if (!$fuelTank) {
             $fail(__('validation.exists', ['attribute' => $attribute]))->translate();
+
             return;
         }
 
@@ -51,86 +51,87 @@ class CanDispatch implements DataAwareRule, ValidationRule
 
         if ($ruleSetRules->isEmpty()) {
             $fail(__('enjin-platform-fuel-tanks::validation.dispatch_rule_not_found'))->translate();
+
             return;
         }
 
-        ray($ruleSetRules);
-
-
-        $canDispatch = $ruleSetRules->filter(function($ruleSetRule) use ($caller) {
+        $canDispatch = $ruleSetRules->filter(function ($ruleSetRule) use ($caller) {
             $ruleType = Arr::get($ruleSetRule, 'rule');
             $value = Arr::get($ruleSetRule, 'value');
 
-            ray($ruleType);
-            ray($value);
-
-             $canDispatch = $this->canDispatchWithRule($caller, $ruleType, $value);
-             ray($canDispatch);
-
-             return $canDispatch;
+            return $this->canDispatchWithRule($caller, $ruleType, $value);
         });
-
-        ray($canDispatch);
 
         if ($canDispatch->count() < $ruleSetRules->count()) {
             $fail(__('enjin-platform-fuel-tanks::validation.cannot_dispatch'))->translate();
         }
     }
 
-    protected function canDispatchWithRule(string $caller, string $ruleType, mixed $value): bool {
+    protected function canDispatchWithRule(string $caller, string $ruleType, mixed $value): bool
+    {
         switch ($ruleType) {
-            case DispatchRule::WHITELISTED_CALLERS->value: {
+            case DispatchRule::WHITELISTED_CALLERS->value:
                 $dispatchRule = new WhitelistedCallersParams($value);
+
                 return $dispatchRule->validate($caller);
-            }
-            case DispatchRule::REQUIRE_TOKEN->value: {
+
+            case DispatchRule::REQUIRE_TOKEN->value:
                 $dispatchRule = new RequireTokenParams($value['collectionId'], $value['tokenId']);
+
                 return $dispatchRule->validate($caller);
-            }
-            case DispatchRule::WHITELISTED_PALLETS->value: {
+
+            case DispatchRule::WHITELISTED_PALLETS->value:
                 $dispatchRule = new WhitelistedPalletsParams($value);
+
                 return $dispatchRule->validate($this->data['dispatch']['call']);
-            }
-            case DispatchRule::PERMITTED_CALLS->value: {
+
+            case DispatchRule::PERMITTED_CALLS->value:
                 $dispatchRule = new PermittedCallsParams($value);
-                # TODO: Not sure how to check the above yet
+
+                // TODO: Not sure how to check the above yet
                 return $dispatchRule->validate($caller);
-            }
-            case DispatchRule::PERMITTED_EXTRINSICS->value: {
+
+            case DispatchRule::PERMITTED_EXTRINSICS->value:
                 $dispatchRule = new PermittedExtrinsicsParams(array_map(function ($x) {
                     $extrinsic = explode('.', $x);
+
                     return [
                         $extrinsic[0] => [
-                            $extrinsic[1] => null
+                            $extrinsic[1] => null,
                         ],
                     ];
                 }, $value));
-                # TODO: Not sure how to check the above yet
+
+                // TODO: Not sure how to check the above yet
                 return $dispatchRule->validate($caller);
-            }
-            case DispatchRule::WHITELISTED_COLLECTIONS->value: {
+
+            case DispatchRule::WHITELISTED_COLLECTIONS->value:
                 $dispatchRule = new WhitelistedCollectionsParams($value);
-                # TODO: Not sure how to check the above yet
+
+                // TODO: Not sure how to check the above yet
                 return $dispatchRule->validate($caller);
-            }
-            case DispatchRule::MAX_FUEL_BURN_PER_TRANSACTION->value: {
+
+            case DispatchRule::MAX_FUEL_BURN_PER_TRANSACTION->value:
                 $dispatchRule = new MaxFuelBurnPerTransactionParams($value);
-                # TODO: Not sure how to calculate the above yet
+
+                // TODO: Not sure how to calculate the above yet
                 return $dispatchRule->validate($caller);
-            }
-            case DispatchRule::TANK_FUEL_BUDGET->value: {
+
+            case DispatchRule::TANK_FUEL_BUDGET->value:
                 $dispatchRule = new TankFuelBudgetParams($value['amount'], $value['resetPeriod']);
-                # TODO: Not sure how to calculate the above yet
+
+                // TODO: Not sure how to calculate the above yet
                 return $dispatchRule->validate($caller);
-            }
-            case DispatchRule::USER_FUEL_BUDGET->value: {
+
+            case DispatchRule::USER_FUEL_BUDGET->value:
                 $dispatchRule = new UserFuelBudgetParams($value['amount'], $value['resetPeriod']);
-                # TODO: Not sure how to calculate the above yet
+
+                // TODO: Not sure how to calculate the above yet
                 return $dispatchRule->validate($caller);
-            }
-            default: {
+
+            default:
                 return true;
-            }
+
         }
     }
 }
