@@ -168,7 +168,6 @@ class DispatchTest extends TestCaseGraphQL
             array_merge($data, ['ruleSetId' => Hex::MAX_UINT128]),
             true
         );
-        ray($response['error']);
 
         $this->assertArraySubset(
             ['ruleSetId' => ['The rule set id is too large, the maximum value it can be is 4294967295.']],
