@@ -4,6 +4,7 @@ namespace Enjin\Platform\FuelTanks\Models\Substrate;
 
 use Enjin\BlockchainTools\HexConverter;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class WhitelistedPalletsParams extends FuelTankRules
 {
@@ -22,7 +23,7 @@ class WhitelistedPalletsParams extends FuelTankRules
     {
         return new self(
             pallets: array_map(
-                fn ($pallet) => HexConverter::hexToString($pallet),
+                fn ($pallet) => is_array($pallet) ? array_key_first($pallet) : HexConverter::hexToString($pallet),
                 Arr::get($params, 'WhitelistedPallets', []),
             ),
         );
@@ -46,5 +47,12 @@ class WhitelistedPalletsParams extends FuelTankRules
         return [
             'WhitelistedPallets' => $this->pallets,
         ];
+    }
+
+    public function validate(string $pallet): bool
+    {
+        $hasPallet = array_filter($this->pallets, fn ($v) => Str::lower($pallet) === Str::snake($v));
+
+        return count($hasPallet) > 0;
     }
 }

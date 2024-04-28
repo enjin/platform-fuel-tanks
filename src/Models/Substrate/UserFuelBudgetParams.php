@@ -53,4 +53,9 @@ class UserFuelBudgetParams extends FuelTankRules
             ],
         ];
     }
+
+    public function validate(string $value): bool
+    {
+        return true;
+    }
 }

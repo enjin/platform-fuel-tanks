@@ -96,6 +96,11 @@ class PermittedExtrinsicsParams extends FuelTankRules
         ];
     }
 
+    public function validate(string $value): bool
+    {
+        return true;
+    }
+
     protected function getEncodedData(string $mutationName): string
     {
         $transactionMutation = Package::getClassesThatImplementInterface(PlatformBlockchainTransaction::class)

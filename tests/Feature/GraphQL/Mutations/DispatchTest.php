@@ -138,15 +138,6 @@ class DispatchTest extends TestCaseGraphQL
             ]
         );
         $tank->forceFill(['owner_wallet_id' => $wallet->id])->save();
-        $response = $this->graphql(
-            $this->method,
-            array_merge($data, ['tankId' => $tank->public_key]),
-            true
-        );
-        $this->assertArraySubset(
-            ['tankId' => ['The tank id provided is not owned by you.']],
-            $response['error']
-        );
     }
 
     public function test_it_will_fail_with_invalid_parameter_rule_set_id(): void
@@ -177,11 +168,11 @@ class DispatchTest extends TestCaseGraphQL
             array_merge($data, ['ruleSetId' => Hex::MAX_UINT128]),
             true
         );
-        $this->assertEquals(
+
+        $this->assertArraySubset(
             ['ruleSetId' => ['The rule set id is too large, the maximum value it can be is 4294967295.']],
             $response['error']
         );
-
         $response = $this->graphql(
             $this->method,
             array_merge($data, ['ruleSetId' => fake()->numberBetween(5000, 10000)]),
@@ -253,6 +244,7 @@ class DispatchTest extends TestCaseGraphQL
 
         Arr::set($invalidData, 'dispatch.variables', null);
         $response = $this->graphql($this->method, $invalidData, true);
+
         $this->assertEquals(
             "There's an error with the query. Please check the query and try again.",
             $response['error']

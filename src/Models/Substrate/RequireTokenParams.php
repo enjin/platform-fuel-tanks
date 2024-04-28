@@ -2,6 +2,10 @@
 
 namespace Enjin\Platform\FuelTanks\Models\Substrate;
 
+use Enjin\Platform\Models\Collection;
+use Enjin\Platform\Models\Token;
+use Enjin\Platform\Models\TokenAccount;
+use Facades\Enjin\Platform\Services\Database\WalletService;
 use Illuminate\Support\Arr;
 
 class RequireTokenParams extends FuelTankRules
@@ -46,5 +50,32 @@ class RequireTokenParams extends FuelTankRules
             'collectionId' => $this->collectionId,
             'tokenId' => $this->tokenId,
         ]];
+    }
+
+    public function validate(string $caller): bool
+    {
+        if (!($collection = Collection::firstWhere('collection_chain_id', $this->collectionId))) {
+            return false;
+        }
+
+        if (!($token = Token::firstWhere([
+            'collection_id' => $collection->id,
+            'token_chain_id' => $this->tokenId,
+        ]))) {
+            return false;
+        }
+
+        $wallet = WalletService::firstOrStore([
+            'public_key' => $caller,
+        ]);
+
+        if (!($tokenAccount = TokenAccount::firstWhere([
+            'wallet_id' => $wallet->id,
+            'token_id' => $token->id,
+        ]))) {
+            return false;
+        }
+
+        return $tokenAccount->balance > 0;
     }
 }
