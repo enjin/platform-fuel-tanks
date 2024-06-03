@@ -35,10 +35,9 @@ class RuleSetRemoved extends FuelTankSubstrateEvent
     {
         Log::debug(
             sprintf(
-                'The rule set %s from FuelTank %s with %s rules was removed.',
+                'The rule set %s from FuelTank %s was removed.',
                 $this->event->ruleSetId,
                 $this->event->tankId,
-                $rules
             )
         );
     }

@@ -21,9 +21,7 @@ class CallDispatched extends FuelTankSubstrateEvent
      */
     public function run(): void
     {
-        // Fail if it doesn't find the fuel tank
-        $fuelTank = $this->getFuelTank($this->event->tankId);
-        $account = $this->firstOrStoreAccount($this->event->caller);
+        $this->firstOrStoreAccount($this->event->caller);
     }
 
     public function log(): void

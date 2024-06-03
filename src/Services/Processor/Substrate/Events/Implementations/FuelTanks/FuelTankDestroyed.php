@@ -4,6 +4,7 @@ namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implement
 
 use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankDestroyed as FuelTankDestroyedEvent;
+use Enjin\Platform\FuelTanks\Models\Laravel\FuelTank;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankDestroyed as FuelTankDestroyedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
@@ -16,16 +17,10 @@ class FuelTankDestroyed extends FuelTankSubstrateEvent
 
     /**
      * Handle the fuel tank destroyed event.
-     *
-     * @throws PlatformException
      */
     public function run(): void
     {
-        $fuelTank = $this->getFuelTank(
-            $this->event->tankId
-        );
-
-        $fuelTank->delete();
+        FuelTank::where(['public_key' => $this->event->tankId])?->delete();
     }
 
     public function log(): void
