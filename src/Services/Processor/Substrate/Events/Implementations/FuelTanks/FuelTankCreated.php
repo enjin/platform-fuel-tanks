@@ -7,8 +7,6 @@ use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
-use Enjin\Platform\Models\Laravel\Block;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankCreated as FuelTankCreatedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Enjin\Platform\Support\Account;
@@ -17,16 +15,15 @@ use Illuminate\Support\Facades\Log;
 
 class FuelTankCreated extends FuelTankSubstrateEvent
 {
+    /** @var FuelTankCreatedPolkadart */
+    protected Event $event;
+
     /**
      * Handle the fuel tank created event.
      */
-    public function run(Event $event, Block $block, Codec $codec): void
+    public function run(): void
     {
-        if (!$event instanceof FuelTankCreatedPolkadart) {
-            return;
-        }
-
-        $extrinsic = $block->extrinsics[$event->extrinsicIndex];
+        $extrinsic = $this->block->extrinsics[$this->event->extrinsicIndex];
         $params = $extrinsic->params;
 
         $providesDeposit = Arr::get($params, 'descriptor.provides_deposit');
@@ -40,13 +37,13 @@ class FuelTankCreated extends FuelTankSubstrateEvent
             'descriptor.user_account_management.tank_reserves_account_creation_deposit',
         ]);
 
-        $owner = $this->firstOrStoreAccount($event->owner);
+        $owner = $this->firstOrStoreAccount($this->event->owner);
         $fuelTank = FuelTank::updateOrCreate(
             [
-                'public_key' => Account::parseAccount($event->tankId),
+                'public_key' => Account::parseAccount($this->event->tankId),
             ],
             [
-                'name' => $event->tankName,
+                'name' => $this->event->tankName,
                 'owner_wallet_id' => $owner->id,
                 'reserves_existential_deposit' => $reservesExistentialDeposit,
                 'reserves_account_creation_deposit' => $reservesAccountCreationDeposit,
@@ -98,21 +95,25 @@ class FuelTankCreated extends FuelTankSubstrateEvent
         }
 
         $fuelTank->dispatchRules()->createMany($insertDispatchRules);
-        $transaction = $this->getTransaction($block, $event->extrinsicIndex);
+    }
 
-        Log::info(
+    public function log(): void
+    {
+        Log::debug(
             sprintf(
-                'FuelTank %s (id: %s) was created from transaction %s (id: %s)',
-                $fuelTank->public_key,
-                $fuelTank->id,
+                'FuelTank %s was created from transaction %s.',
+                $this->event->tankId,
                 $transaction?->transaction_chain_hash ?? 'unknown',
-                $transaction?->id ?? 'unknown'
             )
         );
+    }
 
+    public function broadcast(): void
+    {
         FuelTankCreatedEvent::safeBroadcast(
-            $fuelTank,
-            $transaction
+            $this->event,
+            $this->getTransaction($this->block, $this->event->extrinsicIndex),
+            $this->extra,
         );
     }
 }

@@ -7,37 +7,35 @@ use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankMutated as FuelT
 use Enjin\Platform\FuelTanks\Models\AccountRule;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
-use Enjin\Platform\Models\Laravel\Block;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankMutated as FuelTankMutatedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
+use Illuminate\Support\Facades\Log;
 
 class FuelTankMutated extends FuelTankSubstrateEvent
 {
+    /** @var FuelTankMutatedPolkadart */
+    protected Event $event;
+
     /**
      * Handle the fuel tank mutated event.
      *
      * @throws PlatformException
      */
-    public function run(Event $event, Block $block, Codec $codec): void
+    public function run(): void
     {
-        if (!$event instanceof FuelTankMutatedPolkadart) {
-            return;
-        }
-
         // Fail if it doesn't find the fuel tank
-        $fuelTank = $this->getFuelTank($event->tankId);
+        $fuelTank = $this->getFuelTank($this->event->tankId);
 
-        if (!is_null($uac = $event->userAccountManagement)) {
+        if (!is_null($uac = $this->event->userAccountManagement)) {
             $fuelTank->reserves_existential_deposit = $this->getValue($uac, ['Some.tank_reserves_existential_deposit', 'tank_reserves_existential_deposit']);
             $fuelTank->reserves_account_creation_deposit = $this->getValue($uac, ['Some.tank_reserves_account_creation_deposit', 'tank_reserves_account_creation_deposit']);
         }
 
-        if (!is_null($providesDeposit = $event->providesDeposit)) {
+        if (!is_null($providesDeposit = $this->event->providesDeposit)) {
             $fuelTank->provides_deposit = $providesDeposit;
         }
 
-        if (!is_null($accountRules = $event->accountRules)) {
+        if (!is_null($accountRules = $this->event->accountRules)) {
             AccountRule::where('fuel_tank_id', $fuelTank->id)?->delete();
 
             $insertAccountRules = [];
@@ -63,9 +61,25 @@ class FuelTankMutated extends FuelTankSubstrateEvent
 
         $fuelTank->save();
 
+
+    }
+
+    public function log(): void
+    {
+        Log::debug(
+            sprintf(
+                'Listing %s was cancelled.',
+                $this->event->listingId,
+            )
+        );
+    }
+
+    public function broadcast(): void
+    {
         FuelTankMutatedEvent::safeBroadcast(
-            $fuelTank,
-            $this->getTransaction($block, $event->extrinsicIndex),
+            $this->event,
+            $this->getTransaction($this->block, $this->event->extrinsicIndex),
+            $this->extra,
         );
     }
 }
