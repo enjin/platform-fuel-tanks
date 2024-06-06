@@ -2,7 +2,6 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
-use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankDestroyed as FuelTankDestroyedEvent;
 use Enjin\Platform\FuelTanks\Models\Laravel\FuelTank;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
@@ -35,7 +34,6 @@ class FuelTankDestroyed extends FuelTankSubstrateEvent
 
     public function broadcast(): void
     {
-
         FuelTankDestroyedEvent::safeBroadcast(
             $this->event,
             $this->getTransaction($this->block, $this->event->extrinsicIndex),

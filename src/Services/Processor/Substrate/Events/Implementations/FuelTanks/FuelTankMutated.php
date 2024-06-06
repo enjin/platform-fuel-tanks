@@ -60,8 +60,6 @@ class FuelTankMutated extends FuelTankSubstrateEvent
         }
 
         $fuelTank->save();
-
-
     }
 
     public function log(): void

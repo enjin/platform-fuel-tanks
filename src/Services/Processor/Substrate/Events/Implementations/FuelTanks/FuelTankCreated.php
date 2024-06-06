@@ -18,6 +18,8 @@ class FuelTankCreated extends FuelTankSubstrateEvent
     /** @var FuelTankCreatedPolkadart */
     protected Event $event;
 
+    protected FuelTank $fuelTankCreated;
+
     /**
      * Handle the fuel tank created event.
      */
@@ -38,7 +40,9 @@ class FuelTankCreated extends FuelTankSubstrateEvent
         ]);
 
         $owner = $this->firstOrStoreAccount($this->event->owner);
-        $fuelTank = FuelTank::updateOrCreate(
+        $this->extra = ['tank_owner' => $this->event->owner];
+
+        $this->fuelTankCreated = FuelTank::updateOrCreate(
             [
                 'public_key' => Account::parseAccount($this->event->tankId),
             ],
@@ -74,7 +78,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
             }
         }
 
-        $fuelTank->accountRules()->createMany($insertAccountRules);
+        $this->fuelTankCreated->accountRules()->createMany($insertAccountRules);
 
         $dispatchRules = Arr::get($params, 'descriptor.rule_sets', []);
         $insertDispatchRules = [];
@@ -94,7 +98,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
             }
         }
 
-        $fuelTank->dispatchRules()->createMany($insertDispatchRules);
+        $this->fuelTankCreated->dispatchRules()->createMany($insertDispatchRules);
     }
 
     public function log(): void
@@ -114,6 +118,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
             $this->event,
             $this->getTransaction($this->block, $this->event->extrinsicIndex),
             $this->extra,
+            $this->fuelTankCreated,
         );
     }
 }

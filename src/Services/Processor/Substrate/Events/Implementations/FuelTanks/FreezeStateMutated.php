@@ -33,8 +33,8 @@ class FreezeStateMutated extends FuelTankSubstrateEvent
         }
 
         DispatchRule::where([
-                'fuel_tank_id' => $fuelTank->id,
-                'rule_set_id' => $this->event->ruleSetId,
+            'fuel_tank_id' => $fuelTank->id,
+            'rule_set_id' => $this->event->ruleSetId,
         ])?->update(['is_frozen' => $this->event->isFrozen]);
     }
 
