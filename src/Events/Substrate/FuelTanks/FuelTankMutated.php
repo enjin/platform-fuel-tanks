@@ -6,28 +6,23 @@ use Enjin\Platform\Channels\PlatformAppChannel;
 use Enjin\Platform\Events\PlatformBroadcastEvent;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\Model;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankMutated as FuelTankMutatedPolkadart;
 
 class FuelTankMutated extends PlatformBroadcastEvent
 {
     /**
      * Create a new event instance.
      */
-    public function __construct(Model $fuelTank, ?Model $transaction = null)
+    public function __construct(FuelTankMutatedPolkadart $event, ?Model $transaction = null, ?array $extra = null)
     {
         parent::__construct();
 
-        $this->broadcastData = [
-            'tankId' => $fuelTank->address,
-            'name' => $fuelTank->name,
-            'owner' => $fuelTank->owner->address,
-            'reservesExistentialDeposit' => $fuelTank->reserves_existential_deposit,
-            'reservesAccountCreationDeposit' => $fuelTank->reserves_account_creation_deposit,
-            'providesDeposit' => $fuelTank->provides_deposit,
-        ];
+        $this->broadcastData = $event->toBroadcast([
+            'idempotencyKey' => $transaction?->idempotency_key,
+        ]);
 
         $this->broadcastChannels = [
-            new Channel("tank;{$this->broadcastData['tankId']}"),
-            new Channel($this->broadcastData['owner']),
+            new Channel("tank;{$event->tankId}"),
             new PlatformAppChannel(),
         ];
     }

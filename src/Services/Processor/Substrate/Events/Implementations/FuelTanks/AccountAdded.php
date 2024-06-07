@@ -6,54 +6,53 @@ use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\AccountAdded as AccountAddedEvent;
 use Enjin\Platform\FuelTanks\Models\FuelTankAccount;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
-use Enjin\Platform\Models\Laravel\Block;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\AccountAdded as AccountAddedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Illuminate\Support\Facades\Log;
 
 class AccountAdded extends FuelTankSubstrateEvent
 {
+    /** @var AccountAddedPolkadart */
+    protected Event $event;
+
     /**
      * Handle the account added event.
      *
      * @throws PlatformException
      */
-    public function run(Event $event, Block $block, Codec $codec): void
+    public function run(): void
     {
-        if (!$event instanceof AccountAddedPolkadart) {
-            return;
-        }
-
         // Fails if it doesn't find the fuel tank
-        $fuelTank = $this->getFuelTank($event->tankId);
-        $account = $this->firstOrStoreAccount($event->userId);
+        $fuelTank = $this->getFuelTank($this->event->tankId);
+        $account = $this->firstOrStoreAccount($this->event->userId);
 
-        $fuelTankAccount = FuelTankAccount::create([
+        FuelTankAccount::create([
             'fuel_tank_id' => $fuelTank->id,
             'wallet_id' => $account->id,
-            'tank_deposit' => $event->tankDeposit,
-            'user_deposit' => $event->userDeposit,
-            'total_received' => $event->totalReceived,
+            'tank_deposit' => $this->event->tankDeposit,
+            'user_deposit' => $this->event->userDeposit,
+            'total_received' => $this->event->totalReceived,
         ]);
+    }
 
-        $transaction = $this->getTransaction($block, $event->extrinsicIndex);
-
-        Log::info(
+    public function log(): void
+    {
+        Log::debug(
             sprintf(
-                'FuelTankAccount %s (id: %s) of FuelTank %s (id: %s) was created from transaction %s (id: %s).',
-                $account->public_key,
-                $fuelTankAccount->id,
-                $fuelTank->public_key,
-                $fuelTank->id,
+                'FuelTankAccount %s of FuelTank %s was created from transaction %s.',
+                $this->event->userId,
+                $this->event->tankId,
                 $transaction?->transaction_chain_hash ?? 'unknown',
-                $transaction?->id ?? 'unknown'
             )
         );
+    }
 
+    public function broadcast(): void
+    {
         AccountAddedEvent::safeBroadcast(
-            $fuelTankAccount,
-            $transaction
+            $this->event,
+            $this->getTransaction($this->block, $this->event->extrinsicIndex),
+            $this->extra,
         );
     }
 }
