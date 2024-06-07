@@ -26,16 +26,16 @@ class FuelTankMutated extends FuelTankSubstrateEvent
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($this->event->tankId);
 
-        if (!is_null($uac = $this->event->userAccountManagement)) {
+        if (!empty($uac = $this->event->userAccountManagement)) {
             $fuelTank->reserves_existential_deposit = $this->getValue($uac, ['Some.tank_reserves_existential_deposit', 'tank_reserves_existential_deposit']);
             $fuelTank->reserves_account_creation_deposit = $this->getValue($uac, ['Some.tank_reserves_account_creation_deposit', 'tank_reserves_account_creation_deposit']);
         }
 
-        if (!is_null($providesDeposit = $this->event->providesDeposit)) {
+        if (!empty($providesDeposit = $this->event->providesDeposit)) {
             $fuelTank->provides_deposit = $providesDeposit;
         }
 
-        if (!is_null($accountRules = $this->event->accountRules)) {
+        if (!empty($accountRules = $this->event->accountRules)) {
             AccountRule::where('fuel_tank_id', $fuelTank->id)?->delete();
 
             $insertAccountRules = [];
