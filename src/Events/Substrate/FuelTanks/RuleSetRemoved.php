@@ -6,23 +6,26 @@ use Enjin\Platform\Channels\PlatformAppChannel;
 use Enjin\Platform\Events\PlatformBroadcastEvent;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\Model;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\RuleSetRemoved as RuleSetRemovedPolkadart;
 
 class RuleSetRemoved extends PlatformBroadcastEvent
 {
     /**
      * Create a new event instance.
      */
-    public function __construct(RuleSetRemovedPolkadart $event, ?Model $transaction = null, ?array $extra = null)
+    public function __construct(Model $fuelTank, int $ruleSetId, ?Model $transaction = null)
     {
         parent::__construct();
 
-        $this->broadcastData = $event->toBroadcast([
-            'idempotencyKey' => $transaction?->idempotency_key,
-        ]);
+        $this->broadcastData = [
+            'tankId' => $fuelTank->address,
+            'name' => $fuelTank->name,
+            'owner' => $fuelTank->owner->address,
+            'ruleSet' => $ruleSetId,
+        ];
 
         $this->broadcastChannels = [
-            new Channel("tank;{$event->tankId}"),
+            new Channel("tank;{$this->broadcastData['tankId']}"),
+            new Channel($this->broadcastData['owner']),
             new PlatformAppChannel(),
         ];
     }

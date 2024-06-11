@@ -5,42 +5,43 @@ namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implement
 use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\CallDispatched as CallDispatchedEvent;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
+use Enjin\Platform\Models\Laravel\Block;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\CallDispatched as CallDispatchedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Illuminate\Support\Facades\Log;
 
 class CallDispatched extends FuelTankSubstrateEvent
 {
-    /** @var CallDispatchedPolkadart */
-    protected Event $event;
-
     /**
      * Handle the call dispatched event.
      *
      * @throws PlatformException
      */
-    public function run(): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
-        $this->firstOrStoreAccount($this->event->caller);
-    }
+        if (!$event instanceof CallDispatchedPolkadart) {
+            return;
+        }
 
-    public function log(): void
-    {
-        Log::debug(
+        // Fail if it doesn't find the fuel tank
+        $fuelTank = $this->getFuelTank($event->tankId);
+        $account = $this->firstOrStoreAccount($event->caller);
+
+        Log::info(
             sprintf(
-                'The caller %s has dispatched a call through FuelTank %s.',
-                $this->event->caller,
-                $this->event->tankId,
+                'The caller %s (id: %s) has dispatched a call through FuelTank %s (id: %s).',
+                $account->public_key,
+                $account->id,
+                $fuelTank->public_key,
+                $fuelTank->id,
             )
         );
-    }
 
-    public function broadcast(): void
-    {
         CallDispatchedEvent::safeBroadcast(
-            $this->event,
-            $this->getTransaction($this->block, $this->event->extrinsicIndex),
-            $this->extra,
+            $fuelTank,
+            $account,
+            $this->getTransaction($block, $event->extrinsicIndex),
         );
     }
 }

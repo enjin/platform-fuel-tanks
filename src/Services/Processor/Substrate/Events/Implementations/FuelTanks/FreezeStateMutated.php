@@ -6,68 +6,60 @@ use Enjin\Platform\Exceptions\PlatformException;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FreezeStateMutated as FreezeStateMutatedEvent;
 use Enjin\Platform\FuelTanks\Models\DispatchRule;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
+use Enjin\Platform\Models\Laravel\Block;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FreezeStateMutated as FreezeStateMutatedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Illuminate\Support\Facades\Log;
 
 class FreezeStateMutated extends FuelTankSubstrateEvent
 {
-    /** @var FreezeStateMutatedPolkadart */
-    protected Event $event;
-
     /**
      * Handle the freeze state mutated event.
      *
      * @throws PlatformException
      */
-    public function run(): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
-        // Fail if it doesn't find the fuel tank
-        $fuelTank = $this->getFuelTank($this->event->tankId);
+        if (!$event instanceof FreezeStateMutatedPolkadart) {
+            return;
+        }
 
-        if (is_null($this->event->ruleSetId)) {
-            $fuelTank->is_frozen = $this->event->isFrozen;
+        // Fail if it doesn't find the fuel tank
+        $fuelTank = $this->getFuelTank($event->tankId);
+
+        if (!$event->ruleSetId) {
+            $fuelTank->is_frozen = $event->isFrozen;
             $fuelTank->save();
 
-            return;
-        }
-
-        DispatchRule::where([
-            'fuel_tank_id' => $fuelTank->id,
-            'rule_set_id' => $this->event->ruleSetId,
-        ])?->update(['is_frozen' => $this->event->isFrozen]);
-    }
-
-    public function log(): void
-    {
-        if (is_null($this->event->ruleSetId)) {
-            Log::debug(
+            Log::info(
                 sprintf(
-                    'FuelTank %s was %s.',
-                    $this->event->tankId,
-                    $this->event->isFrozen ? 'frozen' : 'thawed',
+                    'FuelTank %s (id: %s) was %s.',
+                    $fuelTank->public_key,
+                    $fuelTank->id,
+                    $event->isFrozen ? 'frozen' : 'thawed',
                 )
             );
+        } else {
+            DispatchRule::where([
+                'fuel_tank_id' => $fuelTank->id,
+                'rule_set_id' => $event->ruleSetId,
+            ])->update(['is_frozen' => $event->isFrozen]);
 
-            return;
+            Log::info(
+                sprintf(
+                    'The rule set id %s of fuel tank %s (id: %s) was %s.',
+                    $event->ruleSetId,
+                    $fuelTank->public_key,
+                    $fuelTank->id,
+                    $event->isFrozen ? 'frozen' : 'thawed',
+                )
+            );
         }
 
-        Log::debug(
-            sprintf(
-                'The rule set id %s of fuel tank %s was %s.',
-                $this->event->ruleSetId,
-                $this->event->tankId,
-                $this->event->isFrozen ? 'frozen' : 'thawed',
-            )
-        );
-    }
-
-    public function broadcast(): void
-    {
         FreezeStateMutatedEvent::safeBroadcast(
-            $this->event,
-            $this->getTransaction($this->block, $this->event->extrinsicIndex),
-            $this->extra,
+            $fuelTank,
+            $this->getTransaction($block, $event->extrinsicIndex),
         );
     }
 }

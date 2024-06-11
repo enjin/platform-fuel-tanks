@@ -7,6 +7,8 @@ use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\RuleSetInserted as RuleS
 use Enjin\Platform\FuelTanks\Models\DispatchRule;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
+use Enjin\Platform\Models\Laravel\Block;
+use Enjin\Platform\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\RuleSetInserted as RuleSetInsertedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
 use Illuminate\Support\Arr;
@@ -14,36 +16,37 @@ use Illuminate\Support\Facades\Log;
 
 class RuleSetInserted extends FuelTankSubstrateEvent
 {
-    /** @var RuleSetInsertedPolkadart */
-    protected Event $event;
-
     /**
      * Handle the rule set inserted event.
      *
      * @throws PlatformException
      */
-    public function run(): void
+    public function run(Event $event, Block $block, Codec $codec): void
     {
-        $extrinsic = $this->block->extrinsics[$this->event->extrinsicIndex];
+        if (!$event instanceof RuleSetInsertedPolkadart) {
+            return;
+        }
+
+        $extrinsic = $block->extrinsics[$event->extrinsicIndex];
         $params = $extrinsic->params;
         $rules = Arr::get($params, 'rules', []);
 
         // Fail if it doesn't find the fuel tank
-        $fuelTank = $this->getFuelTank($this->event->tankId);
+        $fuelTank = $this->getFuelTank($event->tankId);
 
         // Removes rules from that rule set id
         DispatchRule::where([
             'fuel_tank_id' => $fuelTank->id,
-            'rule_set_id' => $this->event->ruleSetId,
+            'rule_set_id' => $event->ruleSetId,
         ])?->delete();
 
         $insertDispatchRules = [];
-        $dispatchRule = (new DispatchRulesParams())->fromEncodable($this->event->ruleSetId, ['rules' => $rules])->toArray();
+        $dispatchRule = (new DispatchRulesParams())->fromEncodable($event->ruleSetId, ['rules' => $rules])->toArray();
 
         foreach ($dispatchRule as $rule) {
             $insertDispatchRules[] = [
                 'fuel_tank_id' => $fuelTank->id,
-                'rule_set_id' => $this->event->ruleSetId,
+                'rule_set_id' => $event->ruleSetId,
                 'rule' => array_key_first($rule),
                 'value' => $rule[array_key_first($rule)],
                 'is_frozen' => false,
@@ -51,25 +54,22 @@ class RuleSetInserted extends FuelTankSubstrateEvent
         }
 
         $fuelTank->dispatchRules()->createMany($insertDispatchRules);
-    }
+        $transaction = $this->getTransaction($block, $event->extrinsicIndex);
 
-    public function log(): void
-    {
-        Log::debug(
+        Log::info(
             sprintf(
-                'RuleSetInserted at FuelTank %s from transaction %s.',
-                $this->event->tankId,
+                'RuleSetInserted at FuelTank %s (id: %s) from transaction %s (id: %s).',
+                $fuelTank->public_key,
+                $fuelTank->id,
                 $transaction?->transaction_chain_hash ?? 'unknown',
+                $transaction?->id ?? 'unknown',
             )
         );
-    }
 
-    public function broadcast(): void
-    {
         RuleSetInsertedEvent::safeBroadcast(
-            $this->event,
-            $this->getTransaction($this->block, $this->event->extrinsicIndex),
-            $this->extra,
+            $fuelTank,
+            $insertDispatchRules,
+            $transaction
         );
     }
 }

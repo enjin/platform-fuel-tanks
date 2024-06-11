@@ -6,24 +6,27 @@ use Enjin\Platform\Channels\PlatformAppChannel;
 use Enjin\Platform\Events\PlatformBroadcastEvent;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\Model;
-use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\CallDispatched as CallDispatchedPolkadart;
 
 class CallDispatched extends PlatformBroadcastEvent
 {
     /**
      * Create a new event instance.
      */
-    public function __construct(CallDispatchedPolkadart $event, ?Model $transaction = null, ?array $extra = null)
+    public function __construct(Model $fuelTank, Model $caller, ?Model $transaction = null)
     {
         parent::__construct();
 
-        $this->broadcastData = $event->toBroadcast([
-            'idempotencyKey' => $transaction?->idempotency_key,
-        ]);
+        $this->broadcastData = [
+            'tankId' => $fuelTank->public_key,
+            'owner' => $fuelTank->owner->address,
+            'name' => $fuelTank->name,
+            'caller' => $caller->address,
+        ];
 
         $this->broadcastChannels = [
-            new Channel("tank;{$event->tankId}"),
-            new Channel($event->caller),
+            new Channel("tank;{$this->broadcastData['tankId']}"),
+            new Channel($this->broadcastData['owner']),
+            new Channel($this->broadcastData['caller']),
             new PlatformAppChannel(),
         ];
     }

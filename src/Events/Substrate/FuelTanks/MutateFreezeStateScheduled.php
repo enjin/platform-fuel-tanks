@@ -7,29 +7,24 @@ use Enjin\Platform\Events\PlatformBroadcastEvent;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\Model;
 
-class AccountAdded extends PlatformBroadcastEvent
+class MutateFreezeStateScheduled extends PlatformBroadcastEvent
 {
     /**
      * Create a new event instance.
      */
-    public function __construct(Model $fuelTankAccount, ?Model $transaction = null)
+    public function __construct(Model $fuelTank, ?Model $transaction = null)
     {
         parent::__construct();
 
-        $this->model = $fuelTankAccount;
-
         $this->broadcastData = [
-            'idempotencyKey' => $transaction?->idempotency_key,
-            'tankId' => $fuelTankAccount->fuelTank->public_key,
-            'name' => $fuelTankAccount->fuelTank->name,
-            'owner' => $fuelTankAccount->fuelTank->owner->address,
-            'account' => $fuelTankAccount->wallet->address,
+            'tankId' => $fuelTank->address,
+            'name' => $fuelTank->name,
+            'owner' => $fuelTank->owner->address,
         ];
 
         $this->broadcastChannels = [
             new Channel("tank;{$this->broadcastData['tankId']}"),
             new Channel($this->broadcastData['owner']),
-            new Channel($this->broadcastData['account']),
             new PlatformAppChannel(),
         ];
     }
