@@ -33,19 +33,19 @@ enum FuelTanksEventType: string
     /**
      * Get the processor for the event.
      */
-    public function getProcessor($event, $block, $codec): SubstrateEvent
+    public function getProcessor(): SubstrateEvent
     {
         return match ($this) {
-            self::FUEL_TANK_CREATED => new FuelTankCreated($event, $block, $codec),
-            self::FUEL_TANK_DESTROYED => new FuelTankDestroyed($event, $block, $codec),
-            self::FUEL_TANK_MUTATED => new FuelTankMutated($event, $block, $codec),
-            self::ACCOUNT_ADDED => new AccountAdded($event, $block, $codec),
-            self::ACCOUNT_REMOVED => new AccountRemoved($event, $block, $codec),
-            self::FREEZE_STATE_MUTATED => new FreezeStateMutated($event, $block, $codec),
-            self::ACCOUNT_RULE_DATA_REMOVED => new AccountRuleDataRemoved($event, $block, $codec),
-            self::RULE_SET_INSERTED => new RuleSetInserted($event, $block, $codec),
-            self::RULE_SET_REMOVED => new RuleSetRemoved($event, $block, $codec),
-            self::CALL_DISPATCHED => new CallDispatched($event, $block, $codec),
+            self::FUEL_TANK_CREATED => new FuelTankCreated(),
+            self::FUEL_TANK_DESTROYED => new FuelTankDestroyed(),
+            self::FUEL_TANK_MUTATED => new FuelTankMutated(),
+            self::ACCOUNT_ADDED => new AccountAdded(),
+            self::ACCOUNT_REMOVED => new AccountRemoved(),
+            self::FREEZE_STATE_MUTATED => new FreezeStateMutated(),
+            self::ACCOUNT_RULE_DATA_REMOVED => new AccountRuleDataRemoved(),
+            self::RULE_SET_INSERTED => new RuleSetInserted(),
+            self::RULE_SET_REMOVED => new RuleSetRemoved(),
+            self::CALL_DISPATCHED => new CallDispatched(),
         };
     }
 }
