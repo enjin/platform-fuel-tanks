@@ -18,7 +18,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
     /** @var FuelTankCreatedPolkadart */
     protected Event $event;
 
-    protected FuelTank $fuelTankCreated;
+    protected ?FuelTank $fuelTankCreated = null;
 
     /**
      * Handle the fuel tank created event.
