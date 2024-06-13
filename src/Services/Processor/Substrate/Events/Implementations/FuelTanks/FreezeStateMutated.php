@@ -25,7 +25,7 @@ class FreezeStateMutated extends FuelTankSubstrateEvent
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($this->event->tankId);
 
-        if (empty($this->event->ruleSetId)) {
+        if (is_null($this->event->ruleSetId)) {
             $fuelTank->is_frozen = $this->event->isFrozen;
             $fuelTank->save();
 
@@ -40,7 +40,7 @@ class FreezeStateMutated extends FuelTankSubstrateEvent
 
     public function log(): void
     {
-        if (empty($this->event->ruleSetId)) {
+        if (is_null($this->event->ruleSetId)) {
             Log::debug(
                 sprintf(
                     'FuelTank %s was %s.',
