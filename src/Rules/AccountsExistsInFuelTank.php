@@ -12,9 +12,7 @@ class AccountsExistsInFuelTank implements ValidationRule
     /**
      * Create a new rule instance.
      */
-    public function __construct(protected ?string $account)
-    {
-    }
+    public function __construct(protected ?string $account) {}
 
     /**
      * Run the validation rule.

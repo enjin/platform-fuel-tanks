@@ -10,8 +10,7 @@ class UserAccountManagementParams
     public function __construct(
         public bool $tankReservesExistentialDeposit = false,
         public bool $tankReservesAccountCreationDeposit = false,
-    ) {
-    }
+    ) {}
 
     /**
      * Returns the encodable representation of this instance.

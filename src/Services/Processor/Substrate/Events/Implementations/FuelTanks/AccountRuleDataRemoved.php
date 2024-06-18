@@ -21,11 +21,7 @@ class AccountRuleDataRemoved extends FuelTankSubstrateEvent
         // Maybe we should query the storage for this one? That would make it slower though
     }
 
-    public function log(): void
-    {
-    }
+    public function log(): void {}
 
-    public function broadcast(): void
-    {
-    }
+    public function broadcast(): void {}
 }

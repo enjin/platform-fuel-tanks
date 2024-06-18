@@ -14,8 +14,7 @@ class TankFuelBudgetParams extends FuelTankRules
         public string $resetPeriod,
         public ?string $totalConsumed = '0',
         public ?string $lastResetBlock = '0',
-    ) {
-    }
+    ) {}
 
     /**
      * Creates a new instance from the given array.

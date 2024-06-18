@@ -12,8 +12,7 @@ class AccountRulesParams
     public function __construct(
         public ?WhitelistedCallersParams $whitelistedCallers = null,
         public ?RequireTokenParams $requireToken = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new instance from the given parameters.

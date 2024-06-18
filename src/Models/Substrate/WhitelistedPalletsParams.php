@@ -13,8 +13,7 @@ class WhitelistedPalletsParams extends FuelTankRules
      */
     public function __construct(
         public ?array $pallets = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Creates a new instance from the given array.
