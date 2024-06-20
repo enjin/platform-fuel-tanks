@@ -17,6 +17,5 @@ class TransactionService extends DatabaseTransactionService
     public function __construct(
         public readonly Codec $codec,
         public readonly WalletService $wallet
-    ) {
-    }
+    ) {}
 }

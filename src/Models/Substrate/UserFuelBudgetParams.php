@@ -13,8 +13,7 @@ class UserFuelBudgetParams extends FuelTankRules
         public string $amount,
         public string $resetPeriod,
         public ?string $userCount = '0',
-    ) {
-    }
+    ) {}
 
     /**
      * Creates a new instance from the given array.
