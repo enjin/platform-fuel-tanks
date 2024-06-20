@@ -26,4 +26,8 @@ class AccountRuleDataRemoved extends FuelTankSubstrateEvent
         // Not sure how to do that yet, we would have to know the rule structure on chain.
         // Maybe we should query the storage for this one? That would make it slower though
     }
+
+    public function log(): void {}
+
+    public function broadcast(): void {}
 }

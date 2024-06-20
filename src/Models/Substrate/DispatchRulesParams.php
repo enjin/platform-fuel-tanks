@@ -21,8 +21,7 @@ class DispatchRulesParams
         public ?PermittedExtrinsicsParams $permittedExtrinsics = null,
         public ?WhitelistedPalletsParams $whitelistedPallets = null,
         public ?bool $isFrozen = false,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new instance from the given parameters.
