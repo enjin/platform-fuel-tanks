@@ -432,7 +432,7 @@ class EncodingTest extends TestCase
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
         $this->assertEquals(
-            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a00000004070c2800000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e95680200280c0000",
+            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a00000004070c2800000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e95680200282900",
             $data
         );
     }
