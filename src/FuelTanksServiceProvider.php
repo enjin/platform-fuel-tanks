@@ -2,7 +2,7 @@
 
 namespace Enjin\Platform\FuelTanks;
 
-use Enjin\Platform\Facades\Package as EnjinPackage;
+use Enjin\Platform\FuelTanks\Package as FuelTanksPackage;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Codec\Encoder as FuelTankEncoder;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Encoder as BaseEncoder;
 use Spatie\LaravelPackageTools\Package;
@@ -35,7 +35,7 @@ class FuelTanksServiceProvider extends PackageServiceProvider
     public function register()
     {
         if (app()->runningUnitTests()) {
-            EnjinPackage::setPath(__DIR__ . '/..');
+            FuelTanksPackage::setPath(__DIR__ . '/..');
         }
 
         parent::register();
