@@ -28,7 +28,7 @@ class Decoder extends BaseDecoder
      */
     public function tankStorageData(string $data): array
     {
-        $decoded = $this->codec->process('TankStorageData', new ScaleBytes($data));
+        $decoded = $this->codec->process(isRunningLatest() ? 'TankStorageDataV1010' : 'TankStorageData', new ScaleBytes($data));
 
         return [
             'owner' => ($owner = Arr::get($decoded, 'owner')) !== null ? HexConverter::prefix($owner) : null,
@@ -36,11 +36,13 @@ class Decoder extends BaseDecoder
             'ruleSets' => $this->parseRuleSets(Arr::get($decoded, 'ruleSets', [])),
             'totalReserved' => gmp_strval(Arr::get($decoded, 'totalReserved')),
             'accountCount' => gmp_strval(Arr::get($decoded, 'accountCount')),
-            'reservesExistentialDeposit' => Arr::get($decoded, 'userAccountManagement.tankReservesExistentialDeposit'),
+            'reservesExistentialDeposit' => null, // TODO: Remove this field
             'reservesAccountCreationDeposit' => Arr::get($decoded, 'userAccountManagement.tankReservesAccountCreationDeposit'),
             'isFrozen' => Arr::get($decoded, 'isFrozen'),
-            'providesDeposit' => Arr::get($decoded, 'providesDeposit'),
+            'providesDeposit' => is_bool($r = $this->getValue($decoded, ['providesDeposit', 'coveragePolicy'])) ? $r : $r === 'FeesAndDeposit',
             'accountRules' => $this->parseAccountRules(Arr::get($decoded, 'accountRules')),
+            // TODO: New fields in v1010
+            //      coveragePolicy => "Fees", "FeesAndDeposit"
         ];
     }
 
@@ -62,7 +64,7 @@ class Decoder extends BaseDecoder
      */
     public function fuelTankAccountStorageData(string $data): array
     {
-        $decoded = $this->codec->process('FuelTankAccountStorageData', new ScaleBytes($data));
+        $decoded = $this->codec->process(isRunningLatest() ? 'FuelTankAccountStorageDataV1010' : 'FuelTankAccountStorageData', new ScaleBytes($data));
 
         return [
             'tankDeposit' => gmp_strval(Arr::get($decoded, 'tankDeposit')),
