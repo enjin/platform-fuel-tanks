@@ -20,6 +20,7 @@ class DispatchRulesParams
         public ?PermittedCallsParams $permittedCalls = null,
         public ?PermittedExtrinsicsParams $permittedExtrinsics = null,
         public ?WhitelistedPalletsParams $whitelistedPallets = null,
+        public ?RequireSignatureParams $requireSignature = null,
         public ?bool $isFrozen = false,
     ) {}
 
@@ -75,6 +76,10 @@ class DispatchRulesParams
             $params[] = $this->whitelistedPallets->toEncodable();
         }
 
+        if ($this->requireSignature) {
+            $params[] = $this->requireSignature->toEncodable();
+        }
+
         if ($this->permittedExtrinsics) {
             $params[] = ['PermittedExtrinsics' => ['extrinsics' => []]];
         }
@@ -121,6 +126,10 @@ class DispatchRulesParams
 
         if ($this->permittedExtrinsics) {
             $params[] = $this->permittedExtrinsics->toArray();
+        }
+
+        if ($this->requireSignature) {
+            $params[] = $this->requireSignature->toArray();
         }
 
         return $params;
