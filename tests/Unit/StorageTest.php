@@ -91,7 +91,7 @@ final class StorageTest extends TestCase
                 'ruleSets' => [],
                 'totalReserved' => '0',
                 'accountCount' => '0',
-                'reservesExistentialDeposit' => true,
+                'reservesExistentialDeposit' => null,  // TODO: This should be removed when transition is over
                 'reservesAccountCreationDeposit' => false,
                 'isFrozen' => false,
                 'providesDeposit' => false,
@@ -117,7 +117,7 @@ final class StorageTest extends TestCase
                 ],
                 'totalReserved' => '2000000000000000000',
                 'accountCount' => '1',
-                'reservesExistentialDeposit' => true,
+                'reservesExistentialDeposit' => null, // TODO: This should be removed when transition is over
                 'reservesAccountCreationDeposit' => true,
                 'isFrozen' => false,
                 'providesDeposit' => false,

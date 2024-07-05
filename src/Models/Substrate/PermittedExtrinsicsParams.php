@@ -46,8 +46,8 @@ class PermittedExtrinsicsParams extends FuelTankRules
                     $methodName = (new $transactionMutation())->getMethodName();
 
                     return [
-                        explode('.', Arr::get(BaseEncoder::getCallIndexKeys(), $methodName))[0] => [
-                            explode('.', Arr::get(BaseEncoder::getCallIndexKeys(), $methodName))[1] => null,
+                        explode('.', (string) Arr::get(BaseEncoder::getCallIndexKeys(), $methodName))[0] => [
+                            explode('.', (string) Arr::get(BaseEncoder::getCallIndexKeys(), $methodName))[1] => null,
                         ],
                     ];
                 },

@@ -100,7 +100,8 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
         SerializationServiceInterface $serializationService,
         Substrate $blockchainService
     ) {
-        $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(
+        $method = isRunningLatest() ? $this->getMutationName() . 'V1010' : $this->getMutationName();
+        $encodedData = $serializationService->encode($method, static::getEncodableParams(
             name: $args['name'],
             userAccountManagement: $blockchainService->getUserAccountManagementParams($args),
             dispatchRules: $blockchainService->getDispatchRulesParamsArray($args),
@@ -117,17 +118,23 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
     public static function getEncodableParams(...$params): array
     {
         $name = Arr::get($params, 'name', '');
-        $userAccountManagement = Arr::get($params, 'userAccountManagement', null);
+        $userAccountManagement = Arr::get($params, 'userAccountManagement');
         $ruleSets = collect(Arr::get($params, 'dispatchRules', []));
         $providesDeposit = Arr::get($params, 'providesDeposit', false);
         $accountRules = Arr::get($params, 'accountRules', new AccountRulesParams());
+
+        $extra = isRunningLatest() ? [
+            'coveragePolicy' => $providesDeposit ? 'Fees' : 'FeesAndDeposit',
+        ] : [
+            'providesDeposit' => $providesDeposit,
+        ];
 
         return [
             'descriptor' => [
                 'name' => HexConverter::stringToHexPrefixed($name),
                 'userAccountManagement' => $userAccountManagement?->toEncodable(),
                 'ruleSets' => $ruleSets->map(fn ($ruleSet) => $ruleSet->toEncodable())->toArray(),
-                'providesDeposit' => $providesDeposit,
+                ...$extra,
                 'accountRules' => $accountRules?->toEncodable() ?? [],
             ],
         ];

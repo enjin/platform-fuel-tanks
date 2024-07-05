@@ -40,15 +40,13 @@ trait HasFuelTankValidationRules
                 "{$attribute}.whitelistedCallers.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidSubstrateAddress()],
                 "{$attribute}.whitelistedCallers" => ['nullable', 'array', 'min:1'],
                 "{$attribute}.requireToken.collectionId" => $isArray
-                        ? Rule::forEach(function ($value, $key) {
-                            return [
-                                'bail',
-                                'required_with:' . str_replace('collectionId', 'tokenId', $key),
-                                new MinBigInt(),
-                                new MaxBigInt(Hex::MAX_UINT128),
-                                Rule::exists('collections', 'collection_chain_id'),
-                            ];
-                        })
+                        ? Rule::forEach(fn ($value, $key) => [
+                            'bail',
+                            'required_with:' . str_replace('collectionId', 'tokenId', $key),
+                            new MinBigInt(),
+                            new MaxBigInt(Hex::MAX_UINT128),
+                            Rule::exists('collections', 'collection_chain_id'),
+                        ])
                         : [
                             "required_with:{$attribute}.requireToken.tokenId",
                             Rule::exists('collections', 'collection_chain_id'),
@@ -85,14 +83,12 @@ trait HasFuelTankValidationRules
                 "{$attribute}.whitelistedCallers.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidSubstrateAddress()],
                 "{$attribute}.whitelistedCallers" => ['nullable', 'array', 'min:1'],
                 "{$attribute}.requireToken.collectionId" => $isArray
-                    ? Rule::forEach(function ($value, $key) {
-                        return [
-                            'bail',
-                            'required_with:' . str_replace('collectionId', 'tokenId', $key),
-                            new MinBigInt(),
-                            new MaxBigInt(Hex::MAX_UINT128),
-                        ];
-                    })
+                    ? Rule::forEach(fn ($value, $key) => [
+                        'bail',
+                        'required_with:' . str_replace('collectionId', 'tokenId', $key),
+                        new MinBigInt(),
+                        new MaxBigInt(Hex::MAX_UINT128),
+                    ])
                     : [
                         "required_with:{$attribute}.requireToken.tokenId",
                     ],

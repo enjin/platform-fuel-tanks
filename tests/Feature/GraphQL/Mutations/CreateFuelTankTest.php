@@ -57,7 +57,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
         $response = $this->graphql($this->method, $data = [
             'name' => fake()->text(32),
             'account' => resolve(SubstrateProvider::class)->public_key(),
-            'reservesExistentialDeposit' => $existentialDeposit = (fake()->boolean() ? fake()->boolean() : null),
+            'reservesExistentialDeposit' => $existentialDeposit = (fake()->boolean() ?: null),
             'reservesAccountCreationDeposit' => $existentialDeposit != null ? fake()->boolean() : null,
             'providesDeposit' => fake()->boolean(),
             'accountRules' => [

@@ -2,7 +2,6 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
-use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\FuelTanks\Enums\DispatchCall;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\DispatchAndTouchMutation;
 use Enjin\Platform\Models\Collection;
@@ -22,12 +21,8 @@ class DispatchAndTouchTest extends DispatchTest
             $params = $this->generateParams()
         );
 
-        $encodedCall = DispatchAndTouchMutation::getEncodedCall($params);
-
-        $this->assertEquals(
-            $response['encodedData'],
-            TransactionSerializer::encode($this->method, DispatchAndTouchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
-        );
+        $encodedCall = DispatchAndTouchMutation::getFuelTankCall($this->method, $params);
+        $this->assertEquals($response['encodedData'], $encodedCall);
     }
 
     public function test_it_can_skip_validation(): void
@@ -49,11 +44,7 @@ class DispatchAndTouchTest extends DispatchTest
             ],
         );
 
-        $encodedCall = DispatchAndTouchMutation::getEncodedCall($params);
-
-        $this->assertEquals(
-            $response['encodedData'],
-            TransactionSerializer::encode($this->method, DispatchAndTouchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
-        );
+        $encodedCall = DispatchAndTouchMutation::getFuelTankCall($this->method, $params);
+        $this->assertEquals($response['encodedData'], $encodedCall);
     }
 }

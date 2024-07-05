@@ -29,7 +29,7 @@ trait GenerateFuelTankData
         return [
             'name' => fake()->text(32),
             'account' => $this->wallet->address,
-            'reservesExistentialDeposit' => $existentialDeposit = (fake()->boolean() ? fake()->boolean() : null),
+            'reservesExistentialDeposit' => $existentialDeposit = (fake()->boolean() ?: null),
             'reservesAccountCreationDeposit' => $existentialDeposit != null ? fake()->boolean() : null,
             'providesDeposit' => fake()->boolean(),
             'accountRules' => [
