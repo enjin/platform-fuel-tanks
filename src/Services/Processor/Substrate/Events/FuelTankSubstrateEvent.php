@@ -18,7 +18,7 @@ abstract class FuelTankSubstrateEvent extends SubstrateEvent
     protected function getFuelTank(string $publicKey): Model
     {
         if (!$fuelTank = FuelTank::where(['public_key' => SS58Address::getPublicKey($publicKey)])->first()) {
-            throw new PlatformException(__('enjin-platform::traits.query_data_or_fail.unable_to_find_fuel_tank', ['class' => __CLASS__, 'publicKey' => $publicKey]));
+            throw new PlatformException(__('enjin-platform::traits.query_data_or_fail.unable_to_find_fuel_tank', ['class' => self::class, 'publicKey' => $publicKey]));
         }
 
         return $fuelTank;

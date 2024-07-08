@@ -19,17 +19,14 @@ use Illuminate\Support\Str;
 class Parser extends BaseParser
 {
     protected static $tankCache = [];
-    protected TankService $tankService;
     protected Codec $codec;
 
     /**
      * Creates a new instance.
      */
-    public function __construct(TankService $tankService)
+    public function __construct(protected TankService $tankService)
     {
         parent::__construct();
-
-        $this->tankService = $tankService;
         $this->codec = new Codec();
     }
 

@@ -29,19 +29,16 @@ trait EagerLoadSelectFields
         static::$query = $query;
         $queryPlan = $resolveInfo->lookAhead()->queryPlan();
 
-        switch ($query) {
-            case 'GetFuelTanks':
-            case 'GetFuelTank':
-                [$select, $with, $withCount] = static::loadFuelTank(
-                    $queryPlan,
-                    $query == 'GetFuelTanks' ? 'edges.fields.node.fields' : '',
-                    [],
-                    null,
-                    true
-                );
-
-                break;
-        }
+        [$select, $with, $withCount] = match ($query) {
+            'GetFuelTanks', 'GetFuelTank' => static::loadFuelTank(
+                $queryPlan,
+                $query == 'GetFuelTanks' ? 'edges.fields.node.fields' : '',
+                [],
+                null,
+                true
+            ),
+            default => [$select, $with, $withCount],
+        };
 
 
         return [$select, $with, $withCount];
@@ -70,7 +67,7 @@ trait EagerLoadSelectFields
 
         if (!$isParent) {
             $with = [
-                $key => function ($query) use ($select, $args) {
+                $key => function ($query) use ($select, $args): void {
                     $query->select(array_unique($select))
                         ->when($cursor = Cursor::fromEncoded(Arr::get($args, 'after')), fn ($q) => $q->where('id', '>', $cursor->parameter('id')))
                         ->orderBy('fuel_tanks.id');
@@ -170,7 +167,7 @@ trait EagerLoadSelectFields
 
         if (!$isParent) {
             $with = [
-                $key => function ($query) use ($select, $args) {
+                $key => function ($query) use ($select, $args): void {
                     $query->select($select)
                         ->when(Arr::get($args, 'transactionIds'), fn ($q) => $q->whereIn('transaction_chain_id', $args['transactionIds']))
                         ->when(Arr::get($args, 'transactionHashes'), fn ($q) => $q->whereIn('transaction_chain_hash', $args['transactionIds']))

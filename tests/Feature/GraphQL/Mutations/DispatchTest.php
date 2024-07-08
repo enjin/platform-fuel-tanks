@@ -2,7 +2,6 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
-use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\FuelTanks\Enums\DispatchCall;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\DispatchMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
@@ -42,12 +41,8 @@ class DispatchTest extends TestCaseGraphQL
             $params = $this->generateParams()
         );
 
-        $encodedCall = DispatchMutation::getEncodedCall($params);
-
-        $this->assertEquals(
-            $response['encodedData'],
-            TransactionSerializer::encode($this->method, DispatchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
-        );
+        $encodedCall = DispatchMutation::getFuelTankCall($this->method, $params);
+        $this->assertEquals($response['encodedData'], $encodedCall);
     }
 
     public function test_it_can_dispatch_multi_token(): void
@@ -57,12 +52,8 @@ class DispatchTest extends TestCaseGraphQL
             $params = $this->generateParams(DispatchCall::MULTI_TOKENS)
         );
 
-        $encodedCall = DispatchMutation::getEncodedCall($params);
-
-        $this->assertEquals(
-            $response['encodedData'],
-            TransactionSerializer::encode($this->method, DispatchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
-        );
+        $encodedCall = DispatchMutation::getFuelTankCall($this->method, $params);
+        $this->assertEquals($response['encodedData'], $encodedCall);
     }
 
     public function test_it_can_skip_validation(): void
@@ -85,12 +76,8 @@ class DispatchTest extends TestCaseGraphQL
             ]
         );
 
-        $encodedCall = DispatchMutation::getEncodedCall($params);
-
-        $this->assertEquals(
-            $response['encodedData'],
-            TransactionSerializer::encode($this->method, DispatchMutation::getEncodableParams(...$params)) . $encodedCall . '00'
-        );
+        $encodedCall = DispatchMutation::getFuelTankCall($this->method, $params);
+        $this->assertEquals($response['encodedData'], $encodedCall);
     }
 
     public function test_it_will_fail_with_invalid_parameter_tank_id(): void
