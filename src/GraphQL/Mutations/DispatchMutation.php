@@ -21,7 +21,7 @@ use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Rules\MaxBigInt;
 use Enjin\Platform\Rules\MinBigInt;
 use Enjin\Platform\Rules\ValidSubstrateAddress;
-use Enjin\Platform\Services\Serialization\Interfaces\SerializationServiceInterface;
+use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\Support\Account;
 use Enjin\Platform\Support\Hex;
 use Enjin\Platform\Support\SS58Address;
@@ -80,7 +80,6 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
             'paysRemainingFee' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::mutation.dispatch.args.paysRemainingFee'),
-                'defaultValue' => false,
             ],
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
@@ -98,15 +97,11 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
         $context,
         ResolveInfo $resolveInfo,
         Closure $getSelectFields,
-        SerializationServiceInterface $serializationService
     ) {
-        $paysRemainingFee = Arr::get($args, 'paysRemainingFee') ? '01' : '00';
-        $encodedCall = $this->getEncodedCall($args);
-        $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(...$args));
-        $encodedData .= $encodedCall . $paysRemainingFee;
+        $encodedCall = static::getFuelTankCall($this->getMethodName(), $args);
 
         return Transaction::lazyLoadSelectFields(
-            DB::transaction(fn () => $this->storeTransaction($args, $encodedData)),
+            DB::transaction(fn () => $this->storeTransaction($args, $encodedCall)),
             $resolveInfo
         );
     }
@@ -131,6 +126,30 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
         }
 
         return HexConverter::unPrefix($encodedData);
+    }
+
+    public static function getFuelTankCall($method, $args, ?string $rawCall = null): string
+    {
+        $method = isRunningLatest() ? "{$method}V1010" : $method;
+        $paysRemainingFee = Arr::get($args, 'paysRemainingFee');
+
+        $encodedCall = TransactionSerializer::encode($method, static::getEncodableParams(
+            tankId: $args['tankId'],
+            ruleSetId: $args['ruleSetId'],
+        ));
+
+        $encodedCall .= $rawCall ?: static::getEncodedCall($args);
+
+        return $encodedCall . TransactionSerializer::encodeRaw(
+            isRunningLatest() ? 'OptionDispatchSettingsV1010' : 'OptionDispatchSettings',
+            ['option' => $paysRemainingFee === null ? null :
+                [
+                    'useNoneOrigin' => false,
+                    'paysRemainingFee' => $paysRemainingFee,
+                    'signature' => null,
+                ],
+            ],
+        );
     }
 
     public static function getEncodableParams(...$params): array

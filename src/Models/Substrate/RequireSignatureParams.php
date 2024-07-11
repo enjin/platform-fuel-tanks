@@ -38,6 +38,6 @@ class RequireSignatureParams extends FuelTankRules
 
     public function validate(string $signature): bool
     {
-        return ctype_xdigit($signature) && strlen(HexConverter::unPrefix($signature)) === 16 ;
+        return ctype_xdigit($signature) && strlen(HexConverter::unPrefix($signature)) === 16;
     }
 }

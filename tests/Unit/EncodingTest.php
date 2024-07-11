@@ -535,11 +535,10 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_dispatch()
     {
-        $createCollection = '2800000000000000';
-        $data = $this->substrate->encode('Dispatch', DispatchMutation::getEncodableParams(
-            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            ruleSetId: 255,
-        )) . $createCollection . '00';
+        $data = DispatchMutation::getFuelTankCall('Dispatch', [
+            'tankId' => '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            'ruleSetId' => 255,
+        ], rawCall: '2800000000000000');
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.dispatch', true);
         $this->assertEquals(
@@ -550,15 +549,15 @@ class EncodingTest extends TestCase
 
     public function test_it_can_encode_dispatch_and_touch()
     {
-        $createCollection = '2800000000000000';
-        $data = $this->substrate->encode('DispatchAndTouch', DispatchAndTouchMutation::getEncodableParams(
-            tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
-            ruleSetId: 255,
-        )) . $createCollection . '00';
+        $data = DispatchAndTouchMutation::getFuelTankCall('DispatchAndTouch', [
+            'tankId' => '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
+            'ruleSetId' => 255,
+            'paysRemainingFee' => false,
+        ], rawCall: '2800000000000000');
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.dispatch_and_touch', true);
         $this->assertEquals(
-            "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27dff000000280000000000000000",
+            "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27dff0000002800000000000000010000",
             $data
         );
     }

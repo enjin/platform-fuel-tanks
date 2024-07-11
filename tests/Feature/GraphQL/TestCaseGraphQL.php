@@ -110,7 +110,7 @@ class TestCaseGraphQL extends BaseTestCase
             );
         } else {
             $tank->each(
-                function ($tank) {
+                function ($tank): void {
                     $tank->setRelation(
                         'dispatchRules',
                         DispatchRule::factory(5)->create(['fuel_tank_id' => $tank->id])
