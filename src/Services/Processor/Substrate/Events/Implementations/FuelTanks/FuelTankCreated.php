@@ -50,7 +50,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
                 'owner_wallet_id' => $owner->id,
                 'reserves_existential_deposit' => $reservesExistentialDeposit,
                 'reserves_account_creation_deposit' => $reservesAccountCreationDeposit,
-                'provides_deposit' => $providesDeposit,
+                'provides_deposit' => $providesDeposit ?? false,
                 'is_frozen' => false,
             ]
         );
