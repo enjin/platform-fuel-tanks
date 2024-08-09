@@ -133,7 +133,9 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
             'descriptor' => [
                 'name' => HexConverter::stringToHexPrefixed($name),
                 'userAccountManagement' => $userAccountManagement?->toEncodable(),
-                'ruleSets' => $ruleSets->map(fn ($ruleSet) => $ruleSet->toEncodable())->toArray(),
+                'ruleSets' => isRunningLatest()
+                    ? [['rules' => $ruleSets->flatMap(fn ($ruleSet) => $ruleSet->toEncodable())->all(), 'requireAccount' => false]]
+                    : $ruleSets->map(fn ($ruleSet) => $ruleSet->toEncodable())->all(),
                 ...$extra,
                 'accountRules' => $accountRules?->toEncodable() ?? [],
             ],
