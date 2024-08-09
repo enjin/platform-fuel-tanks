@@ -8,6 +8,7 @@ use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\MaxFuelBurnPerTransactionParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\PermittedCallsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\PermittedExtrinsicsParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\RequireSignatureParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\RequireTokenParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\TankFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\UserAccountManagementParams;
@@ -77,6 +78,9 @@ class Substrate extends PlatformSubstrate
                 : null,
             ($pallets = Arr::get($args, 'whitelistedPallets'))
                 ? new WhitelistedPalletsParams($pallets)
+                : null,
+            ($requireSignature = Arr::get($args, 'requireSignature.signature'))
+                ? new RequireSignatureParams($requireSignature)
                 : null,
         );
     }
