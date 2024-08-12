@@ -2,6 +2,7 @@
 
 namespace Enjin\Platform\FuelTanks\GraphQL\Types\Input;
 
+use Enjin\Platform\Rules\ValidHex;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 
 class RequireSignatureInputType extends InputType
@@ -26,6 +27,7 @@ class RequireSignatureInputType extends InputType
             'signature' => [
                 'type' => GraphQL::type('String!'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.require_signature.field.signature'),
+                'rules' => ['sometimes', new ValidHex(16)],
             ],
         ];
     }
