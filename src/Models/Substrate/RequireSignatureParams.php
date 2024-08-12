@@ -33,7 +33,7 @@ class RequireSignatureParams extends FuelTankRules
 
     public function toArray(): array
     {
-        return ['RequireSignature' => $this->toArray()];
+        return ['RequireSignature' => $this->signature];
     }
 
     public function validate(string $signature): bool
