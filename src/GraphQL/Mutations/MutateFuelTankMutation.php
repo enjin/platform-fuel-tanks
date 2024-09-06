@@ -113,7 +113,9 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
             ],
             'mutation' => [
                 'userAccountManagement' => is_array($userAccount) ? ['NoMutation' => null] : ['SomeMutation' => $userAccount?->toEncodable()],
-                (isRunningLatest() ? 'coveragePolicy' : 'providesDeposit') => $providesDeposit,
+                ...(isRunningLatest() ?
+                    ['coveragePolicy' => $providesDeposit ? 'Fees' : 'FeesAndDeposit'] :
+                    ['providesDeposit' => $providesDeposit]),
                 'accountRules' => $accountRules?->toEncodable(),
             ],
         ];
