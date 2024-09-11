@@ -22,7 +22,8 @@ class DispatchRulesParams
         public ?WhitelistedPalletsParams $whitelistedPallets = null,
         public ?RequireSignatureParams $requireSignature = null,
         public ?bool $isFrozen = false,
-    ) {}
+    ) {
+    }
 
     /**
      * Create a new instance from the given parameters.
