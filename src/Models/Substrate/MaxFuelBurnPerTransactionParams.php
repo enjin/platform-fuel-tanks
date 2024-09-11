@@ -9,7 +9,9 @@ class MaxFuelBurnPerTransactionParams extends FuelTankRules
     /**
      * Creates a new instance.
      */
-    public function __construct(public string $max) {}
+    public function __construct(public string $max)
+    {
+    }
 
     /**
      * Creates a new instance from the given array.

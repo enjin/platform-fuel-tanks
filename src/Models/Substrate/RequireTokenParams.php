@@ -16,7 +16,8 @@ class RequireTokenParams extends FuelTankRules
     public function __construct(
         public string $collectionId,
         public string $tokenId,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a new instance from the given array.

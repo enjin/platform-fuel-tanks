@@ -11,7 +11,8 @@ class WhitelistedCollectionsParams extends FuelTankRules
      */
     public function __construct(
         public ?array $collections = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a new instance from the given array.

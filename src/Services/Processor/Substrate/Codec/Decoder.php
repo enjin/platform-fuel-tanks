@@ -28,11 +28,7 @@ class Decoder extends BaseDecoder
      */
     public function tankStorageData(string $data): array
     {
-        try {
-            $decoded = $this->codec->process('TankStorageDataV1010', new ScaleBytes($data));
-        } catch (\Exception) {
-            $decoded = $this->codec->process('TankStorageData', new ScaleBytes($data));
-        }
+        $decoded = $this->codec->process('TankStorageDataV1010', new ScaleBytes($data));
 
         return [
             'owner' => ($owner = Arr::get($decoded, 'owner')) !== null ? HexConverter::prefix($owner) : null,
@@ -68,11 +64,7 @@ class Decoder extends BaseDecoder
      */
     public function fuelTankAccountStorageData(string $data): array
     {
-        try {
-            $decoded = $this->codec->process('FuelTankAccountStorageDataV1010', new ScaleBytes($data));
-        } catch (\Exception) {
-            $decoded = $this->codec->process('FuelTankAccountStorageData', new ScaleBytes($data));
-        }
+        $decoded = $this->codec->process('FuelTankAccountStorageDataV1010', new ScaleBytes($data));
 
         return [
             'tankDeposit' => gmp_strval(Arr::get($decoded, 'tankDeposit')),
