@@ -11,7 +11,8 @@ class RequireSignatureParams extends FuelTankRules
      */
     public function __construct(
         public string $signature,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a new instance from the given array.
