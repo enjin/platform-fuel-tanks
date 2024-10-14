@@ -1,7 +1,7 @@
 query GetFuelTank($tankId: String, $name: String) {
   GetFuelTank(tankId: $tankId, name: $name) {
     name
-    providesDeposit
+    coveragePolicy
     tankId {
       publicKey
       address

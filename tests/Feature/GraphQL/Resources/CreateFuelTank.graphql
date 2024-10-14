@@ -1,17 +1,15 @@
 mutation CreateFuelTank(
   $name: String!
-  $reservesExistentialDeposit: Boolean
   $reservesAccountCreationDeposit: Boolean
-  $providesDeposit: Boolean!
+  $coveragePolicy: CoveragePolicy
   $accountRules: AccountRuleInputType
   $dispatchRules: [DispatchRuleInputType!]
   $skipValidation: Boolean
 ) {
   CreateFuelTank(
     name: $name
-    reservesExistentialDeposit: $reservesExistentialDeposit
     reservesAccountCreationDeposit: $reservesAccountCreationDeposit
-    providesDeposit: $providesDeposit
+    coveragePolicy: $coveragePolicy
     accountRules: $accountRules
     dispatchRules: $dispatchRules
     skipValidation: $skipValidation

@@ -8,7 +8,6 @@ class UserAccountManagementParams
      * Creates a new instance.
      */
     public function __construct(
-        public bool $tankReservesExistentialDeposit = false,
         public bool $tankReservesAccountCreationDeposit = false,
     ) {}
 
@@ -18,7 +17,6 @@ class UserAccountManagementParams
     public function toEncodable(): array
     {
         return [
-            'tankReservesExistentialDeposit' => $this->tankReservesExistentialDeposit,
             'tankReservesAccountCreationDeposit' => $this->tankReservesAccountCreationDeposit,
         ];
     }

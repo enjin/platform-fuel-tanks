@@ -123,21 +123,16 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
         $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
         $ruleSetId = Arr::get($params, 'ruleSetId', 0);
         $rules = Arr::get($params, 'dispatchRules', new DispatchRulesParams())->toEncodable();
-        $extra = isRunningLatest() ? [
-            'ruleSet' => [
-                'rules' => $rules,
-                'requireAccount' => false,
-            ],
-        ] : [
-            'rules' => $rules,
-        ];
 
         return [
             'tankId' => [
                 'Id' => HexConverter::unPrefix(SS58Address::getPublicKey($tankId)),
             ],
             'ruleSetId' => $ruleSetId,
-            ...$extra,
+            'ruleSet' => [
+                'rules' => $rules,
+                'requireAccount' => false,
+            ],
         ];
     }
 

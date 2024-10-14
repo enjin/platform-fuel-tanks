@@ -124,7 +124,6 @@ class TestCaseGraphQL extends BaseTestCase
             );
         }
 
-
         return $tank;
     }
 

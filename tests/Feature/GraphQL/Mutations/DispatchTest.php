@@ -49,7 +49,7 @@ class DispatchTest extends TestCaseGraphQL
     {
         $response = $this->graphql(
             $this->method,
-            $params = $this->generateParams(DispatchCall::MULTI_TOKENS)
+            $params = $this->generateParams(DispatchCall::MULTI_TOKENS),
         );
 
         $encodedCall = DispatchMutation::getFuelTankCall($this->method, $params);

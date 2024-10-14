@@ -2,7 +2,6 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Traits;
 
-use Enjin\Platform\Enums\Substrate\TokenMintCapType;
 use Enjin\Platform\Models\Collection;
 use Enjin\Platform\Models\Token;
 use Enjin\Platform\Models\Wallet;
@@ -31,40 +30,30 @@ trait CreateCollectionData
     public function createCollectionData(?string $publicKey = null): void
     {
         $this->wallet = Wallet::firstOrCreate(
-            ['public_key' => $publicKey ?: config('enjin-platform.chains.daemon-account')],
             [
-                'external_id' => fake()->unique()->uuid(),
-                'managed' => fake()->boolean(),
-                'verification_id' => fake()->unique()->uuid(),
-                'network' => 'developer',
-                'linking_code' => null,
-            ]
+                'public_key' => $publicKey ?: config('enjin-platform.chains.daemon-account'),
+            ],
+            Wallet::factory()->raw([
+                'public_key' => $publicKey ?: config('enjin-platform.chains.daemon-account'),
+            ]),
         );
 
-        $this->collection = Collection::create([
+        $this->collection = Collection::factory()->create([
             'collection_chain_id' => (string) fake()->unique()->numberBetween(2000),
             'owner_wallet_id' => $this->wallet->id,
             'max_token_count' => fake()->numberBetween(1),
             'max_token_supply' => (string) fake()->numberBetween(1),
-            'force_single_mint' => fake()->boolean(),
+            'force_collapsing_supply' => fake()->boolean(),
             'is_frozen' => false,
-            'token_count' => '0',
-            'attribute_count' => '0',
-            'total_deposit' => '0',
-            'network' => 'developer',
         ]);
 
-        $this->token = Token::create([
+        $this->token = Token::factory()->create([
             'collection_id' => $this->collection->id,
             'token_chain_id' => (string) fake()->unique()->numberBetween(2000),
-            'supply' => (string) $supply = fake()->numberBetween(1),
-            'cap' => TokenMintCapType::INFINITE->name,
+            'supply' => (string) fake()->numberBetween(1),
+            'cap' => null,
             'cap_supply' => null,
             'is_frozen' => false,
-            'unit_price' => (string) $unitPrice = fake()->numberBetween(1 / $supply * 10 ** 17),
-            'mint_deposit' => (string) ($unitPrice * $supply),
-            'minimum_balance' => '1',
-            'attribute_count' => '0',
         ]);
     }
 }

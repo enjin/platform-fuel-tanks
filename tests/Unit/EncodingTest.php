@@ -2,6 +2,7 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Unit;
 
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\AddAccountMutation;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\BatchAddAccountMutation;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\BatchRemoveAccountMutation;
@@ -126,13 +127,13 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             accountRules: $accountRules,
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}3c456e6a696e204675656c2054616e6b00000000",
+            "0x{$callIndex}3c456e6a696e204675656c2054616e6b00040000000000000000",
             $data
         );
     }
@@ -143,13 +144,13 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
-            providesDeposit: true,
+            coveragePolicy: CoveragePolicy::FEES_AND_DEPOSIT,
             accountRules: $accountRules,
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}3c456e6a696e204675656c2054616e6b00000100",
+            "0x{$callIndex}3c456e6a696e204675656c2054616e6b00040000000000000100",
             $data
         );
     }
@@ -158,13 +159,12 @@ class EncodingTest extends TestCase
     {
         $accountRules = new AccountRulesParams();
         $userAccount = new UserAccountManagementParams(
-            tankReservesExistentialDeposit: true,
             tankReservesAccountCreationDeposit: true,
         );
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             accountRules: $accountRules,
             dispatchRules: [],
             userAccountManagement: $userAccount,
@@ -172,7 +172,7 @@ class EncodingTest extends TestCase
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}3c456e6a696e204675656c2054616e6b010101000000",
+            "0x{$callIndex}3c456e6a696e204675656c2054616e6b0101040000000000000000",
             $data
         );
     }
@@ -188,13 +188,13 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             accountRules: $accountRules,
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}3c456e6a696e204675656c2054616e6b0000000401d0070000000000000000000000000000ff000000000000000000000000000000",
+            "0x{$callIndex}3c456e6a696e204675656c2054616e6b0004000000000000000401d0070000000000000000000000000000ff000000000000000000000000000000",
             $data
         );
     }
@@ -212,13 +212,13 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             accountRules: $accountRules,
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}3c456e6a696e204675656c2054616e6b0000000400088eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
+            "0x{$callIndex}3c456e6a696e204675656c2054616e6b0004000000000000000400088eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
             $data
         );
     }
@@ -240,13 +240,13 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Fuel Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             accountRules: $accountRules,
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}3c456e6a696e204675656c2054616e6b0000000800088eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01d0070000000000000000000000000000ff000000000000000000000000000000",
+            "0x{$callIndex}3c456e6a696e204675656c2054616e6b0004000000000000000800088eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d01d0070000000000000000000000000000ff000000000000000000000000000000",
             $data
         );
     }
@@ -263,14 +263,14 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             userAccountManagement: null,
             dispatchRules: [$dispatchRules],
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}28456e6a696e2054616e6b000400000000040004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0000",
+            "0x{$callIndex}28456e6a696e2054616e6b000400000000040004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d000000",
             $data
         );
     }
@@ -285,14 +285,14 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             userAccountManagement: null,
             dispatchRules: [$dispatchRules],
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}28456e6a696e2054616e6b000400000000040104d00700000000000000000000000000000000",
+            "0x{$callIndex}28456e6a696e2054616e6b000400000000040104d0070000000000000000000000000000000000",
             $data
         );
     }
@@ -307,14 +307,14 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             userAccountManagement: null,
             dispatchRules: [$dispatchRules],
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}28456e6a696e2054616e6b0004000000000402af6400000000000000000000000000000000",
+            "0x{$callIndex}28456e6a696e2054616e6b0004000000000402af640000000000000000000000000000000000",
             $data
         );
     }
@@ -330,14 +330,14 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             userAccountManagement: null,
             dispatchRules: [$dispatchRules],
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}28456e6a696e2054616e6b000400000000040302ca9a3be09304000000",
+            "0x{$callIndex}28456e6a696e2054616e6b000400000000040302ca9a3be0930400000000",
             $data
         );
     }
@@ -353,14 +353,14 @@ class EncodingTest extends TestCase
 
         $data = $this->substrate->encode('CreateFuelTank', CreateFuelTankMutation::getEncodableParams(
             name: 'Enjin Tank',
-            providesDeposit: false,
+            coveragePolicy: CoveragePolicy::FEES,
             userAccountManagement: null,
             dispatchRules: [$dispatchRules],
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.create_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}28456e6a696e2054616e6b0004000000000404024e7253bf0e00000000",
+            "0x{$callIndex}28456e6a696e2054616e6b0004000000000404024e7253bf0e0000000000",
             $data
         );
     }
@@ -410,7 +410,7 @@ class EncodingTest extends TestCase
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
         $this->assertEquals(
-            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a000000040004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d",
+            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a000000040004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d00",
             $data
         );
     }
@@ -432,7 +432,7 @@ class EncodingTest extends TestCase
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
         $this->assertEquals(
-            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a00000004070c2800000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e95680200282900",
+            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a0000000407070c280000000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e95680200282900",
             $data
         );
     }
@@ -485,14 +485,13 @@ class EncodingTest extends TestCase
         $data = $this->substrate->encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             userAccount: new UserAccountManagementParams(
-                tankReservesExistentialDeposit: true,
                 tankReservesAccountCreationDeposit: true,
             )
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.mutate_fuel_tank', true);
         $this->assertEquals(
-            "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d010101010000",
+            "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0101010000",
             $data
         );
     }
@@ -502,7 +501,7 @@ class EncodingTest extends TestCase
         $data = $this->substrate->encode('MutateFuelTank', MutateFuelTankMutation::getEncodableParams(
             tankId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             userAccount: [],
-            providesDeposit: true,
+            coveragePolicy: CoveragePolicy::FEES_AND_DEPOSIT,
         ));
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.mutate_fuel_tank', true);
@@ -553,11 +552,11 @@ class EncodingTest extends TestCase
             'tankId' => '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d',
             'ruleSetId' => 255,
             'paysRemainingFee' => false,
-        ], rawCall: '2800000000000000');
+        ], rawCall: '2800000000000004000000');
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.dispatch_and_touch', true);
         $this->assertEquals(
-            "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27dff0000002800000000000000010000",
+            "0x{$callIndex}00d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27dff000000280000000000000400000001000000",
             $data
         );
     }

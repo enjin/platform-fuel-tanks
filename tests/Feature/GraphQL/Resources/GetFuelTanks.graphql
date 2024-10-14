@@ -10,7 +10,7 @@ query GetFuelTanks($tankIds: [String!], $names: [String!]) {
     edges {
       node {
         name
-        providesDeposit
+        coveragePolicy
         tankId {
           publicKey
           address

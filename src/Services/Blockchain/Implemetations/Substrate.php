@@ -34,10 +34,8 @@ class Substrate extends PlatformSubstrate
      */
     public function getUserAccountManagementParams(?array $args = null): ?UserAccountManagementParams
     {
-        if (!is_null($existentialDeposit = Arr::get($args, 'reservesExistentialDeposit'))
-            || !is_null($creationDeposit = Arr::get($args, 'reservesAccountCreationDeposit'))) {
+        if (!is_null($creationDeposit = Arr::get($args, 'reservesAccountCreationDeposit'))) {
             return new UserAccountManagementParams(
-                $existentialDeposit ?? false,
                 $creationDeposit ?? false
             );
         }

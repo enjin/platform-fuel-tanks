@@ -86,10 +86,9 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
         SerializationServiceInterface $serializationService,
         Substrate $blockchainService
     ) {
-        $method = isRunningLatest() ? $this->getMutationName() . 'V1010' : $this->getMutationName();
-        $encodedData = $serializationService->encode($method, static::getEncodableParams(
+        $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(
             userAccount: $blockchainService->getUserAccountManagementParams(Arr::get($args, 'mutation')),
-            providesDeposit: Arr::get($args, 'mutation.providesDeposit'),
+            coveragePolicy: Arr::get($args, 'mutation.coveragePolicy'),
             accountRules: $blockchainService->getAccountRulesParams(Arr::get($args, 'mutation')),
             tankId: $args['tankId'],
         ));
@@ -104,7 +103,7 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
     {
         $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
         $userAccount = Arr::get($params, 'userAccount');
-        $providesDeposit = Arr::get($params, 'providesDeposit');
+        $coveragePolicy = Arr::get($params, 'coveragePolicy');
         $accountRules = Arr::get($params, 'accountRules');
 
         return [
@@ -113,9 +112,7 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
             ],
             'mutation' => [
                 'userAccountManagement' => is_array($userAccount) ? ['NoMutation' => null] : ['SomeMutation' => $userAccount?->toEncodable()],
-                ...(isRunningLatest() ?
-                    ['coveragePolicy' => $providesDeposit ? 'Fees' : 'FeesAndDeposit'] :
-                    ['providesDeposit' => $providesDeposit]),
+                'coveragePolicy' => $coveragePolicy?->value,
                 'accountRules' => $accountRules?->toEncodable(),
             ],
         ];

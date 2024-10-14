@@ -100,7 +100,9 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
     ) {
         DB::beginTransaction();
         $encodedCall = static::getFuelTankCall($this->getMethodName(), $args);
+
         $transaction = $this->storeTransaction($args, $encodedCall);
+
         DB::commit();
 
         return Transaction::lazyLoadSelectFields($transaction, $resolveInfo);

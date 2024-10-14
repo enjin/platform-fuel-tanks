@@ -3,6 +3,7 @@
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
 use Enjin\Platform\Exceptions\PlatformException;
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankMutated as FuelTankMutatedEvent;
 use Enjin\Platform\FuelTanks\Models\AccountRule;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
@@ -25,14 +26,10 @@ class FuelTankMutated extends FuelTankSubstrateEvent
     {
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($this->event->tankId);
+        $fuelTank->coverage_policy = CoveragePolicy::from($this->event->coveragePolicy)->name;
 
         if (!empty($uac = $this->event->userAccountManagement)) {
-            $fuelTank->reserves_existential_deposit = $this->getValue($uac, ['Some.tank_reserves_existential_deposit', 'tank_reserves_existential_deposit']);
-            $fuelTank->reserves_account_creation_deposit = $this->getValue($uac, ['Some.tank_reserves_account_creation_deposit', 'tank_reserves_account_creation_deposit']);
-        }
-
-        if (!empty($providesDeposit = $this->event->providesDeposit)) {
-            $fuelTank->provides_deposit = $providesDeposit;
+            $fuelTank->reserves_account_creation_deposit = $this->getValue($uac, 'tank_reserves_account_creation_deposit');
         }
 
         if (!empty($accountRules = $this->event->accountRules)) {

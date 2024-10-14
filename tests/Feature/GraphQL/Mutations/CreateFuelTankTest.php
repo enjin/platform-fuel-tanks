@@ -3,6 +3,7 @@
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Mutations;
 
 use Enjin\Platform\Facades\TransactionSerializer;
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\GraphQL\Mutations\CreateFuelTankMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
@@ -57,9 +58,8 @@ class CreateFuelTankTest extends TestCaseGraphQL
         $response = $this->graphql($this->method, $data = [
             'name' => fake()->text(32),
             'account' => resolve(SubstrateProvider::class)->public_key(),
-            'reservesExistentialDeposit' => $existentialDeposit = (fake()->boolean() ?: null),
-            'reservesAccountCreationDeposit' => $existentialDeposit != null ? fake()->boolean() : null,
-            'providesDeposit' => fake()->boolean(),
+            'reservesAccountCreationDeposit' => fake()->boolean(),
+            'coveragePolicy' => fake()->randomElement(CoveragePolicy::caseNamesAsArray()),
             'accountRules' => [
                 'whitelistedCallers' => [resolve(SubstrateProvider::class)->public_key()],
                 'requireToken' => [
@@ -96,7 +96,11 @@ class CreateFuelTankTest extends TestCaseGraphQL
     public function test_it_will_fail_with_invalid_parameter_name(): void
     {
         $data = $this->generateData();
-        FuelTank::create(['name' => $data['name'], 'public_key' => $data['account'], 'owner_wallet_id' => $this->wallet->id]);
+        FuelTank::factory()->create([
+            'name' => $data['name'],
+            'public_key' => $data['account'],
+            'owner_wallet_id' => $this->wallet->id
+        ]);
 
         $response = $this->graphql($this->method, $data, true);
         $this->assertArraySubset(
@@ -132,40 +136,15 @@ class CreateFuelTankTest extends TestCaseGraphQL
         );
     }
 
-    public function test_it_will_fail_with_invalid_parameter_provides_deposit(): void
+    public function test_it_will_fail_with_invalid_parameter_coverage_policy(): void
     {
         $data = $this->generateData();
         $response = $this->graphql(
             $this->method,
-            array_merge($data, ['providesDeposit' => 'Invalid']),
+            array_merge($data, ['coveragePolicy' => 'Invalid']),
             true
         );
-        $this->assertEquals('Variable "$providesDeposit" got invalid value "Invalid"; Boolean cannot represent a non boolean value: "Invalid"', $response['error']);
-
-        $response = $this->graphql(
-            $this->method,
-            array_merge($data, ['providesDeposit' => null]),
-            true
-        );
-        $this->assertEquals('Variable "$providesDeposit" of non-null type "Boolean!" must not be null.', $response['error']);
-    }
-
-    public function test_it_will_fail_with_invalid_parameter_user_management(): void
-    {
-        $data = $this->generateData();
-        $response = $this->graphql(
-            $this->method,
-            array_merge($data, ['reservesExistentialDeposit' => 'Invalid']),
-            true
-        );
-        $this->assertEquals('Variable "$reservesExistentialDeposit" got invalid value "Invalid"; Boolean cannot represent a non boolean value: "Invalid"', $response['error']);
-
-        $response = $this->graphql(
-            $this->method,
-            array_merge($data, ['reservesAccountCreationDeposit' => 'Invalid']),
-            true
-        );
-        $this->assertEquals('Variable "$reservesAccountCreationDeposit" got invalid value "Invalid"; Boolean cannot represent a non boolean value: "Invalid"', $response['error']);
+        $this->assertEquals('Variable "$coveragePolicy" got invalid value "Invalid"; Value "Invalid" does not exist in "CoveragePolicy" enum.', $response['error']);
     }
 
     public function test_it_will_fail_with_invalid_parameter_account_rules_whitelisted_callers(): void
