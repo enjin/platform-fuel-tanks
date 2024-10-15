@@ -34,7 +34,6 @@ jobs:
         run: |
           cd security-checker/
           composer install --no-interaction --no-progress
-          composer require enjin/platform-core:dev-master
 
       - name: Run
         run: php security-checker security:check ../composer.lock

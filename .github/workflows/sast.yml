@@ -51,7 +51,6 @@ jobs:
       - name: Install dependencies
         run: |
           composer install --no-interaction --no-progress
-          composer require enjin/platform-core:dev-master
           composer dump-autoload      
 
       - name: Run Rector
