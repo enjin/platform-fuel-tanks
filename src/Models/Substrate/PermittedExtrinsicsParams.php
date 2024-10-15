@@ -22,6 +22,10 @@ class PermittedExtrinsicsParams extends FuelTankRules
     {
         $this->extrinsics = array_map(
             function ($extrinsic) {
+                if (is_string($extrinsic)) {
+                    return $extrinsic;
+                }
+
                 if (($palletName = Arr::get($extrinsic, 'palletName')) && ($methodName = Arr::get($extrinsic, 'extrinsicName'))) {
                     return HexConverter::hexToString($palletName) . '.' . HexConverter::hexToString($methodName);
                 }

@@ -2,6 +2,7 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\Traits;
 
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\Providers\Faker\SubstrateProvider;
 
 trait GenerateFuelTankData
@@ -29,9 +30,8 @@ trait GenerateFuelTankData
         return [
             'name' => fake()->text(32),
             'account' => $this->wallet->address,
-            'reservesExistentialDeposit' => $existentialDeposit = (fake()->boolean() ?: null),
-            'reservesAccountCreationDeposit' => $existentialDeposit != null ? fake()->boolean() : null,
-            'providesDeposit' => fake()->boolean(),
+            'reservesAccountCreationDeposit' => fake()->boolean(),
+            'coveragePolicy' => fake()->randomElement(CoveragePolicy::caseNamesAsArray()),
             'accountRules' => [
                 'whitelistedCallers' => [$provider->public_key()],
                 'requireToken' => [

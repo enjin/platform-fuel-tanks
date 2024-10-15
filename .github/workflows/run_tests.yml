@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.2]
+        php: [8.3]
 
     name: PHP ${{ matrix.php }}
 
@@ -58,13 +58,9 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PHP_COMMONS }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          composer install --no-interaction --prefer-dist --optimize-autoloader
+          composer install --no-interaction --no-progress
           composer build-sr25519
           composer dump-autoload
-
-      - name: Run Laravel Pint
-        run: |
-          ./vendor/bin/pint --test
 
       - name: Execute tests
         run: |

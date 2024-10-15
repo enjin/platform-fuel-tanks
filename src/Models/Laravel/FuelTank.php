@@ -32,9 +32,8 @@ class FuelTank extends BaseModel
         'public_key',
         'owner_wallet_id',
         'name',
-        'reserves_existential_deposit',
+        'coverage_policy',
         'reserves_account_creation_deposit',
-        'provides_deposit',
         'is_frozen',
         'account_count',
     ];

@@ -2,8 +2,9 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\Implementations\FuelTanks;
 
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankCreated as FuelTankCreatedEvent;
-use Enjin\Platform\FuelTanks\Models\FuelTank;
+use Enjin\Platform\FuelTanks\Models\Laravel\FuelTank;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
@@ -28,17 +29,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
         $extrinsic = $this->block->extrinsics[$this->event->extrinsicIndex];
         $params = $extrinsic->params;
 
-        $providesDeposit = Arr::get($params, 'descriptor.provides_deposit');
-        $reservesExistentialDeposit = $this->getValue($params, [
-            'descriptor.user_account_management.Some.tank_reserves_existential_deposit',
-            'descriptor.user_account_management.tank_reserves_existential_deposit',
-        ]);
-
-        $reservesAccountCreationDeposit = $this->getValue($params, [
-            'descriptor.user_account_management.Some.tank_reserves_account_creation_deposit',
-            'descriptor.user_account_management.tank_reserves_account_creation_deposit',
-        ]);
-
+        $reservesAccountCreationDeposit = $this->getValue($params, 'descriptor.user_account_management.tank_reserves_account_creation_deposit');
         $owner = $this->firstOrStoreAccount($this->event->owner);
         $this->extra = ['tank_owner' => $this->event->owner];
 
@@ -49,9 +40,8 @@ class FuelTankCreated extends FuelTankSubstrateEvent
             [
                 'name' => $this->event->tankName,
                 'owner_wallet_id' => $owner->id,
-                'reserves_existential_deposit' => $reservesExistentialDeposit,
+                'coverage_policy' => CoveragePolicy::from($this->getValue($params, 'descriptor.coverage_policy'))->name,
                 'reserves_account_creation_deposit' => $reservesAccountCreationDeposit,
-                'provides_deposit' => $providesDeposit ?? false,
                 'is_frozen' => false,
             ]
         );

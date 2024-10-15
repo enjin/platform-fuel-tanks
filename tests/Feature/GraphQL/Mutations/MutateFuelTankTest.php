@@ -24,7 +24,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
 
         $blockchainService = resolve(Substrate::class);
         $data['userAccount'] = $blockchainService->getUserAccountManagementParams(Arr::get($data, 'mutation'));
-        $data['providesDeposit'] = Arr::get($data, 'mutation.providesDeposit');
+        $data['coveragePolicy'] = Arr::get($data, 'mutation.coveragePolicy');
         $data['accountRules'] = $blockchainService->getAccountRulesParams(Arr::get($data, 'mutation'));
 
         $this->assertEquals(
@@ -43,7 +43,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
 
         $blockchainService = resolve(Substrate::class);
         $params['userAccount'] = $blockchainService->getUserAccountManagementParams(Arr::get($params, 'mutation'));
-        $params['providesDeposit'] = Arr::get($params, 'mutation.providesDeposit');
+        $params['coveragePolicy'] = Arr::get($params, 'mutation.coveragePolicy');
         $params['accountRules'] = $blockchainService->getAccountRulesParams(Arr::get($params, 'mutation'));
 
         $this->assertEquals(

@@ -48,6 +48,7 @@ class RemoveAccountTest extends TestCaseGraphQL
             $this->method,
             $params = ['tankId' => $this->tank->public_key, 'userId' => $this->account]
         );
+
         $this->assertEquals(
             $response['encodedData'],
             TransactionSerializer::encode($this->method, RemoveAccountMutation::getEncodableParams(...$params))

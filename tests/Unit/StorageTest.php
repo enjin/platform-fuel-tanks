@@ -2,14 +2,14 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Unit;
 
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\MaxFuelBurnPerTransactionParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\PermittedCallsParams;
-use Enjin\Platform\FuelTanks\Models\Substrate\TankFuelBudgetParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\PermittedExtrinsicsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\UserFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCallersParams;
-use Enjin\Platform\FuelTanks\Models\Substrate\WhitelistedCollectionsParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Codec\Codec;
 use Enjin\Platform\FuelTanks\Tests\TestCase;
 
@@ -43,10 +43,9 @@ final class StorageTest extends TestCase
                 'ruleSets' => [],
                 'totalReserved' => '6000000000000000000',
                 'accountCount' => '3',
-                'reservesExistentialDeposit' => null,
                 'reservesAccountCreationDeposit' => null,
+                'coveragePolicy' => CoveragePolicy::FEES,
                 'isFrozen' => false,
-                'providesDeposit' => false,
                 'accountRules' => null,
             ],
             $content
@@ -70,57 +69,9 @@ final class StorageTest extends TestCase
                 ],
                 'totalReserved' => '0',
                 'accountCount' => '0',
-                'reservesExistentialDeposit' => null,
                 'reservesAccountCreationDeposit' => null,
                 'isFrozen' => false,
-                'providesDeposit' => false,
-                'accountRules' => null,
-            ],
-            $content
-        );
-    }
-
-    public function test_it_can_decode_fuel_tanks_storage_data_with_user_account_management()
-    {
-        $content = $this->codec->decoder()->tankStorageData('0x3274a0b6662b3cab47da58afd6549b17f0cbf5b7a977bb7fed481ce76ea8af74206c666d786a696f69000000010100000000');
-
-        $this->assertEquals(
-            [
-                'owner' => '0x3274a0b6662b3cab47da58afd6549b17f0cbf5b7a977bb7fed481ce76ea8af74',
-                'name' => 'lfmxjioi',
-                'ruleSets' => [],
-                'totalReserved' => '0',
-                'accountCount' => '0',
-                'reservesExistentialDeposit' => null,  // TODO: This should be removed when transition is over
-                'reservesAccountCreationDeposit' => false,
-                'isFrozen' => false,
-                'providesDeposit' => false,
-                'accountRules' => null,
-            ],
-            $content
-        );
-    }
-
-    public function test_it_can_decode_fuel_tanks_storage_data_with_user_account_management_and_rule_set_with_no_rules()
-    {
-        $content = $this->codec->decoder()->tankStorageData('0x56fba7af9da63a74853ced5555fec97ce993bd02060ed5954938f72636bb0800206c65336335766d7904000000000000130000c84e676dc11b04010101000000');
-
-        $this->assertEquals(
-            [
-                'owner' => '0x56fba7af9da63a74853ced5555fec97ce993bd02060ed5954938f72636bb0800',
-                'name' => 'le3c5vmy',
-                'ruleSets' => [
-                    new DispatchRulesParams(
-                        ruleSetId: 0,
-                        isFrozen: false,
-                    ),
-                ],
-                'totalReserved' => '2000000000000000000',
-                'accountCount' => '1',
-                'reservesExistentialDeposit' => null, // TODO: This should be removed when transition is over
-                'reservesAccountCreationDeposit' => true,
-                'isFrozen' => false,
-                'providesDeposit' => false,
+                'coveragePolicy' => CoveragePolicy::FEES,
                 'accountRules' => null,
             ],
             $content
@@ -144,10 +95,9 @@ final class StorageTest extends TestCase
                 ],
                 'totalReserved' => '0',
                 'accountCount' => '0',
-                'reservesExistentialDeposit' => null,
                 'reservesAccountCreationDeposit' => null,
                 'isFrozen' => false,
-                'providesDeposit' => false,
+                'coveragePolicy' => CoveragePolicy::FEES,
                 'accountRules' => null,
             ],
             $content
@@ -156,60 +106,35 @@ final class StorageTest extends TestCase
 
     public function test_it_can_decode_fuel_tanks_storage_data_with_multiple_rules()
     {
-        $content = $this->codec->decoder()->tankStorageData('0x32249aa5459605d8d940b8535dfbcb0b45016f560f784b9420ed346557b85242206c656664686c6d62144811000004030313000064a7b3b6e00d7b00000000004b2d000004040413000064a7b3b6e00d7b0000000000001ab400000401010400000000000000000000000000000000002cfb0000040202000064a7b3b6e00d000000000000000000d345010004000004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d00000000000000');
+        $content = $this->codec->decoder()->tankStorageData('0x583a5efb357bf4a63bd04e1da3915250fcd3c2415f03b1de9917292f77927f4e344d616769634675656c54616e6b080000000004030317000010632d5ec76b056400000014000101000000040707042042616c616e636573207472616e73666572000100000101010100');
 
         $this->assertEquals(
             [
-                'owner' => '0x32249aa5459605d8d940b8535dfbcb0b45016f560f784b9420ed346557b85242',
-                'name' => 'lefdhlmb',
-                'ruleSets' => [
+                'owner' => '0x583a5efb357bf4a63bd04e1da3915250fcd3c2415f03b1de9917292f77927f4e',
+                'name' => 'MagicFuelTank',
+                'ruleSets' =>  [
                     new DispatchRulesParams(
-                        ruleSetId: 4424,
+                        ruleSetId: 0,
                         userFuelBudget: new UserFuelBudgetParams(
-                            amount: '1000000000000000000',
-                            resetPeriod: 123,
-                            userCount: '0',
+                            amount: '7766279631452241920',
+                            resetPeriod: '100',
+                            userCount:'5',
                         ),
                         isFrozen: false,
                     ),
                     new DispatchRulesParams(
-                        ruleSetId: 11595,
-                        tankFuelBudget: new TankFuelBudgetParams(
-                            amount: '1000000000000000000',
-                            resetPeriod: 123,
-                            totalConsumed: '0',
-                            lastResetBlock: null,
-                        ),
-                        isFrozen: false,
-                    ),
-                    new DispatchRulesParams(
-                        ruleSetId: 46106,
-                        whitelistedCollections: new WhitelistedCollectionsParams(
-                            collections: [0],
-                        ),
-                        isFrozen: false,
-                    ),
-                    new DispatchRulesParams(
-                        ruleSetId: 64300,
-                        maxFuelBurnPerTransaction: new MaxFuelBurnPerTransactionParams(
-                            max: '1000000000000000000',
-                        ),
-                        isFrozen: false,
-                    ),
-                    new DispatchRulesParams(
-                        ruleSetId: 83411,
-                        whitelistedCallers: new WhitelistedCallersParams(
-                            callers: ['d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'],
+                        ruleSetId:  1,
+                        permittedExtrinsics: new PermittedExtrinsicsParams(
+                            extrinsics:  ['Balances.transfer'],
                         ),
                         isFrozen: false,
                     ),
                 ],
                 'totalReserved' => '0',
                 'accountCount' => '0',
-                'reservesExistentialDeposit' => null,
-                'reservesAccountCreationDeposit' => null,
-                'isFrozen' => false,
-                'providesDeposit' => false,
+                'reservesAccountCreationDeposit' => true,
+                'coveragePolicy' => CoveragePolicy::FEES_AND_DEPOSIT,
+                'isFrozen' => true,
                 'accountRules' => null,
             ],
             $content
@@ -227,10 +152,9 @@ final class StorageTest extends TestCase
                 'ruleSets' => [],
                 'totalReserved' => '0',
                 'accountCount' => '0',
-                'reservesExistentialDeposit' => null,
                 'reservesAccountCreationDeposit' => null,
+                'coveragePolicy' => CoveragePolicy::FEES,
                 'isFrozen' => false,
-                'providesDeposit' => false,
                 'accountRules' => new AccountRulesParams(
                     whitelistedCallers: new WhitelistedCallersParams(callers: ['d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d']),
                 ),

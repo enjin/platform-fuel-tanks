@@ -130,7 +130,6 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
 
     public static function getFuelTankCall($method, $args, ?string $rawCall = null): string
     {
-        $method = isRunningLatest() ? "{$method}V1010" : $method;
         $paysRemainingFee = Arr::get($args, 'paysRemainingFee');
 
         $encodedCall = TransactionSerializer::encode($method, static::getEncodableParams(
@@ -141,7 +140,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
         $encodedCall .= $rawCall ?: static::getEncodedCall($args);
 
         return $encodedCall . TransactionSerializer::encodeRaw(
-            isRunningLatest() ? 'OptionDispatchSettingsV1010' : 'OptionDispatchSettings',
+            'OptionDispatchSettings',
             ['option' => $paysRemainingFee === null ? null :
                 [
                     'useNoneOrigin' => false,

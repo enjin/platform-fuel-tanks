@@ -4,6 +4,7 @@ namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate\Codec;
 
 use Codec\ScaleBytes;
 use Enjin\BlockchainTools\HexConverter;
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Decoder as BaseDecoder;
@@ -28,11 +29,7 @@ class Decoder extends BaseDecoder
      */
     public function tankStorageData(string $data): array
     {
-        try {
-            $decoded = $this->codec->process('TankStorageDataV1010', new ScaleBytes($data));
-        } catch (\Exception) {
-            $decoded = $this->codec->process('TankStorageData', new ScaleBytes($data));
-        }
+        $decoded = $this->codec->process('TankStorageData', new ScaleBytes($data));
 
         return [
             'owner' => ($owner = Arr::get($decoded, 'owner')) !== null ? HexConverter::prefix($owner) : null,
@@ -40,13 +37,10 @@ class Decoder extends BaseDecoder
             'ruleSets' => $this->parseRuleSets(Arr::get($decoded, 'ruleSets', [])),
             'totalReserved' => gmp_strval(Arr::get($decoded, 'totalReserved')),
             'accountCount' => gmp_strval(Arr::get($decoded, 'accountCount')),
-            'reservesExistentialDeposit' => null, // TODO: Remove this field
+            'coveragePolicy' => CoveragePolicy::from(Arr::get($decoded, 'coveragePolicy')),
             'reservesAccountCreationDeposit' => Arr::get($decoded, 'userAccountManagement.tankReservesAccountCreationDeposit'),
             'isFrozen' => Arr::get($decoded, 'isFrozen'),
-            'providesDeposit' => is_bool($r = $this->getValue($decoded, ['providesDeposit', 'coveragePolicy'])) ? $r : $r === 'FeesAndDeposit',
             'accountRules' => $this->parseAccountRules(Arr::get($decoded, 'accountRules')),
-            // TODO: New fields in v1010
-            //      coveragePolicy => "Fees", "FeesAndDeposit"
         ];
     }
 
@@ -68,11 +62,7 @@ class Decoder extends BaseDecoder
      */
     public function fuelTankAccountStorageData(string $data): array
     {
-        try {
-            $decoded = $this->codec->process('FuelTankAccountStorageDataV1010', new ScaleBytes($data));
-        } catch (\Exception) {
-            $decoded = $this->codec->process('FuelTankAccountStorageData', new ScaleBytes($data));
-        }
+        $decoded = $this->codec->process('FuelTankAccountStorageData', new ScaleBytes($data));
 
         return [
             'tankDeposit' => gmp_strval(Arr::get($decoded, 'tankDeposit')),

@@ -2,7 +2,6 @@
 
 namespace Enjin\Platform\FuelTanks\Services\Processor\Substrate;
 
-use Carbon\Carbon;
 use Closure;
 use Enjin\Platform\FuelTanks\Enums\AccountRule as AccountRuleEnum;
 use Enjin\Platform\FuelTanks\Enums\DispatchRule as DispatchRuleEnum;
@@ -61,17 +60,14 @@ class Parser extends BaseParser
                 'public_key' => $tankKey['tankAccount'],
                 'owner_wallet_id' => $ownerWallet->id,
                 'name' => $tankData['name'],
-                'reserves_existential_deposit' => $tankData['reservesExistentialDeposit'],
+                'coverage_policy' => $tankData['coveragePolicy']->name,
                 'reserves_account_creation_deposit' => $tankData['reservesAccountCreationDeposit'],
-                'provides_deposit' => $tankData['providesDeposit'],
                 'is_frozen' => $tankData['isFrozen'],
                 'account_count' => 0,
-                'created_at' => $now = Carbon::now(),
-                'updated_at' => $now,
             ];
         }
 
-        $this->tankService->insert($insertData);
+        FuelTank::upsert($insertData, uniqueBy: ['public_key']);
         $this->fuelTankRules($insertRules);
     }
 
@@ -100,12 +96,10 @@ class Parser extends BaseParser
                 'tank_deposit' => $accountData['tankDeposit'],
                 'user_deposit' => $accountData['userDeposit'],
                 'total_received' => $accountData['totalReceived'],
-                'created_at' => $now = Carbon::now(),
-                'updated_at' => $now,
             ];
         }
 
-        FuelTankAccount::insert($insertData);
+        FuelTankAccount::upsert($insertData, uniqueBy: ['fuel_tank_id', 'wallet_id']);
     }
 
     /**
@@ -136,8 +130,6 @@ class Parser extends BaseParser
                         'rule' => $rule,
                         'value' => json_encode(Arr::get($ruleParam->toArray(), $rule)),
                         'is_frozen' => $ruleSet->isFrozen,
-                        'created_at' => $now = Carbon::now(),
-                        'updated_at' => $now,
                     ];
                 }
             }
@@ -154,15 +146,13 @@ class Parser extends BaseParser
                         'fuel_tank_id' => $tank->id,
                         'rule' => $rule,
                         'value' => json_encode(Arr::get($ruleParam->toArray(), $rule)),
-                        'created_at' => $now = Carbon::now(),
-                        'updated_at' => $now,
                     ];
                 }
             }
         }
 
-        DispatchRule::insert($insertDispatchRules);
-        AccountRule::insert($insertAccountRules);
+        DispatchRule::upsert($insertDispatchRules, uniqueBy: ['fuel_tank_id', 'rule_set_id', 'rule']);
+        AccountRule::upsert($insertAccountRules, uniqueBy: ['fuel_tank_id', 'rule']);
     }
 
     /**

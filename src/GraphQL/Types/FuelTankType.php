@@ -37,20 +37,15 @@ class FuelTankType extends Type
                 'type' => GraphQL::type('String!'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.name'),
             ],
-            'reservesExistentialDeposit' => [
-                'type' => GraphQL::type('Boolean'),
-                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesExistentialDeposit'),
-                'alias' => 'reserves_existential_deposit',
-            ],
             'reservesAccountCreationDeposit' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesAccountCreationDeposit'),
                 'alias' => 'reserves_account_creation_deposit',
             ],
-            'providesDeposit' => [
-                'type' => GraphQL::type('Boolean!'),
-                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.providesDeposit'),
-                'alias' => 'provides_deposit',
+            'coveragePolicy' => [
+                'type' => GraphQL::type('CoveragePolicy!'),
+                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.coveragePolicy'),
+                'alias' => 'coverage_policy',
             ],
             'isFrozen' => [
                 'type' => GraphQL::type('Boolean!'),
@@ -81,6 +76,21 @@ class FuelTankType extends Type
                 'type' => GraphQL::type('[DispatchRule]'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.dispatchRules'),
                 'is_relation' => true,
+            ],
+            // Deprecated
+            'reservesExistentialDeposit' => [
+                'type' => GraphQL::type('Boolean'),
+                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesExistentialDeposit'),
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.reservesExistentialDeposit'),
+                'selectable' => false,
+                'resolve' => fn () => null,
+            ],
+            'providesDeposit' => [
+                'type' => GraphQL::type('Boolean'),
+                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.providesDeposit'),
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.providesDeposit'),
+                'selectable' => false,
+                'resolve' => fn () => null,
             ],
         ];
     }

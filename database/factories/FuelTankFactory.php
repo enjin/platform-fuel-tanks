@@ -2,6 +2,7 @@
 
 namespace Enjin\Platform\FuelTanks\Database\Factories;
 
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\Providers\Faker\SubstrateProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,9 +24,8 @@ class FuelTankFactory extends Factory
         return [
             'name' => fake()->text(32),
             'public_key' => resolve(SubstrateProvider::class)->public_key(),
-            'reserves_existential_deposit' => $existentialDeposit = (fake()->boolean() ? fake()->boolean() : null),
-            'reserves_account_creation_deposit' => $existentialDeposit !== null ? fake()->boolean() : null,
-            'provides_deposit' => fake()->boolean(),
+            'reserves_account_creation_deposit' => fake()->boolean(),
+            'coverage_policy' => fake()->randomElement(CoveragePolicy::caseNamesAsArray()),
         ];
     }
 }

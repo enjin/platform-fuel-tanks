@@ -4,6 +4,7 @@ namespace Enjin\Platform\FuelTanks\GraphQL\Mutations;
 
 use Closure;
 use Enjin\BlockchainTools\HexConverter;
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\GraphQL\Traits\HasFuelTankValidationRules;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
@@ -61,17 +62,14 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
                 'type' => GraphQL::type('String!'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.name'),
             ],
-            'reservesExistentialDeposit' => [
-                'type' => GraphQL::type('Boolean'),
-                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesExistentialDeposit'),
-            ],
             'reservesAccountCreationDeposit' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesAccountCreationDeposit'),
             ],
-            'providesDeposit' => [
-                'type' => GraphQL::type('Boolean!'),
-                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.providesDeposit'),
+            'coveragePolicy' => [
+                'type' => GraphQL::type('CoveragePolicy'),
+                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.coveragePolicy'),
+                'defaultValue' => CoveragePolicy::FEES->name,
             ],
             'accountRules' => [
                 'type' => GraphQL::type('AccountRuleInputType'),
@@ -85,6 +83,17 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
             ...$this->getSkipValidationField(),
+            // Deprecated fields, they don't exist on-chain anymore, should be removed at 2.1.0
+            'reservesExistentialDeposit' => [
+                'type' => GraphQL::type('Boolean'),
+                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesExistentialDeposit'),
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.reservesExistentialDeposit'),
+            ],
+            'providesDeposit' => [
+                'type' => GraphQL::type('Boolean'),
+                'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.providesDeposit'),
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.providesDeposit'),
+            ],
         ];
     }
 
@@ -100,12 +109,11 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
         SerializationServiceInterface $serializationService,
         Substrate $blockchainService
     ) {
-        $method = isRunningLatest() ? $this->getMutationName() . 'V1010' : $this->getMutationName();
-        $encodedData = $serializationService->encode($method, static::getEncodableParams(
+        $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(
             name: $args['name'],
             userAccountManagement: $blockchainService->getUserAccountManagementParams($args),
             dispatchRules: $blockchainService->getDispatchRulesParamsArray($args),
-            providesDeposit: $args['providesDeposit'],
+            coveragePolicy: $args['coveragePolicy'] ?? CoveragePolicy::FEES,
             accountRules: $blockchainService->getAccountRulesParams($args)
         ));
 
@@ -120,23 +128,20 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
         $name = Arr::get($params, 'name', '');
         $userAccountManagement = Arr::get($params, 'userAccountManagement');
         $ruleSets = collect(Arr::get($params, 'dispatchRules', []));
-        $providesDeposit = Arr::get($params, 'providesDeposit', false);
+        $coveragePolicy = is_string($coverage = Arr::get($params, 'coveragePolicy')) ? CoveragePolicy::getEnumCase($coverage) : $coverage;
         $accountRules = Arr::get($params, 'accountRules', new AccountRulesParams());
-
-        $extra = isRunningLatest() ? [
-            'coveragePolicy' => $providesDeposit ? 'Fees' : 'FeesAndDeposit',
-        ] : [
-            'providesDeposit' => $providesDeposit,
-        ];
 
         return [
             'descriptor' => [
                 'name' => HexConverter::stringToHexPrefixed($name),
                 'userAccountManagement' => $userAccountManagement?->toEncodable(),
-                'ruleSets' => isRunningLatest()
-                    ? [['rules' => $ruleSets->flatMap(fn ($ruleSet) => $ruleSet->toEncodable())->all(), 'requireAccount' => false]]
-                    : $ruleSets->map(fn ($ruleSet) => $ruleSet->toEncodable())->all(),
-                ...$extra,
+                'coveragePolicy' => $coveragePolicy->value,
+                'ruleSets' =>  [
+                    [
+                        'rules' => $ruleSets->flatMap(fn ($ruleSet) => $ruleSet->toEncodable())->all(),
+                        'requireAccount' => false,
+                    ],
+                ],
                 'accountRules' => $accountRules?->toEncodable() ?? [],
             ],
         ];
