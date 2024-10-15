@@ -22,7 +22,7 @@
         "ext-gmp": "*",
         "ext-json": "*",
         "ext-openssl": "*",
-        "enjin/platform-core": "dev-PLA-2038",
+        "enjin/platform-core": "*",
         "phrity/websocket": "^1.0",
         "rebing/graphql-laravel": "^9.2",
         "rector/rector": "^1.0",
@@ -82,5 +82,5 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": false
 }

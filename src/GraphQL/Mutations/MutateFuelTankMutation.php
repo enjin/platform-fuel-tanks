@@ -4,6 +4,7 @@ namespace Enjin\Platform\FuelTanks\GraphQL\Mutations;
 
 use Closure;
 use Enjin\BlockchainTools\HexConverter;
+use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\GraphQL\Traits\HasFuelTankValidationRules;
 use Enjin\Platform\FuelTanks\Rules\FuelTankExists;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
@@ -103,7 +104,7 @@ class MutateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
     {
         $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
         $userAccount = Arr::get($params, 'userAccount');
-        $coveragePolicy = Arr::get($params, 'coveragePolicy');
+        $coveragePolicy = is_string($coverage = Arr::get($params, 'coveragePolicy')) ? CoveragePolicy::getEnumCase($coverage) : $coverage;
         $accountRules = Arr::get($params, 'accountRules');
 
         return [

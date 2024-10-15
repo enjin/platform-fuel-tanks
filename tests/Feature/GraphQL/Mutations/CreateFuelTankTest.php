@@ -99,7 +99,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
         FuelTank::factory()->create([
             'name' => $data['name'],
             'public_key' => $data['account'],
-            'owner_wallet_id' => $this->wallet->id
+            'owner_wallet_id' => $this->wallet->id,
         ]);
 
         $response = $this->graphql($this->method, $data, true);

@@ -48,7 +48,6 @@ class RemoveAccountTest extends TestCaseGraphQL
             $this->method,
             $params = ['tankId' => $this->tank->public_key, 'userId' => $this->account]
         );
-        ray($response);
 
         $this->assertEquals(
             $response['encodedData'],
