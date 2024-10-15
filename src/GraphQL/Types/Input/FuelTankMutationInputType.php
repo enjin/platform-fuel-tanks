@@ -39,12 +39,12 @@ class FuelTankMutationInputType extends InputType
             'reservesExistentialDeposit' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesExistentialDeposit'),
-                'deprecationReason' => '',
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.reservesExistentialDeposit'),
             ],
             'providesDeposit' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.providesDeposit'),
-                'deprecationReason' => '',
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.providesDeposit'),
             ],
         ];
     }

@@ -83,16 +83,16 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
             ...$this->getSkipValidationField(),
-            // Deprecated fields, they don't exists on-chain anymore, should be removed at 2.1.0
+            // Deprecated fields, they don't exist on-chain anymore, should be removed at 2.1.0
             'reservesExistentialDeposit' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesExistentialDeposit'),
-                'deprecationReason' => '',
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.reservesExistentialDeposit'),
             ],
             'providesDeposit' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.providesDeposit'),
-                'deprecationReason' => '',
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.providesDeposit'),
             ],
         ];
     }

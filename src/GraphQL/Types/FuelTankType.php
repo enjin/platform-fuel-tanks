@@ -81,16 +81,16 @@ class FuelTankType extends Type
             'reservesExistentialDeposit' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.reservesExistentialDeposit'),
-                'deprecationReason' => '',
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.reservesExistentialDeposit'),
                 'selectable' => false,
-                'resolve' => fn () => false,
+                'resolve' => fn () => null,
             ],
             'providesDeposit' => [
-                'type' => GraphQL::type('Boolean!'),
+                'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::type.fuel_tank.field.providesDeposit'),
-                'deprecationReason' => '',
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecated.fuel_tank.field.providesDeposit'),
                 'selectable' => false,
-                'resolve' => fn () => false,
+                'resolve' => fn () => null,
             ],
         ];
     }
