@@ -98,8 +98,7 @@ class RemoveAccountRuleDataMutation extends Mutation implements PlatformBlockcha
         Closure $getSelectFields,
         SerializationServiceInterface $serializationService
     ) {
-        $method = isRunningLatest() ? $this->getMutationName() . 'V1010' : $this->getMutationName();
-        $encodedData = $serializationService->encode($method, static::getEncodableParams(...$args));
+        $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(...$args));
 
         return Transaction::lazyLoadSelectFields(
             DB::transaction(fn () => $this->storeTransaction($args, $encodedData)),
