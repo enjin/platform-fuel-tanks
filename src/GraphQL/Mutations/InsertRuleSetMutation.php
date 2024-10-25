@@ -96,10 +96,9 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
         SerializationServiceInterface $serializationService,
         Substrate $blockchainService
     ) {
-        $method = isRunningLatest() ? $this->getMutationName() . 'V1010' : $this->getMutationName();
         $dispatchRules = $blockchainService->getDispatchRulesParams($args['dispatchRules']);
         $encodedData = $serializationService->encode(
-            $method,
+            $this->getMutationName(),
             static::getEncodableParams(
                 tankId: $args['tankId'],
                 ruleSetId: $args['ruleSetId'],
