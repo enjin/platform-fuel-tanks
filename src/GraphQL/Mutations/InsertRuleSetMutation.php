@@ -77,6 +77,11 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
                 'type' => GraphQL::type('DispatchRuleInputType!'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.description'),
             ],
+            'requireAccount' => [
+                'type' => GraphQL::type('Boolean'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.insert_rule_set.args.requireAccount'),
+                'defaultValue' => false,
+            ],
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
@@ -102,7 +107,8 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
             static::getEncodableParams(
                 tankId: $args['tankId'],
                 ruleSetId: $args['ruleSetId'],
-                dispatchRules: $dispatchRules
+                dispatchRules: $dispatchRules,
+                requireAccount: $args['requireAccount'],
             )
         );
 
@@ -122,6 +128,7 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
         $tankId = Arr::get($params, 'tankId', Account::daemonPublicKey());
         $ruleSetId = Arr::get($params, 'ruleSetId', 0);
         $rules = Arr::get($params, 'dispatchRules', new DispatchRulesParams())->toEncodable();
+        $requireAccount = Arr::get($params, 'requireAccount', false);
 
         return [
             'tankId' => [
@@ -130,7 +137,7 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
             'ruleSetId' => $ruleSetId,
             'ruleSet' => [
                 'rules' => $rules,
-                'requireAccount' => false,
+                'requireAccount' => $requireAccount,
             ],
         ];
     }
