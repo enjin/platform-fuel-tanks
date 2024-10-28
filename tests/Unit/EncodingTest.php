@@ -415,6 +415,29 @@ class EncodingTest extends TestCase
         );
     }
 
+    public function test_it_can_encode_insert_rule_set_with_require_account()
+    {
+        $dispatchRules = new DispatchRulesParams(
+            userFuelBudget: new UserFuelBudgetParams(
+                amount: '1000000000',
+                resetPeriod: '500000',
+            ),
+        );
+
+        $data = $this->substrate->encode('InsertRuleSet', InsertRuleSetMutation::getEncodableParams(
+            tankId: '0x18353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c',
+            ruleSetId: '1',
+            dispatchRules: $dispatchRules,
+            requireAccount: true,
+        ));
+
+        $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
+        $this->assertEquals(
+            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c01000000040302286bee20a1070001",
+            $data
+        );
+    }
+
     public function test_it_can_encode_insert_or_update_rule_with_permitted_extrinsics()
     {
         $dispatchRules = new DispatchRulesParams(
