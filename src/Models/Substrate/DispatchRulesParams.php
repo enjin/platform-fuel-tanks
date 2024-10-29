@@ -81,7 +81,7 @@ class DispatchRulesParams
         }
 
         if ($this->permittedExtrinsics) {
-            $params[] = ['PermittedExtrinsics' => ['extrinsics' => []]];
+            $params[] = ['PermittedExtrinsics' => $this->permittedExtrinsics->toEncodable()];
         }
 
 
