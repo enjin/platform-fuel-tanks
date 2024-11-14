@@ -57,9 +57,8 @@ class RuleSetInserted extends FuelTankSubstrateEvent
     {
         Log::debug(
             sprintf(
-                'RuleSetInserted at FuelTank %s from transaction %s.',
+                'RuleSetInserted at FuelTank %s.',
                 $this->event->tankId,
-                $transaction?->transaction_chain_hash ?? 'unknown',
             )
         );
     }

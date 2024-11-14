@@ -39,10 +39,9 @@ class AccountAdded extends FuelTankSubstrateEvent
     {
         Log::debug(
             sprintf(
-                'FuelTankAccount %s of FuelTank %s was created from transaction %s.',
+                'FuelTankAccount %s of FuelTank %s was created.',
                 $this->event->userId,
                 $this->event->tankId,
-                $transaction?->transaction_chain_hash ?? 'unknown',
             )
         );
     }
