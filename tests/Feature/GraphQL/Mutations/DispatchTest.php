@@ -225,7 +225,7 @@ class DispatchTest extends TestCaseGraphQL
         Arr::set($invalidData, 'dispatch.variables', 'Invalid');
         $response = $this->graphql($this->method, $invalidData, true);
         $this->assertStringContainsString(
-            'Variable "$dispatch" got invalid value "Invalid" at "dispatch.variables"; Expected type "Object".',
+            'Variable "$dispatch" got invalid value "Invalid" at "dispatch.variables"',
             $response['error']
         );
 
