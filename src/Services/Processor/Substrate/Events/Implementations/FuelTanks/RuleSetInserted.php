@@ -26,7 +26,7 @@ class RuleSetInserted extends FuelTankSubstrateEvent
     {
         $extrinsic = $this->block->extrinsics[$this->event->extrinsicIndex];
         $params = $extrinsic->params;
-        $rules = Arr::get($params, 'rules', []);
+        $rules = Arr::get($params, 'rule_set.rules', []);
 
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($this->event->tankId);
