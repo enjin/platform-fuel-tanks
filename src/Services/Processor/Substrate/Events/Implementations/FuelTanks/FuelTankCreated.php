@@ -95,9 +95,8 @@ class FuelTankCreated extends FuelTankSubstrateEvent
     {
         Log::debug(
             sprintf(
-                'FuelTank %s was created from transaction %s.',
+                'FuelTank %s was created.',
                 $this->event->tankId,
-                $transaction?->transaction_chain_hash ?? 'unknown',
             )
         );
     }
