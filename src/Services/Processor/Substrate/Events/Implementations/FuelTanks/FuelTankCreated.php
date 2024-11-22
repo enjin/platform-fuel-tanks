@@ -6,7 +6,6 @@ use Enjin\Platform\FuelTanks\Enums\CoveragePolicy;
 use Enjin\Platform\FuelTanks\Events\Substrate\FuelTanks\FuelTankCreated as FuelTankCreatedEvent;
 use Enjin\Platform\FuelTanks\Models\Laravel\FuelTank;
 use Enjin\Platform\FuelTanks\Models\Substrate\AccountRulesParams;
-use Enjin\Platform\FuelTanks\Models\Substrate\DispatchRulesParams;
 use Enjin\Platform\FuelTanks\Services\Processor\Substrate\Events\FuelTankSubstrateEvent;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\FuelTanks\FuelTankCreated as FuelTankCreatedPolkadart;
 use Enjin\Platform\Services\Processor\Substrate\Codec\Polkadart\Events\Event;
@@ -70,25 +69,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
 
         $this->fuelTankCreated->accountRules()->createMany($insertAccountRules);
 
-        $dispatchRules = Arr::get($params, 'descriptor.rule_sets', []);
-        $insertDispatchRules = [];
 
-        foreach ($dispatchRules as $ruleSet) {
-            $ruleSetId = $ruleSet[0];
-            $rules = collect($ruleSet[1])->toArray();
-
-            $dispatchRule = (new DispatchRulesParams())->fromEncodable($ruleSetId, ['rules' => $rules])->toArray();
-            foreach ($dispatchRule as $rule) {
-                $insertDispatchRules[] = [
-                    'rule_set_id' => $ruleSetId,
-                    'rule' => array_key_first($rule),
-                    'value' => $rule[array_key_first($rule)],
-                    'is_frozen' => false,
-                ];
-            }
-        }
-
-        $this->fuelTankCreated->dispatchRules()->createMany($insertDispatchRules);
     }
 
     public function log(): void

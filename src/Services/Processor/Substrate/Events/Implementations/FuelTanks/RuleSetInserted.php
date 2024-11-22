@@ -26,7 +26,7 @@ class RuleSetInserted extends FuelTankSubstrateEvent
     {
         $extrinsic = $this->block->extrinsics[$this->event->extrinsicIndex];
         $params = $extrinsic->params;
-        $rules = Arr::get($params, 'rule_set.rules', []);
+        $rules = $this->getValue($params, ['rule_set.rules', 'descriptor.rule_sets']);
 
         // Fail if it doesn't find the fuel tank
         $fuelTank = $this->getFuelTank($this->event->tankId);
@@ -37,19 +37,7 @@ class RuleSetInserted extends FuelTankSubstrateEvent
             'rule_set_id' => $this->event->ruleSetId,
         ])?->delete();
 
-        $insertDispatchRules = [];
-        $dispatchRule = (new DispatchRulesParams())->fromEncodable($this->event->ruleSetId, ['rules' => $rules])->toArray();
-
-        foreach ($dispatchRule as $rule) {
-            $insertDispatchRules[] = [
-                'fuel_tank_id' => $fuelTank->id,
-                'rule_set_id' => $this->event->ruleSetId,
-                'rule' => array_key_first($rule),
-                'value' => $rule[array_key_first($rule)],
-                'is_frozen' => false,
-            ];
-        }
-
+        $insertDispatchRules = empty(Arr::get($rules, '0.1.rules')) ? $this->parseRuleSetInsertedRuleSet($rules) : $this->parseTankCreatedRuleSets($rules);
         $fuelTank->dispatchRules()->createMany($insertDispatchRules);
     }
 
@@ -70,5 +58,44 @@ class RuleSetInserted extends FuelTankSubstrateEvent
             $this->getTransaction($this->block, $this->event->extrinsicIndex),
             $this->extra,
         );
+    }
+
+    protected function parseTankCreatedRuleSets(array $rules): array
+    {
+        $insertDispatchRules = [];
+
+        foreach ($rules as $ruleSet) {
+            $ruleSetId = $ruleSet[0];
+            $rules = $ruleSet[1]['rules'];
+
+            $dispatchRule = (new DispatchRulesParams())->fromEncodable($ruleSetId, ['rules' => $rules])->toArray();
+            foreach ($dispatchRule as $rule) {
+                $insertDispatchRules[] = [
+                    'rule_set_id' => $ruleSetId,
+                    'rule' => array_key_first($rule),
+                    'value' => $rule[array_key_first($rule)],
+                    'is_frozen' => false,
+                ];
+            }
+        }
+
+        return $insertDispatchRules;
+    }
+
+    protected function parseRuleSetInsertedRuleSet(array $rules): array
+    {
+        $insertDispatchRules = [];
+        $dispatchRule = (new DispatchRulesParams())->fromEncodable($this->event->ruleSetId, ['rules' => $rules])->toArray();
+
+        foreach ($dispatchRule as $rule) {
+            $insertDispatchRules[] = [
+                'rule_set_id' => $this->event->ruleSetId,
+                'rule' => array_key_first($rule),
+                'value' => $rule[array_key_first($rule)],
+                'is_frozen' => false,
+            ];
+        }
+
+        return $insertDispatchRules;
     }
 }
