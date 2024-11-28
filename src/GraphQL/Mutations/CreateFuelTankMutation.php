@@ -109,13 +109,21 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
         SerializationServiceInterface $serializationService,
         Substrate $blockchainService
     ) {
+        $dispatchRules = $blockchainService->getDispatchRulesParamsArray($args);
         $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(
             name: $args['name'],
             userAccountManagement: $blockchainService->getUserAccountManagementParams($args),
-            dispatchRules: $blockchainService->getDispatchRulesParamsArray($args),
+            dispatchRules: $dispatchRules,
             coveragePolicy: $args['coveragePolicy'] ?? CoveragePolicy::FEES,
             accountRules: $blockchainService->getAccountRulesParams($args)
         ));
+
+        if (Arr::get($args, 'dispatchRules.0.permittedExtrinsics')) {
+            $splitData = preg_split('/0700(0[01]0[01])/', $encodedData, -1, PREG_SPLIT_DELIM_CAPTURE);
+            $encodedData = $splitData[0];
+            $encodedData .= Arr::get($dispatchRules[0]->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+            $encodedData .= $splitData[1] . $splitData[2];
+        }
 
         return Transaction::lazyLoadSelectFields(
             DB::transaction(fn () => $this->storeTransaction($args, $encodedData)),

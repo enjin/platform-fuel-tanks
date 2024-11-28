@@ -80,8 +80,9 @@ class DispatchRulesParams
             $params[] = $this->requireSignature->toEncodable();
         }
 
+        // This is encoded manually as we can't encode it using php-scale-codec lib
         if ($this->permittedExtrinsics) {
-            $params[] = ['PermittedExtrinsics' => $this->permittedExtrinsics->toEncodable()];
+            $params[] = ['PermittedExtrinsics' => ['extrinsics' => []]];
         }
 
 
