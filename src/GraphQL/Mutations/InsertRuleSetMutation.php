@@ -113,8 +113,10 @@ class InsertRuleSetMutation extends Mutation implements PlatformBlockchainTransa
         );
 
         if (Arr::get($args, 'dispatchRules.permittedExtrinsics')) {
-            $encodedData = Str::take($encodedData, Str::length($encodedData) - 4);
+            $requireAccount = Str::take($encodedData, -2);
+            $encodedData = Str::take($encodedData, Str::length($encodedData) - 6);
             $encodedData .= Arr::get($dispatchRules->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+            $encodedData .= $requireAccount; // This adds requireAccount back
         }
 
         return Transaction::lazyLoadSelectFields(

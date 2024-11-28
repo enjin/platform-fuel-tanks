@@ -44,12 +44,14 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $params['dispatchRules'] = resolve(Substrate::class)->getDispatchRulesParams($params['dispatchRules']);
 
         $encodedData = TransactionSerializer::encode($this->method, InsertRuleSetMutation::getEncodableParams(...$params));
-        $encodedData = Str::take($encodedData, Str::length($encodedData) - 4);
+        $requireAccount = Str::take($encodedData, -2);
+        $encodedData = Str::take($encodedData, Str::length($encodedData) - 6);
         $encodedData .= Arr::get($params['dispatchRules']->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+        $encodedData .= $requireAccount;
 
         $this->assertEquals(
+            $encodedData,
             $response['encodedData'],
-            $encodedData
         );
     }
 
@@ -66,12 +68,14 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $params['dispatchRules'] = resolve(Substrate::class)->getDispatchRulesParams($params['dispatchRules']);
 
         $encodedData = TransactionSerializer::encode($this->method, InsertRuleSetMutation::getEncodableParams(...$params));
-        $encodedData = Str::take($encodedData, Str::length($encodedData) - 4);
+        $requireAccount = Str::take($encodedData, -2);
+        $encodedData = Str::take($encodedData, Str::length($encodedData) - 6);
         $encodedData .= Arr::get($params['dispatchRules']->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+        $encodedData .= $requireAccount;
 
         $this->assertEquals(
+            $encodedData,
             $response['encodedData'],
-            $encodedData
         );
     }
 
@@ -90,12 +94,14 @@ class InsertRuleSetTest extends TestCaseGraphQL
         $params['dispatchRules'] = resolve(Substrate::class)->getDispatchRulesParams($params['dispatchRules']);
 
         $encodedData = TransactionSerializer::encode($this->method, InsertRuleSetMutation::getEncodableParams(...$params));
-        $encodedData = Str::take($encodedData, Str::length($encodedData) - 4);
+        $requireAccount = Str::take($encodedData, -2);
+        $encodedData = Str::take($encodedData, Str::length($encodedData) - 6);
         $encodedData .= Arr::get($params['dispatchRules']->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+        $encodedData .= $requireAccount;
 
         $this->assertEquals(
+            $encodedData,
             $response['encodedData'],
-            $encodedData
         );
     }
 
