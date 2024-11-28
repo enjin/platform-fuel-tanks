@@ -41,22 +41,18 @@ class PermittedExtrinsicsParams extends FuelTankRules
 
     public function fromMethods(array $methods): self
     {
-        $mutations = Package::getClassesThatImplementInterface(PlatformBlockchainTransaction::class);
+        $mutations = collect(Package::getClassesThatImplementInterface(PlatformBlockchainTransaction::class))
+            ->map(fn ($class) => resolve($class)->getMethodName())
+            ->all();
 
         return new self(
-            extrinsics: array_map(
-                function ($method) use ($mutations) {
-                    $transactionMutation = $mutations->filter(fn ($class) => Str::contains(class_basename($class), $method))->first();
-                    $methodName = (new $transactionMutation())->getMethodName();
-
-                    return [
-                        explode('.', (string) Arr::get(BaseEncoder::getCallIndexKeys(), $methodName))[0] => [
-                            explode('.', (string) Arr::get(BaseEncoder::getCallIndexKeys(), $methodName))[1] => null,
-                        ],
-                    ];
-                },
-                $methods
-            )
+            collect($methods)
+                ->filter(fn ($method) => in_array($method, $mutations))
+                ->map(fn ($method) => [
+                    explode('.', (string) Arr::get(BaseEncoder::getCallIndexKeys(), $method))[0] => [
+                        explode('.', (string) Arr::get(BaseEncoder::getCallIndexKeys(), $method))[1] => null,
+                    ],
+                ])->all()
         );
     }
 

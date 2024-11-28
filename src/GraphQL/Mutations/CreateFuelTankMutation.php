@@ -109,18 +109,34 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
         SerializationServiceInterface $serializationService,
         Substrate $blockchainService
     ) {
+        $dispatchRules = $blockchainService->getDispatchRulesParamsArray($args);
         $encodedData = $serializationService->encode($this->getMutationName(), static::getEncodableParams(
             name: $args['name'],
             userAccountManagement: $blockchainService->getUserAccountManagementParams($args),
-            dispatchRules: $blockchainService->getDispatchRulesParamsArray($args),
+            dispatchRules: $dispatchRules,
             coveragePolicy: $args['coveragePolicy'] ?? CoveragePolicy::FEES,
             accountRules: $blockchainService->getAccountRulesParams($args)
         ));
+
+        $encodedData = self::addPermittedExtrinsics($encodedData, $dispatchRules);
 
         return Transaction::lazyLoadSelectFields(
             DB::transaction(fn () => $this->storeTransaction($args, $encodedData)),
             $resolveInfo
         );
+    }
+
+    public static function addPermittedExtrinsics(string $encodedData, array $dispatchRules): string
+    {
+        if ($dispatchRules[0]->permittedExtrinsics === null) {
+            return $encodedData;
+        }
+
+        $splitData = preg_split('/0700(0[01]0[01])/', $encodedData, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+        $permittedExtrinsics = Arr::get($dispatchRules[0]->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+
+        return $splitData[0] . $permittedExtrinsics . $splitData[1] . $splitData[2];
     }
 
     public static function getEncodableParams(...$params): array

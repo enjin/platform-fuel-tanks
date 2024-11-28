@@ -8,7 +8,6 @@ use Enjin\Platform\FuelTanks\GraphQL\Mutations\CreateFuelTankMutation;
 use Enjin\Platform\FuelTanks\Models\FuelTank;
 use Enjin\Platform\FuelTanks\Services\Blockchain\Implemetations\Substrate;
 use Enjin\Platform\Providers\Faker\SubstrateProvider;
-use Enjin\Platform\Services\Serialization\Implementations\Substrate as SubstrateEncoder;
 use Enjin\Platform\FuelTanks\Tests\Feature\GraphQL\TestCaseGraphQL;
 use Enjin\Platform\Support\Hex;
 use Illuminate\Support\Str;
@@ -22,17 +21,17 @@ class CreateFuelTankTest extends TestCaseGraphQL
 
     public function test_it_can_create_fuel_tank(): void
     {
-        $substrate = new SubstrateEncoder();
         $response = $this->graphql($this->method, $data = $this->generateData());
 
         $blockchainService = resolve(Substrate::class);
         $data['userAccountManagement'] = $blockchainService->getUserAccountManagementParams($data);
         $data['dispatchRules'] = $blockchainService->getDispatchRulesParamsArray($data);
         $data['accountRules'] = $blockchainService->getAccountRulesParams($data);
+        $expectedData = CreateFuelTankMutation::addPermittedExtrinsics(TransactionSerializer::encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data)), $data['dispatchRules']);
 
         $this->assertEquals(
+            $expectedData,
             $response['encodedData'],
-            $substrate->encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data))
         );
     }
 
@@ -44,17 +43,13 @@ class CreateFuelTankTest extends TestCaseGraphQL
         $data['userAccountManagement'] = $blockchainService->getUserAccountManagementParams($data);
         $data['dispatchRules'] = $blockchainService->getDispatchRulesParamsArray($data);
         $data['accountRules'] = $blockchainService->getAccountRulesParams($data);
+        $expectedData = CreateFuelTankMutation::addPermittedExtrinsics(TransactionSerializer::encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data)), $data['dispatchRules']);
 
-        $this->assertEquals(
-            $response['encodedData'],
-            TransactionSerializer::encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data))
-        );
+        $this->assertEquals($expectedData, $response['encodedData']);
     }
 
     public function test_it_can_skip_validation(): void
     {
-        $substrate = new SubstrateEncoder();
-
         $response = $this->graphql($this->method, $data = [
             'name' => fake()->text(32),
             'account' => resolve(SubstrateProvider::class)->public_key(),
@@ -86,10 +81,11 @@ class CreateFuelTankTest extends TestCaseGraphQL
         $data['userAccountManagement'] = $blockchainService->getUserAccountManagementParams($data);
         $data['dispatchRules'] = $blockchainService->getDispatchRulesParamsArray($data);
         $data['accountRules'] = $blockchainService->getAccountRulesParams($data);
+        $expectedData = CreateFuelTankMutation::addPermittedExtrinsics(TransactionSerializer::encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data)), $data['dispatchRules']);
 
         $this->assertEquals(
+            $expectedData,
             $response['encodedData'],
-            $substrate->encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data))
         );
     }
 
@@ -529,4 +525,6 @@ class CreateFuelTankTest extends TestCaseGraphQL
             $response['errors']
         );
     }
+
+    protected function addPermittedExtrinsics($encodedData) {}
 }
