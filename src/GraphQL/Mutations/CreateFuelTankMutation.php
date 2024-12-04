@@ -128,7 +128,7 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
 
     public static function addPermittedExtrinsics(string $encodedData, array $dispatchRules): string
     {
-        if ($dispatchRules[0]->permittedExtrinsics === null) {
+        if (empty($dispatchRules) || $dispatchRules[0]->permittedExtrinsics === null) {
             return $encodedData;
         }
 
