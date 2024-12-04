@@ -35,6 +35,21 @@ class CreateFuelTankTest extends TestCaseGraphQL
         );
     }
 
+    public function test_it_can_create_fuel_tank_only_with_required_args(): void
+    {
+        $data = [
+            'name' => fake()->text(32),
+        ];
+
+        $response = $this->graphql($this->method, $data);
+        $expectedData = TransactionSerializer::encode($this->method, CreateFuelTankMutation::getEncodableParams(...$data));
+
+        $this->assertEquals(
+            $expectedData,
+            $response['encodedData'],
+        );
+    }
+
     public function test_it_can_create_fuel_tank_with_zero_values(): void
     {
         $response = $this->graphql($this->method, $data = $this->generateData(true, 0));
