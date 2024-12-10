@@ -87,6 +87,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
                 'tankId' => resolve(SubstrateProvider::class)->public_key(),
                 'ruleSetId' => fake()->numberBetween(50000, 100000),
                 ...Arr::only($this->generateData(false), 'dispatchRules'),
+                'requireAccount' => true,
                 'skipValidation' => true,
             ]
         );
@@ -477,6 +478,7 @@ class InsertRuleSetTest extends TestCaseGraphQL
             'tankId' => $this->tank->public_key,
             'ruleSetId' => fake()->numberBetween(50000, 100000),
             ...Arr::only($this->generateData(false), 'dispatchRules'),
+            'requireAccount' => true,
         ];
     }
 }

@@ -89,6 +89,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
                 'tankFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
                 'permittedExtrinsics' => ['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken'],
             ]],
+            'requireAccount' => true,
             'skipValidation' => true,
         ]);
 
@@ -102,6 +103,23 @@ class CreateFuelTankTest extends TestCaseGraphQL
             $expectedData,
             $response['encodedData'],
         );
+    }
+
+    public function test_it_will_fail_with_require_account_false_and_user_fuel_budget(): void
+    {
+        $response = $this->graphql($this->method, [
+            'name' => fake()->text(32),
+            'account' => resolve(SubstrateProvider::class)->public_key(),
+            'dispatchRules' => [[
+                'userFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
+            ]],
+            'requireAccount' => false,
+            'skipValidation' => true,
+        ], true);
+
+        $this->assertArrayContainsArray([
+            'dispatchRules.0.userFuelBudget' => ['The dispatchRules.0.userFuelBudget field is prohibited unless require account is in true.'],
+        ], $response['error']);
     }
 
     public function test_it_will_fail_with_invalid_parameter_name(): void

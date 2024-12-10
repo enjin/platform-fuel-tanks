@@ -37,7 +37,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
     {
         $response = $this->graphql($this->method, $params = [
             'tankId' => $this->createFuelTank()->public_key,
-            'mutation' => Arr::except($this->generateData(), ['name', 'account', 'dispatchRules']),
+            'mutation' => Arr::except($this->generateData(), ['name', 'account', 'dispatchRules', 'requireAccount']),
             'skipValidation' => true,
         ]);
 
@@ -233,7 +233,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
     {
         return [
             'tankId' => $this->createFuelTank()->public_key,
-            'mutation' => Arr::except($this->generateData(), ['name', 'account', 'dispatchRules']),
+            'mutation' => Arr::except($this->generateData(), ['name', 'account', 'dispatchRules', 'requireAccount']),
         ];
     }
 }
