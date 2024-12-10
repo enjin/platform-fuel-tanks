@@ -163,6 +163,7 @@ trait HasFuelTankValidationRules
             ...$this->commonRulesExist("{$attributePrefix}dispatchRules{$array}.tankFuelBudget"),
             "{$attributePrefix}dispatchRules{$array}.whitelistedPallets.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidHex()],
             "{$attributePrefix}dispatchRules{$array}.whitelistedPallets" => ['nullable', 'array', 'min:1'],
+            "{$attributePrefix}dispatchRules{$array}.userFuelBudget" => ['prohibited_unless:requireAccount,true'],
         ];
     }
 
@@ -194,6 +195,7 @@ trait HasFuelTankValidationRules
             ...$this->commonRules("{$attributePrefix}dispatchRules{$array}.tankFuelBudget"),
             "{$attributePrefix}dispatchRules{$array}.whitelistedPallets.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidHex()],
             "{$attributePrefix}dispatchRules{$array}.whitelistedPallets" => ['nullable', 'array', 'min:1'],
+            "{$attributePrefix}dispatchRules{$array}.userFuelBudget" => ["prohibited_unless:{$attributePrefix}requireAccount,true"],
         ];
     }
 }

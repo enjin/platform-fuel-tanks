@@ -56,7 +56,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
     {
         $data = $this->generateFuelTankData();
         $response = $this->graphql($this->method, array_merge($data, ['mutation' => []]), true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['mutation' => ['The mutation field is required.']],
             $response['error']
         );
@@ -70,7 +70,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => 'Invalid wallet address']),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
@@ -80,7 +80,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => Str::random(300)]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -97,7 +97,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => '']),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must have a value.']],
             $response['error']
         );
@@ -143,7 +143,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         $invalidData = $data;
         Arr::set($invalidData, 'mutation.accountRules.whitelistedCallers', 'Invalid');
         $response = $this->graphql($this->method, $invalidData, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['mutation.accountRules.whitelistedCallers.0' => ['The mutation.accountRules.whitelistedCallers.0 is not a valid substrate address.']],
             $response['error']
         );
@@ -151,7 +151,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         $invalidData = $data;
         Arr::set($invalidData, 'mutation.accountRules.whitelistedCallers', [$data['tankId'], $data['tankId']]);
         $response = $this->graphql($this->method, $invalidData, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 'mutation.accountRules.whitelistedCallers.0' => ['The mutation.accountRules.whitelistedCallers.0 field has a duplicate value.'],
                 'mutation.accountRules.whitelistedCallers.1' => ['The mutation.accountRules.whitelistedCallers.1 field has a duplicate value.'],
@@ -162,7 +162,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         $invalidData = $data;
         Arr::set($invalidData, 'mutation.accountRules.whitelistedCallers', [Str::random(300)]);
         $response = $this->graphql($this->method, $invalidData, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['mutation.accountRules.whitelistedCallers.0' => ['The mutation.accountRules.whitelistedCallers.0 field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -170,7 +170,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         $invalidData = $data;
         Arr::set($invalidData, 'mutation.accountRules.whitelistedCallers', []);
         $response = $this->graphql($this->method, $invalidData, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['mutation.accountRules.whitelistedCallers' => ['The mutation.account rules.whitelisted callers field must have at least 1 items.']],
             $response['error']
         );
@@ -183,7 +183,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         $invalidData = $data;
         Arr::set($invalidData, 'mutation.accountRules.whitelistedCallers', '');
         $response = $this->graphql($this->method, $invalidData, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['mutation.accountRules.whitelistedCallers.0' => ['The mutation.accountRules.whitelistedCallers.0 field must have a value.']],
             $response['error']
         );
@@ -196,7 +196,7 @@ class MutateFuelTankTest extends TestCaseGraphQL
         $invalidData = $data;
         Arr::set($invalidData, 'mutation.accountRules.requireToken', ['collectionId' => 1, 'tokenId' => ['integer' => 1]]);
         $response = $this->graphql($this->method, $invalidData, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['mutation.accountRules.requireToken.collectionId' => ['The selected mutation.account rules.require token.collection id is invalid.']],
             $response['error']
         );

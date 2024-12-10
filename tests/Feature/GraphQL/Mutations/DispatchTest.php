@@ -89,7 +89,7 @@ class DispatchTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => $pubicKey]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
@@ -99,7 +99,7 @@ class DispatchTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => Str::random(300)]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -109,7 +109,7 @@ class DispatchTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => 'Invalid']),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
@@ -156,7 +156,7 @@ class DispatchTest extends TestCaseGraphQL
             true
         );
 
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['ruleSetId' => ['The rule set id is too large, the maximum value it can be is 4294967295.']],
             $response['error']
         );
@@ -165,7 +165,7 @@ class DispatchTest extends TestCaseGraphQL
             array_merge($data, ['ruleSetId' => fake()->numberBetween(5000, 10000)]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['ruleSetId' => ["The rule set ID doesn't exist."]],
             $response['error']
         );
@@ -194,14 +194,14 @@ class DispatchTest extends TestCaseGraphQL
         $invalidData = $data;
         Arr::set($invalidData, 'dispatch.query', str_replace('id', '', static::$queries['AddAccount']));
         $response = $this->graphql($this->method, $invalidData, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatch.query' => ['The id and encodedData attribute must be queried from the result.']],
             $response['error']
         );
 
         Arr::set($invalidData, 'dispatch.query', str_replace('encodedData', '', static::$queries['AddAccount']));
         $response = $this->graphql($this->method, $invalidData, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatch.query' => ['The id and encodedData attribute must be queried from the result.']],
             $response['error']
         );

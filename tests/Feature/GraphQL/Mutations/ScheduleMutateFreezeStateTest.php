@@ -84,7 +84,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => $pubicKey]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
@@ -95,7 +95,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => Str::random(300)]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -105,7 +105,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => 'Invalid']),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
@@ -126,7 +126,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => $tank->public_key]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id provided is not owned by you.']],
             $response['error']
         );
@@ -167,7 +167,7 @@ class ScheduleMutateFreezeStateTest extends TestCaseGraphQL
             array_merge($data, ['ruleSetId' => fake()->numberBetween(5000, 10000)]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['ruleSetId' => ["The rule set ID doesn't exist."]],
             $response['error']
         );

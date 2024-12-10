@@ -38,7 +38,7 @@ class GetFuelTankTest extends TestCaseGraphQL
     public function test_it_will_fail_with_invalid_name(): void
     {
         $response = $this->graphql($this->method, ['name' => null], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 'name' => ['The name field is required when tank id is not present.'],
                 'tankId' => ['The tank id field is required when name is not present.'],
@@ -47,19 +47,19 @@ class GetFuelTankTest extends TestCaseGraphQL
         );
 
         $response = $this->graphql($this->method, ['name' => ''], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['name' => ['The name field is required when tank id is not present.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['name' => Str::random(50)], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['name' => ['The name field must not be greater than 32 characters.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['name' => Str::random(6)], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['name' => ['The selected name is invalid.']],
             $response['error']
         );
@@ -68,7 +68,7 @@ class GetFuelTankTest extends TestCaseGraphQL
     public function test_it_will_fail_with_invalid_tank_id(): void
     {
         $response = $this->graphql($this->method, ['tankId' => null], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 'name' => ['The name field is required when tank id is not present.'],
                 'tankId' => ['The tank id field is required when name is not present.'],
@@ -77,13 +77,13 @@ class GetFuelTankTest extends TestCaseGraphQL
         );
 
         $response = $this->graphql($this->method, ['tankId' => ''], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field is required when name is not present.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['tankId' => Str::random(50)], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
@@ -93,7 +93,7 @@ class GetFuelTankTest extends TestCaseGraphQL
             ['tankId' => resolve(SubstrateProvider::class)->public_key()],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );

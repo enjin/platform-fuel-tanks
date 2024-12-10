@@ -114,7 +114,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
         ]);
 
         $response = $this->graphql($this->method, $data, true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['name' => ['The name has already been taken.']],
             $response['error']
         );
@@ -124,7 +124,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['name' => "This is a very long name that will fail because it's too long"]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['name' => ['The name field must not be greater than 32 characters.']],
             $response['error']
         );
@@ -141,7 +141,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['name' => '']),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['name' => ['The name field must have a value.']],
             $response['error']
         );
@@ -166,7 +166,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['accountRules' => ['whitelistedCallers' => ['Invalid']]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['accountRules.whitelistedCallers.0' => ['The accountRules.whitelistedCallers.0 is not a valid substrate address.']],
             $response['error']
         );
@@ -176,7 +176,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['accountRules' => ['whitelistedCallers' => [$data['account'], $data['account']]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['accountRules.whitelistedCallers.0' => ['The accountRules.whitelistedCallers.0 field has a duplicate value.']],
             $response['error']
         );
@@ -186,7 +186,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['accountRules' => ['whitelistedCallers' => [Str::random(300)]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['accountRules.whitelistedCallers.0' => ['The accountRules.whitelistedCallers.0 field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -196,7 +196,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['accountRules' => ['whitelistedCallers' => []]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['accountRules.whitelistedCallers' => ['The account rules.whitelisted callers field must have at least 1 items.']],
             $response['error']
         );
@@ -213,7 +213,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['accountRules' => ['whitelistedCallers' => '']]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['accountRules.whitelistedCallers.0' => ['The accountRules.whitelistedCallers.0 field must have a value.']],
             $response['error']
         );
@@ -227,7 +227,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => 1, 'tokenId' => ['integer' => 1]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 'accountRules.requireToken.collectionId' => ['The selected account rules.require token.collection id is invalid.'],
             ],
@@ -259,7 +259,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['accountRules' => ['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId' => ['integer' => Hex::MAX_UINT256 + 1]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 0 => [
                     'message' => 'Variable "$accountRules" got invalid value 1.1579208923732E+77 at "accountRules.requireToken.collectionId"; Cannot represent following value as uint256: 1.1579208923732E+77',
@@ -280,7 +280,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['whitelistedCallers' => ['Invalid']]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.whitelistedCallers.0' => ['The dispatchRules.0.whitelistedCallers.0 is not a valid substrate address.']],
             $response['error']
         );
@@ -290,7 +290,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['whitelistedCallers' => [$data['account'], $data['account']]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.whitelistedCallers.0' => ['The dispatchRules.0.whitelistedCallers.0 field has a duplicate value.']],
             $response['error']
         );
@@ -300,7 +300,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['whitelistedCallers' => [Str::random(300)]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.whitelistedCallers.0' => ['The dispatchRules.0.whitelistedCallers.0 field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -310,7 +310,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['whitelistedCallers' => []]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.whitelistedCallers' => ['The dispatchRules.0.whitelistedCallers field must have at least 1 items.']],
             $response['error']
         );
@@ -327,7 +327,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['whitelistedCallers' => '']]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.whitelistedCallers.0' => ['The dispatchRules.0.whitelistedCallers.0 field must have a value.']],
             $response['error']
         );
@@ -341,7 +341,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => 1, 'tokenId' => ['integer' => 1]]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.requireToken.collectionId' => ['The selected dispatchRules.0.requireToken.collectionId is invalid.']],
             $response['error']
         );
@@ -371,7 +371,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['requireToken' => ['collectionId' => Hex::MAX_UINT256 + 1, 'tokenId' => ['integer' => Hex::MAX_UINT256 + 1]]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 0 => [
                     'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].requireToken.collectionId"; Cannot represent following value as uint256: 1.1579208923732E+77',
@@ -402,7 +402,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['whitelistedCollections' => [1, 1]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.whitelistedCollections.0' => ['The dispatchRules.0.whitelistedCollections.0 field has a duplicate value.']],
             $response['error']
         );
@@ -412,7 +412,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['whitelistedCollections' => [5000]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.whitelistedCollections.0' => ['The selected dispatchRules.0.whitelistedCollections.0 is invalid.']],
             $response['error']
         );
@@ -422,7 +422,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['whitelistedCollections' => []]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['dispatchRules.0.whitelistedCollections' => ['The dispatchRules.0.whitelistedCollections field must have at least 1 items.']],
             $response['error']
         );
@@ -477,7 +477,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['userFuelBudget' => ['amount' => 'Invalid', 'resetPeriod' => 'Invalid']]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 0 => [
                     'message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].userFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"',
@@ -494,7 +494,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['userFuelBudget' => ['amount' => Hex::MAX_UINT256 + 1, 'resetPeriod' => Hex::MAX_UINT256 + 1]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 0 => [
                     'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].userFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
@@ -515,7 +515,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['tankFuelBudget' => ['amount' => 'Invalid', 'resetPeriod' => 'Invalid']]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 ['message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].tankFuelBudget.amount"; Cannot represent following value as uint256: "Invalid"'],
                 ['message' => 'Variable "$dispatchRules" got invalid value "Invalid" at "dispatchRules[0].tankFuelBudget.resetPeriod"; Cannot represent following value as uint256: "Invalid"'],
@@ -528,7 +528,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
             array_merge($data, ['dispatchRules' => [['tankFuelBudget' => ['amount' => Hex::MAX_UINT256 + 1, 'resetPeriod' => Hex::MAX_UINT256 + 1]]]]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 0 => [
                     'message' => 'Variable "$dispatchRules" got invalid value 1.1579208923732E+77 at "dispatchRules[0].tankFuelBudget.amount"; Cannot represent following value as uint256: 1.1579208923732E+77',
