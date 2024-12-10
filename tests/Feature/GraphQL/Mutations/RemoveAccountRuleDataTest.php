@@ -83,7 +83,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => $pubicKey]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
@@ -93,7 +93,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => Str::random(300)]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -103,7 +103,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => 'Invalid']),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
@@ -124,7 +124,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
             array_merge($data, ['tankId' => $tank->public_key]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id provided is not owned by you.']],
             $response['error']
         );
@@ -140,7 +140,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
             true
         );
 
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userId' => ['The user id is not a valid substrate address.']],
             $response['error']
         );
@@ -157,7 +157,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
             array_merge($data, ['userId' => Str::random(300)]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userId' => ['The user id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -168,7 +168,7 @@ class RemoveAccountRuleDataTest extends TestCaseGraphQL
             array_merge($data, ['userId' => $pubicKey]),
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userId' => ["The user id contains an account that doesn't exist in the fuel tank."]],
             $response['error']
         );

@@ -40,6 +40,7 @@ trait GenerateFuelTankData
                 ],
             ],
             'dispatchRules' => $isArray ? [$dispatchRules] : $dispatchRules,
+            'requireAccount' => true,
         ];
     }
 }

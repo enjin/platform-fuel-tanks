@@ -79,6 +79,11 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
                 'type' => GraphQL::type('[DispatchRuleInputType!]'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.description'),
             ],
+            'requireAccount' => [
+                'type' => GraphQL::type('Boolean'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.insert_rule_set.args.requireAccount'),
+                'defaultValue' => false,
+            ],
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
             ...$this->getSimulateField(),
@@ -114,6 +119,7 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
             name: $args['name'],
             userAccountManagement: $blockchainService->getUserAccountManagementParams($args),
             dispatchRules: $dispatchRules,
+            requireAccount: $args['requireAccount'],
             coveragePolicy: $args['coveragePolicy'] ?? CoveragePolicy::FEES,
             accountRules: $blockchainService->getAccountRulesParams($args)
         ));
@@ -146,6 +152,7 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
         $ruleSets = collect(Arr::get($params, 'dispatchRules', []));
         $coveragePolicy = is_string($coverage = Arr::get($params, 'coveragePolicy')) ? CoveragePolicy::getEnumCase($coverage) : $coverage;
         $accountRules = Arr::get($params, 'accountRules', new AccountRulesParams());
+        $requireAccount = Arr::get($params, 'requireAccount', false);
 
         return [
             'descriptor' => [
@@ -155,7 +162,7 @@ class CreateFuelTankMutation extends Mutation implements PlatformBlockchainTrans
                 'ruleSets' =>  [
                     [
                         'rules' => $ruleSets->flatMap(fn ($ruleSet) => $ruleSet->toEncodable())->all(),
-                        'requireAccount' => false,
+                        'requireAccount' => $requireAccount,
                     ],
                 ],
                 'accountRules' => $accountRules?->toEncodable() ?? [],

@@ -46,19 +46,19 @@ class GetAccountsTest extends TestCaseGraphQL
         );
 
         $response = $this->graphql($this->method, ['tankId' => ''], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must have a value.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['tankId' => Str::random(10)], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['tankId' => Str::random(300)], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -68,7 +68,7 @@ class GetAccountsTest extends TestCaseGraphQL
             ['tankId' => resolve(SubstrateProvider::class)->public_key()],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
