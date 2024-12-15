@@ -77,7 +77,7 @@ class Substrate extends PlatformSubstrate
             ($pallets = Arr::get($args, 'whitelistedPallets'))
                 ? new WhitelistedPalletsParams($pallets)
                 : null,
-            ($requireSignature = Arr::get($args, 'requireSignature.signature'))
+            ($requireSignature = Arr::get($args, 'requireSignature'))
                 ? new RequireSignatureParams($requireSignature)
                 : null,
         );

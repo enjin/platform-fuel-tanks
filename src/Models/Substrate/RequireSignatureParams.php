@@ -3,6 +3,7 @@
 namespace Enjin\Platform\FuelTanks\Models\Substrate;
 
 use Enjin\BlockchainTools\HexConverter;
+use Enjin\Platform\Support\SS58Address;
 
 class RequireSignatureParams extends FuelTankRules
 {
@@ -28,7 +29,7 @@ class RequireSignatureParams extends FuelTankRules
      */
     public function toEncodable(): array
     {
-        return ['RequireSignature' => $this->signature];
+        return ['RequireSignature' => SS58Address::getPublicKey($this->signature)];
     }
 
     public function toArray(): array

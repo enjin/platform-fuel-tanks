@@ -35,6 +35,10 @@ class DispatchInputType extends InputType
                 'type' => GraphQL::type('Object'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.dispatch.field.variables'),
             ],
+            'settings' => [
+                'type' => GraphQL::type('DispatchSettingsInputType'),
+                'description' => __('enjin-platform-fuel-tanks::input_type.dispatch.field.settings'),
+            ],
         ];
     }
 }
