@@ -88,6 +88,7 @@ class CreateFuelTankTest extends TestCaseGraphQL
                 'userFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
                 'tankFuelBudget' => ['amount' => $value ?? fake()->numberBetween(1, 1000), 'resetPeriod' => fake()->numberBetween(1, 1000)],
                 'permittedExtrinsics' => ['CreateCollection', 'ApproveCollection', 'SimpleTransferToken', 'OperatorTransferToken'],
+                'requireSignature' => resolve(SubstrateProvider::class)->public_key(),
             ]],
             'requireAccount' => true,
             'skipValidation' => true,

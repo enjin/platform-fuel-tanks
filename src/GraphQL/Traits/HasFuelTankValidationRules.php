@@ -37,6 +37,7 @@ trait HasFuelTankValidationRules
                 ],
             ],
             default => [
+                "{$attribute}.requireSignature" => ['nullable', new ValidSubstrateAddress()],
                 "{$attribute}.whitelistedCallers.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidSubstrateAddress()],
                 "{$attribute}.whitelistedCallers" => ['nullable', 'array', 'min:1'],
                 "{$attribute}.requireToken.collectionId" => $isArray
@@ -80,6 +81,7 @@ trait HasFuelTankValidationRules
                 ],
             ],
             default => [
+                "{$attribute}.requireSignature" => ['nullable', new ValidSubstrateAddress()],
                 "{$attribute}.whitelistedCallers.*" => ['bail', 'distinct', 'max:255', 'filled', new ValidSubstrateAddress()],
                 "{$attribute}.whitelistedCallers" => ['nullable', 'array', 'min:1'],
                 "{$attribute}.requireToken.collectionId" => $isArray

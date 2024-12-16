@@ -56,6 +56,43 @@ class DispatchTest extends TestCaseGraphQL
         $this->assertEquals($response['encodedData'], $encodedCall);
     }
 
+    public function test_it_can_dispatch_with_deprecated_pays_remaining_fee(): void
+    {
+        $response = $this->graphql(
+            $this->method,
+            $params = [
+                ...$this->generateParams(),
+                'paysRemainingFee' => true,
+            ],
+        );
+
+        $encodedCall = DispatchMutation::getFuelTankCall($this->method, $params);
+        $this->assertEquals($response['encodedData'], $encodedCall);
+    }
+
+    public function test_it_can_dispatch_with_pays_remaining_fee(): void
+    {
+        $params = $this->generateParams();
+        $params['dispatch']['settings']['paysRemainingFee'] = true;
+        $response = $this->graphql($this->method, $params);
+
+        $encodedCall = DispatchMutation::getFuelTankCall($this->method, $params);
+        $this->assertEquals($response['encodedData'], $encodedCall);
+    }
+
+    public function test_it_can_dispatch_with_required_signature(): void
+    {
+        $params = $this->generateParams();
+        $params['dispatch']['settings']['paysRemainingFee'] = true;
+        $params['dispatch']['settings']['signature']['signature'] = resolve(SubstrateProvider::class)->signature();
+        $params['dispatch']['settings']['signature']['expiryBlock'] = fake()->numberBetween(1, 1000);
+
+        $response = $this->graphql($this->method, $params);
+
+        $encodedCall = DispatchMutation::getFuelTankCall($this->method, $params);
+        $this->assertEquals($response['encodedData'], $encodedCall);
+    }
+
     public function test_it_can_skip_validation(): void
     {
         $response = $this->graphql(
