@@ -145,6 +145,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
             'OptionDispatchSettings',
             ['option' => $paysRemainingFee === null ? null :
                 [
+                    'useNoneOrigin' => false,
                     'paysRemainingFee' => $paysRemainingFee,
                     'signature' => $signature === null ? null : [
                         'signature' => HexConverter::hexToBytes($signature),
