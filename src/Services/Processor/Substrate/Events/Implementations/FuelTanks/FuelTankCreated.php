@@ -28,7 +28,6 @@ class FuelTankCreated extends FuelTankSubstrateEvent
         $extrinsic = $this->block->extrinsics[$this->event->extrinsicIndex];
         $params = $extrinsic->params;
 
-        $reservesAccountCreationDeposit = $this->getValue($params, 'descriptor.user_account_management.tank_reserves_account_creation_deposit');
         $owner = $this->firstOrStoreAccount($this->event->owner);
         $this->extra = ['tank_owner' => $this->event->owner];
 
@@ -40,7 +39,7 @@ class FuelTankCreated extends FuelTankSubstrateEvent
                 'name' => $this->event->tankName,
                 'owner_wallet_id' => $owner->id,
                 'coverage_policy' => CoveragePolicy::from($this->getValue($params, 'descriptor.coverage_policy'))->name,
-                'reserves_account_creation_deposit' => $reservesAccountCreationDeposit,
+                'reserves_account_creation_deposit' => $this->getValue($params, 'descriptor.user_account_management'),
                 'is_frozen' => false,
             ]
         );
