@@ -21,6 +21,7 @@ class DispatchRulesParams
         public ?PermittedExtrinsicsParams $permittedExtrinsics = null,
         public ?WhitelistedPalletsParams $whitelistedPallets = null,
         public ?RequireSignatureParams $requireSignature = null,
+        public ?MinimumInfusionParams $minimumInfusion = null,
         public ?bool $isFrozen = false,
     ) {}
 
@@ -85,6 +86,10 @@ class DispatchRulesParams
             $params[] = ['PermittedExtrinsics' => ['extrinsics' => []]];
         }
 
+        if ($this->minimumInfusion) {
+            $params[] = $this->minimumInfusion->toEncodable();
+        }
+
 
         return $params;
     }
@@ -131,6 +136,10 @@ class DispatchRulesParams
 
         if ($this->requireSignature) {
             $params[] = $this->requireSignature->toArray();
+        }
+
+        if ($this->minimumInfusion) {
+            $params[] = $this->minimumInfusion->toArray();
         }
 
         return $params;
