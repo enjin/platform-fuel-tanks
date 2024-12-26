@@ -450,12 +450,14 @@ class EncodingTest extends TestCase
             dispatchRules: $dispatchRules,
         ));
 
-        $data = Str::take($data, Str::length($data) - 4);
+        $requireAccount = Str::take($data, -2);
+        $data = Str::take($data, Str::length($data) - 6);
         $data .= Arr::get($dispatchRules->permittedExtrinsics->toEncodable(), 'PermittedExtrinsics.extrinsics');
+        $data .= $requireAccount; // This adds require account back
 
         $callIndex = $this->codec->encoder()->getCallIndex('FuelTanks.insert_rule_set', true);
         $this->assertEquals(
-            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a0000000407070c280000000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e95680200282900",
+            "0x{$callIndex}0018353dcf7a6eb053b6f0c01774d1f8cfe0c15963780f6935c49a9fd4f50b893c0a000000040708280000000000000000280f006a03b1a3d40d7e344dfb27157931b14b59fe2ff11d7352353321fe400e9568020000",
             $data
         );
     }

@@ -64,7 +64,7 @@ class AddAccountTest extends TestCaseGraphQL
             ['tankId' => $publicKey, 'userId' => $publicKey],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
@@ -74,7 +74,7 @@ class AddAccountTest extends TestCaseGraphQL
             ['tankId' => Str::random(300), 'userId' => $publicKey],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -84,7 +84,7 @@ class AddAccountTest extends TestCaseGraphQL
             ['tankId' => 'Invalid', 'userId' => $publicKey],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
@@ -105,7 +105,7 @@ class AddAccountTest extends TestCaseGraphQL
             ['tankId' => $tank->public_key, 'userId' => $publicKey],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id provided is not owned by you.']],
             $response['error']
         );
@@ -118,7 +118,7 @@ class AddAccountTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'userId' => 'Invalid'],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userId' => ['The user id is not a valid substrate address.']],
             $response['error']
         );
@@ -138,7 +138,7 @@ class AddAccountTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'userId' => Str::random(300)],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userId' => ['The user id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -153,7 +153,7 @@ class AddAccountTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'userId' => $publicKey],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userId' => ['The user id contains an account that already exists in the fuel tank.']],
             $response['error']
         );

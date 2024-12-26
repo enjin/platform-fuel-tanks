@@ -65,7 +65,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => $pubicKey, 'userIds' => [$pubicKey]],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
@@ -75,7 +75,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => Str::random(300), 'userIds' => [$pubicKey]],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -85,7 +85,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => 'Invalid', 'userIds' => [$pubicKey]],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
@@ -106,7 +106,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => $tank->public_key, 'userIds' => [$pubicKey]],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id provided is not owned by you.']],
             $response['error']
         );
@@ -119,7 +119,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'userIds' => 'Invalid'],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userIds.0' => ['The userIds.0 is not a valid substrate address.']],
             $response['error']
         );
@@ -139,7 +139,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'userIds' => ''],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userIds.0' => ['The userIds.0 field must have a value.']],
             $response['error']
         );
@@ -149,7 +149,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'userIds' => [Str::random(300)]],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userIds.0' => ['The userIds.0 field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -160,7 +160,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'userIds' => [$publicKey, $publicKey]],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             [
                 'userIds.0' => ['The userIds.0 field has a duplicate value.'],
                 'userIds.1' => ['The userIds.1 field has a duplicate value.'],
@@ -178,7 +178,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'userIds' => [$publicKey]],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userIds' => ['The user ids contains an account that already exists in the fuel tank.']],
             $response['error']
         );
@@ -191,7 +191,7 @@ class BatchAddAccountTest extends TestCaseGraphQL
                 'userIds' => Collection::range(1, 101)->map(fn ($row) => $provider->public_key())->toArray()],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['userIds' => ['The user ids field must not have more than 100 items.']],
             $response['error']
         );

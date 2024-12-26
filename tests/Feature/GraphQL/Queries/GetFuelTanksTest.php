@@ -48,19 +48,19 @@ class GetFuelTanksTest extends TestCaseGraphQL
     public function test_it_will_fail_with_invalid_names(): void
     {
         $response = $this->graphql($this->method, ['names' => ['']], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['names.0' => ['The names.0 field must have a value.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['names' => [Str::random(50)]], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['names.0' => ['The names.0 field must not be greater than 32 characters.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['names' => ['duplicate', 'duplicate']], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['names.0' => ['The names.0 field has a duplicate value.']],
             $response['error']
         );
@@ -69,19 +69,19 @@ class GetFuelTanksTest extends TestCaseGraphQL
     public function test_it_will_fail_with_invalid_tank_ids(): void
     {
         $response = $this->graphql($this->method, ['tankIds' => ['']], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankIds.0' => ['The tankIds.0 field must have a value.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['tankIds' => [Str::random(50)]], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankIds.0' => ['The tankIds.0 is not a valid substrate address.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['tankIds' => ['duplicate', 'duplicate']], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankIds.0' => ['The tankIds.0 field has a duplicate value.']],
             $response['error']
         );

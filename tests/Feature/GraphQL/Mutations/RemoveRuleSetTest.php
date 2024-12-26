@@ -68,7 +68,7 @@ class RemoveRuleSetTest extends TestCaseGraphQL
             ['tankId' => $pubicKey, 'ruleSetId' => 1],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
@@ -78,7 +78,7 @@ class RemoveRuleSetTest extends TestCaseGraphQL
             ['tankId' => Str::random(300), 'ruleSetId' => 1],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
@@ -88,7 +88,7 @@ class RemoveRuleSetTest extends TestCaseGraphQL
             ['tankId' => 'Invalid', 'ruleSetId' => 1],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
@@ -109,7 +109,7 @@ class RemoveRuleSetTest extends TestCaseGraphQL
             ['tankId' => $tank->public_key, 'ruleSetId' => 1],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id provided is not owned by you.']],
             $response['error']
         );
@@ -152,7 +152,7 @@ class RemoveRuleSetTest extends TestCaseGraphQL
             ['tankId' => $this->tank->public_key, 'ruleSetId' => fake()->numberBetween(5000, 10000)],
             true
         );
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['ruleSetId' => ["The rule set ID doesn't exist."]],
             $response['error']
         );

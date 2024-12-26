@@ -20,6 +20,7 @@ use Enjin\Platform\Interfaces\PlatformBlockchainTransaction;
 use Enjin\Platform\Models\Transaction;
 use Enjin\Platform\Rules\MaxBigInt;
 use Enjin\Platform\Rules\MinBigInt;
+use Enjin\Platform\Rules\ValidHex;
 use Enjin\Platform\Rules\ValidSubstrateAddress;
 use Enjin\Platform\Facades\TransactionSerializer;
 use Enjin\Platform\Support\Account;
@@ -80,6 +81,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
             'paysRemainingFee' => [
                 'type' => GraphQL::type('Boolean'),
                 'description' => __('enjin-platform-fuel-tanks::mutation.dispatch.args.paysRemainingFee'),
+                'deprecationReason' => __('enjin-platform-fuel-tanks::deprecation.dispatch.args.paysRemainingFee'),
             ],
             ...$this->getSigningAccountField(),
             ...$this->getIdempotencyField(),
@@ -130,8 +132,8 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
 
     public static function getFuelTankCall($method, $args, ?string $rawCall = null): string
     {
-        $paysRemainingFee = Arr::get($args, 'paysRemainingFee');
-
+        $paysRemainingFee = Arr::get($args, 'dispatch.settings.paysRemainingFee') ?? Arr::get($args, 'paysRemainingFee');
+        $signature = Arr::get($args, 'dispatch.settings.signature.signature');
         $encodedCall = TransactionSerializer::encode($method, static::getEncodableParams(
             tankId: $args['tankId'],
             ruleSetId: $args['ruleSetId'],
@@ -145,7 +147,10 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
                 [
                     'useNoneOrigin' => false,
                     'paysRemainingFee' => $paysRemainingFee,
-                    'signature' => null,
+                    'signature' => $signature === null ? null : [
+                        'signature' => HexConverter::hexToBytes($signature),
+                        'expiryBlock' => Arr::get($args, 'dispatch.settings.signature.expiryBlock'),
+                    ],
                 ],
             ],
         );
@@ -190,6 +195,12 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
                 'filled',
                 new ValidMutation(),
             ],
+            'dispatch.settings.signature.signature' => [
+                'bail', 'filled', new ValidHex(64),
+            ],
+            'dispatch.settings.signature.expiryBlock' => [
+                'bail', 'integer', 'min:0',
+            ],
         ];
     }
 
@@ -213,6 +224,12 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
             'dispatch.query' => [
                 'filled',
                 new ValidMutation(),
+            ],
+            'dispatch.settings.signature.signature' => [
+                'bail', 'filled', new ValidHex(64),
+            ],
+            'dispatch.settings.signature.expiryBlock' => [
+                'bail', 'integer', 'min:0',
             ],
         ];
     }

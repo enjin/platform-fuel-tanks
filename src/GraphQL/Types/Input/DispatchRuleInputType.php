@@ -52,7 +52,7 @@ class DispatchRuleInputType extends InputType
                 'description' => __('enjin-platform-fuel-tanks::input_type.permitted_extrinsics.description'),
             ],
             'requireSignature' => [
-                'type' => GraphQL::type('RequireSignatureInputType'),
+                'type' => GraphQL::type('String'),
                 'description' => __('enjin-platform-fuel-tanks::input_type.require_signature.description'),
             ],
         ];

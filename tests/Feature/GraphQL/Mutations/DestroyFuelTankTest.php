@@ -43,19 +43,19 @@ class DestroyFuelTankTest extends TestCaseGraphQL
     {
         $pubicKey = resolve(SubstrateProvider::class)->public_key();
         $response = $this->graphql($this->method, ['tankId' => $pubicKey], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The selected tankId is invalid.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['tankId' => Str::random(300)], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id field must not be greater than 255 characters.']],
             $response['error']
         );
 
         $response = $this->graphql($this->method, ['tankId' => 'Invalid'], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id is not a valid substrate address.']],
             $response['error']
         );
@@ -72,7 +72,7 @@ class DestroyFuelTankTest extends TestCaseGraphQL
         );
         $tank->forceFill(['owner_wallet_id' => $wallet->id])->save();
         $response = $this->graphql($this->method, ['tankId' => $tank->public_key], true);
-        $this->assertArraySubset(
+        $this->assertArrayContainsArray(
             ['tankId' => ['The tank id provided is not owned by you.']],
             $response['error']
         );

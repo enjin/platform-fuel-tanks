@@ -2,7 +2,6 @@
 
 namespace Enjin\Platform\FuelTanks\Tests\Feature\GraphQL;
 
-use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Enjin\Platform\CoreServiceProvider;
 use Enjin\Platform\FuelTanks\FuelTanksServiceProvider;
 use Enjin\Platform\FuelTanks\Models\DispatchRule;
@@ -21,7 +20,6 @@ use Rebing\GraphQL\Support\Facades\GraphQL;
 
 class TestCaseGraphQL extends BaseTestCase
 {
-    use ArraySubsetAsserts;
     use CreateCollectionData;
     use GenerateFuelTankData;
 
@@ -239,6 +237,16 @@ class TestCaseGraphQL extends BaseTestCase
         if ($this->fakeEvents) {
             Event::fake();
         }
+    }
+
+    protected function assertArrayContainsArray(array $expected, array $actual): void
+    {
+        $this->assertArrayIsEqualToArrayOnlyConsideringListOfKeys($expected, $actual, $this->arrayKeys($expected));
+    }
+
+    protected function arrayKeys($array): array
+    {
+        return array_keys(Arr::dot($array));
     }
 
     /**

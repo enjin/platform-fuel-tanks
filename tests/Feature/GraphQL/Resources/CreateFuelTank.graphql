@@ -4,6 +4,7 @@ mutation CreateFuelTank(
   $coveragePolicy: CoveragePolicy
   $accountRules: AccountRuleInputType
   $dispatchRules: [DispatchRuleInputType!]
+  $requireAccount: Boolean
   $skipValidation: Boolean
 ) {
   CreateFuelTank(
@@ -12,6 +13,7 @@ mutation CreateFuelTank(
     coveragePolicy: $coveragePolicy
     accountRules: $accountRules
     dispatchRules: $dispatchRules
+    requireAccount: $requireAccount
     skipValidation: $skipValidation
   ) {
     id

@@ -4,8 +4,10 @@ namespace Enjin\Platform\FuelTanks\Enums;
 
 use Enjin\Platform\FuelTanks\Models\Substrate\FuelTankRules;
 use Enjin\Platform\FuelTanks\Models\Substrate\MaxFuelBurnPerTransactionParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\MinimumInfusionParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\PermittedCallsParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\PermittedExtrinsicsParams;
+use Enjin\Platform\FuelTanks\Models\Substrate\RequireSignatureParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\RequireTokenParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\TankFuelBudgetParams;
 use Enjin\Platform\FuelTanks\Models\Substrate\UserFuelBudgetParams;
@@ -27,6 +29,8 @@ enum DispatchRule: string
     case PERMITTED_EXTRINSICS = 'PermittedExtrinsics';
     case PERMITTED_CALLS = 'PermittedCalls';
     case WHITELISTED_PALLETS = 'WhitelistedPallets';
+    case REQUIRE_SIGNATURE = 'RequireSignature';
+    case MINIMUM_INFUSION = 'MinimumInfusion';
 
     /**
      * Convert enum case to FuelTankRules.
@@ -43,6 +47,8 @@ enum DispatchRule: string
             self::PERMITTED_EXTRINSICS => new PermittedExtrinsicsParams(),
             self::PERMITTED_CALLS => new PermittedCallsParams(),
             self::WHITELISTED_PALLETS => new WhitelistedPalletsParams(),
+            self::REQUIRE_SIGNATURE => new RequireSignatureParams(''),
+            self::MINIMUM_INFUSION => new MinimumInfusionParams('')
         };
     }
 }
