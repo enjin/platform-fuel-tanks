@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'create_fuel_tank.description' => 'Creates a fuel tank.',
+    'create_fuel_tank.description' => 'Creates a fuel tank, a pool of Enjin Coins (ENJ) used to cover transaction fees for eligible users. Fuel tanks are customizable and operate based on defined rules to target specific actions or accounts that meet certain criteria. For more details, refer to the [Fuel Tanks documentation](https://docs.enjin.io/docs/using-fuel-tanks).',
     'create_fuel_tank.args.account' => 'The fuel tank will be created from this wallet account.',
     'destroy_fuel_tank.description' => 'Destroy the fuel tank.',
     'destroy_fuel_tank.args.tankId' => 'The wallet address of the fuel tank.',

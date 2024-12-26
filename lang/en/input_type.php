@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'account_rule.description' => 'The fuel tank account rules.',
+    'account_rule.description' => 'Defines criteria that accounts must meet to be added as Fuel Tank User Accounts. These rules are validated during the creation of Tank User Accounts, ensuring only eligible accounts are added based on the specified criteria. [Learn more](https://docs.enjin.io/docs/fuel-tank-pallet#account-rules).',
     'account_rule.field.whitelistedCallers' => 'The wallet accounts that are allowed to use the fuel tank.',
     'account_rule.field.requireToken' => 'The wallet account must have a specific token in their wallet to use the fuel tank.',
-    'dispatch_rule.description' => 'The fuel tank dispatch rules.',
+    'dispatch_rule.description' => 'Specifies rule sets that are validated when dispatching a transaction subsidized by the Fuel Tank. Each rule set can contain multiple individual rules that control access and permissions, ensuring the dispatch call adheres to the defined criteria. [Learn more](https://docs.enjin.io/docs/fuel-tank-pallet#dispatch-rules).',
     'dispatch_rule.field.whitelistedCollections' => 'The list of collections that can be used in the fuel tank.',
     'dispatch_rule.field.maxFuelBurnPerTransaction' => 'The maximum amount of fuel can be used per transaction.',
     'fuel_budget.description' => 'The rule for fuel budget.',
