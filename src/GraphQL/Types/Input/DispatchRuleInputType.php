@@ -25,15 +25,15 @@ class DispatchRuleInputType extends InputType
         return [
             'whitelistedCallers' => [
                 'type' => GraphQL::type('[String!]'),
-                'description' => __('enjin-platform-fuel-tanks::input_type.account_rule.field.whitelistedCallers'),
+                'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.field.whitelistedCallers'),
             ],
             'requireToken' => [
                 'type' => GraphQL::type('MultiTokenIdInput'),
-                'description' => __('enjin-platform-fuel-tanks::input_type.account_rule.field.requireToken'),
+                'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.field.requireToken'),
             ],
             'whitelistedCollections' => [
                 'type' => GraphQL::type('[BigInt!]'),
-                'description' => __('enjin-platform-fuel-tanks::input_type.account_rule.field.requireToken'),
+                'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.field.whitelistedCollections'),
             ],
             'maxFuelBurnPerTransaction' => [
                 'type' => GraphQL::type('BigInt'),
@@ -41,11 +41,11 @@ class DispatchRuleInputType extends InputType
             ],
             'userFuelBudget' => [
                 'type' => GraphQL::type('FuelBudgetInputType'),
-                'description' => __('enjin-platform-fuel-tanks::input_type.fuel_budget.description'),
+                'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.field.userFuelBudget'),
             ],
             'tankFuelBudget' => [
                 'type' => GraphQL::type('FuelBudgetInputType'),
-                'description' => __('enjin-platform-fuel-tanks::input_type.fuel_budget.description'),
+                'description' => __('enjin-platform-fuel-tanks::input_type.dispatch_rule.field.tankFuelBudget'),
             ],
             'permittedExtrinsics' => [
                 'type' => GraphQL::type('[TransactionMethod!]'),

@@ -60,7 +60,7 @@ class BatchRemoveAccountMutation extends Mutation implements PlatformBlockchainT
         return [
             'tankId' => [
                 'type' => GraphQL::type('String!'),
-                'description' => __('enjin-platform-fuel-tanks::mutation.destroy_fuel_tank.args.tankId'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.fuel_tank.args.tankId'),
             ],
             'userIds' => [
                 'type' => GraphQL::type('[String!]!'),

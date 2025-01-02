@@ -50,7 +50,7 @@ class GetFuelTanksQuery extends Query
             ],
             'tankIds' => [
                 'type' => GraphQL::type('[String!]'),
-                'description' => __('enjin-platform-fuel-tanks::mutation.destroy_fuel_tank.args.tankId'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.fuel_tank.args.tankId'),
             ],
         ]);
     }

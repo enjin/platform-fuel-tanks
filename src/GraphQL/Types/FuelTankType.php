@@ -28,7 +28,7 @@ class FuelTankType extends Type
         return [
             'tankId' => [
                 'type' => GraphQL::type('Account'),
-                'description' => __('enjin-platform-fuel-tanks::mutation.destroy_fuel_tank.args.tankId'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.fuel_tank.args.tankId'),
                 'resolve' => fn ($tank) => ['publicKey' => $tank->public_key, 'address' => $tank->address],
                 'is_relation' => false,
                 'selectable' => false,
