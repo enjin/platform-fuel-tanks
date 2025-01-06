@@ -66,7 +66,7 @@ class RemoveAccountRuleDataMutation extends Mutation implements PlatformBlockcha
         return [
             'tankId' => [
                 'type' => GraphQL::type('String!'),
-                'description' => __('enjin-platform-fuel-tanks::mutation.destroy_fuel_tank.args.tankId'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.fuel_tank.args.tankId'),
             ],
             'userId' => [
                 'type' => GraphQL::type('String!'),
@@ -74,7 +74,7 @@ class RemoveAccountRuleDataMutation extends Mutation implements PlatformBlockcha
             ],
             'ruleSetId' => [
                 'type' => GraphQL::type('BigInt!'),
-                'description' => __('enjin-platform-fuel-tanks::mutation.schedule_mutate_freeze_state.args.ruleSetId'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.fuel_tank.args.ruleSetId'),
             ],
             'rule' => [
                 'type' => GraphQL::type('DispatchRuleEnum!'),

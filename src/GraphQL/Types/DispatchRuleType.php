@@ -32,7 +32,7 @@ class DispatchRuleType extends Type
             ],
             'ruleSetId' => [
                 'type' => GraphQL::type('Int!'),
-                'description' => __('enjin-platform-fuel-tanks::mutation.schedule_mutate_freeze_state.args.ruleSetId'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.fuel_tank.args.ruleSetId'),
                 'alias' => 'rule_set_id',
             ],
             'value' => [

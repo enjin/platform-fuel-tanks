@@ -68,11 +68,11 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
         return [
             'tankId' => [
                 'type' => GraphQL::type('String!'),
-                'description' => __('enjin-platform-fuel-tanks::mutation.destroy_fuel_tank.args.tankId'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.fuel_tank.args.tankId'),
             ],
             'ruleSetId' => [
                 'type' => GraphQL::type('BigInt!'),
-                'description' => __('enjin-platform-fuel-tanks::mutation.schedule_mutate_freeze_state.args.ruleSetId'),
+                'description' => __('enjin-platform-fuel-tanks::mutation.dispatch.args.ruleSetId'),
             ],
             'dispatch' => [
                 'type' => GraphQL::type('DispatchInputType!'),
