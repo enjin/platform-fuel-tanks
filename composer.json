@@ -38,6 +38,7 @@
         "phpunit/php-code-coverage": "^11.0",
         "phpunit/phpunit": "^11.5",
         "rector/rector": "^2.0",
+        "spatie/laravel-ray": "^1.30",
         "roave/security-advisories": "dev-latest"
     },
     "autoload": {
