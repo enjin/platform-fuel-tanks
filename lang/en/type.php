@@ -6,7 +6,7 @@ return [
     'fuel_tank.field.owner_wallet' => 'The wallet account that owns the fuel tank.',
     'fuel_tank.field.name' => 'The fuel tank name.',
     'fuel_tank.field.reservesExistentialDeposit' => '(DEPRECATED) The flag for existential deposit.',
-    'fuel_tank.field.reservesAccountCreationDeposit' => <<<MD
+    'fuel_tank.field.reservesAccountCreationDeposit' => <<<'MD'
 Determines how accounts are added to the Fuel Tank User Accounts and whether the Fuel Tank covers the storage deposit costs. [Learn more](https://docs.enjin.io/docs/using-fuel-tanks#user-account-management).  
 
 Options:  
@@ -25,7 +25,7 @@ MD,
     'fuel_tank.field.accounts' => 'The fuel tank accounts.',
     'fuel_tank.field.accountRules' => 'The fuel tank account rules.',
     'fuel_tank.field.dispatchRules' => 'The fuel tank dispatch rules.',
-    'fuel_tank.field.coveragePolicy' => <<<MD
+    'fuel_tank.field.coveragePolicy' => <<<'MD'
 Defines the coverage scope for the Fuel Tank. [Learn more](https://docs.enjin.io/docs/using-fuel-tanks#coverage-policy).  
 
 Options:  

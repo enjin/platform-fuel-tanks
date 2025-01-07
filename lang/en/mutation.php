@@ -3,7 +3,7 @@
 return [
     'create_fuel_tank.description' => 'Creates a fuel tank, a pool of Enjin Coins (ENJ) used to cover transaction fees for eligible users. Fuel tanks are customizable and operate based on defined rules to target specific actions or accounts that meet certain criteria. For more details, refer to the [Fuel Tanks documentation](https://docs.enjin.io/docs/using-fuel-tanks).',
     'create_fuel_tank.args.account' => 'The fuel tank will be created from this wallet account.',
-    'destroy_fuel_tank.description' => <<<MD
+    'destroy_fuel_tank.description' => <<<'MD'
 Destroys a fuel tank, returning the storage deposit and any remaining balance to the fuel tank owner.  
 
 **Prerequisites:**  
@@ -25,7 +25,7 @@ MD,
     'batch_remove_account.args.userIds' => 'List of wallet account addresses that will be removed from the fuel tank.',
     'schedule_mutate_freeze_state.description' => 'Freezes or thaws a fuel tank or a rule set. If `ruleSetId` is provided, the specified rule set is targeted; otherwise, the fuel tank is targeted.',
     'schedule_mutate_freeze_state.args.isFrozen' => 'Determines the state of the target. Set to `true` to freeze or `false` to thaw the fuel tank or rule set.',
-    'insert_rule_set.description' => <<<MD
+    'insert_rule_set.description' => <<<'MD'
 Inserts a new rule set into a fuel tank or replaces an existing one.  
 
 **Important Considerations:**  
@@ -33,7 +33,7 @@ Inserts a new rule set into a fuel tank or replaces an existing one.
 - Adding a rule set requires the fuel tank to be frozen; otherwise, the operation will fail.  
 MD,
     'insert_rule_set.args.requireAccount' => 'Specifies if the caller must have a Tank User Account to dispatch transactions. If `true`, the caller must have an account, or the dispatch will fail. If `false`, the caller can dispatch without an account. [Learn more](https://docs.enjin.io/docs/fuel-tank-pallet#require-account).',
-    'remove_rule_set.description' => <<<MD
+    'remove_rule_set.description' => <<<'MD'
 Removes a rule set from a fuel tank.  
 
 **Important Considerations:**  
