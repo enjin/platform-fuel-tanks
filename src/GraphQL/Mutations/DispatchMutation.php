@@ -139,7 +139,7 @@ class DispatchMutation extends Mutation implements PlatformBlockchainTransaction
             ruleSetId: $args['ruleSetId'],
         ));
 
-        $encodedCall .= HexConverter::unPrefix($rawCall) ?: static::getEncodedCall($args);
+        $encodedCall .= $rawCall ? HexConverter::unPrefix($rawCall) : static::getEncodedCall($args);
 
         return $encodedCall . TransactionSerializer::encodeRaw(
             'OptionDispatchSettings',
