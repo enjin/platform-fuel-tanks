@@ -1,3 +1,6 @@
+⚠️ This package has been archived and merged into [platform-core](https://github.com/enjin/platform-core)!
+--
+
 # Platform Fuel Tanks
 
 This package is an extension of [platform-core](https://github.com/enjin/platform-core) for fuel tanks.
